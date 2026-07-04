@@ -279,6 +279,7 @@
   .score-box{text-align:right;flex-shrink:0;}
   .score-label{font-size:9.5px;color:var(--texto-muted);margin:0;text-transform:uppercase;letter-spacing:0.03em;}
   .score-value{font-size:19px;font-weight:700;margin:0;font-variant-numeric:tabular-nums;}
+  .score-value.sem-vaga{font-size:13px;font-weight:600;color:var(--texto-muted);}
   .card-foot{
     display:flex;
     justify-content:space-between;
@@ -524,10 +525,18 @@ function filtrarDados(){
     if (ESTADO.uf && d.uf !== ESTADO.uf) return false;
     if (ESTADO.municipio && d.mun !== ESTADO.municipio) return false;
     const m = d.mod[chave];
-    if (!m || m.n === null || m.n === undefined) return false;
+    if (!m) return false;
+    const temNota = m.n !== null && m.n !== undefined;
+    const zeroVagas = (d.vTotal === 0);
+    if (!temNota && !zeroVagas) return false;
     if (buscaLower && !(d.ies.toLowerCase().includes(buscaLower) || d.mun.toLowerCase().includes(buscaLower))) return false;
     return true;
-  }).sort((a,b) => a.mod[chave].n - b.mod[chave].n);
+  }).sort((a,b) => {
+    const na = a.mod[chave].n, nb = b.mod[chave].n;
+    if (na === null || na === undefined) return nb === null || nb === undefined ? a.ies.localeCompare(b.ies) : 1;
+    if (nb === null || nb === undefined) return -1;
+    return na - nb;
+  });
 }
 
 function renderKPIs(lista){
@@ -535,9 +544,10 @@ function renderKPIs(lista){
   document.getElementById("kInst").textContent = fmtInt(lista.length);
   const totalVagas = lista.reduce((s,d) => s + (d.mod[chave].v || 0), 0);
   document.getElementById("kVagas").textContent = fmtInt(totalVagas);
-  if (lista.length){
-    document.getElementById("kMin").textContent = fmtNota(lista[0].mod[chave].n);
-    document.getElementById("kMax").textContent = fmtNota(lista[lista.length-1].mod[chave].n);
+  const notas = lista.map(d => d.mod[chave].n).filter(n => n !== null && n !== undefined);
+  if (notas.length){
+    document.getElementById("kMin").textContent = fmtNota(Math.min(...notas));
+    document.getElementById("kMax").textContent = fmtNota(Math.max(...notas));
   } else {
     document.getElementById("kMin").textContent = "-";
     document.getElementById("kMax").textContent = "-";
@@ -579,8 +589,10 @@ function detalheModalidades(item){
 
 function renderLista(lista){
   const el = document.getElementById("lista");
+  const chave = modKey();
+  const semVaga = lista.filter(d => d.mod[chave].n === null || d.mod[chave].n === undefined).length;
   document.getElementById("contagem").textContent = lista.length
-    ? `${lista.length} instituição${lista.length>1?'ões':''} ofertando esta modalidade`
+    ? `${lista.length} instituição${lista.length>1?'ões':''}` + (semVaga ? `, sendo ${semVaga} sem vagas nesta edição` : "")
     : "";
 
   if (!lista.length){
@@ -591,13 +603,14 @@ function renderLista(lista){
     return;
   }
 
-  const chave = modKey();
-  const notas = lista.map(d => d.mod[chave].n);
-  const min = Math.min(...notas), max = Math.max(...notas);
+  const notas = lista.map(d => d.mod[chave].n).filter(n => n !== null && n !== undefined);
+  const min = notas.length ? Math.min(...notas) : 0;
+  const max = notas.length ? Math.max(...notas) : 0;
 
   el.innerHTML = lista.map((item, idx) => {
     const m = item.mod[chave];
-    const cor = corNota(m.n, min, max);
+    const temNota = m.n !== null && m.n !== undefined;
+    const cor = temNota ? corNota(m.n, min, max) : null;
     const badge = badgeCor(item.conceito);
     return `
     <div class="card" data-idx="${idx}">
@@ -609,7 +622,9 @@ function renderLista(lista){
         </div>
         <div class="score-box">
           <p class="score-label">nota de corte</p>
-          <p class="score-value" style="color:${cor}">${fmtNota(m.n)}</p>
+          ${temNota
+            ? `<p class="score-value" style="color:${cor}">${fmtNota(m.n)}</p>`
+            : `<p class="score-value sem-vaga">Sem vagas</p>`}
         </div>
       </div>
       <div class="card-foot">
@@ -634,9 +649,11 @@ function agruparPor(lista, campoFn){
     if (!mapa.has(k)) mapa.set(k, { vagas: 0, notas: [] });
     const registro = mapa.get(k);
     registro.vagas += (m.v || 0);
-    registro.notas.push(m.n);
+    if (m.n !== null && m.n !== undefined) registro.notas.push(m.n);
   });
-  return Array.from(mapa.entries()).map(([nome, r]) => ({
+  return Array.from(mapa.entries())
+    .filter(([, r]) => r.notas.length > 0)
+    .map(([nome, r]) => ({
     nome,
     vagas: r.vagas,
     menorNota: Math.min(...r.notas),
