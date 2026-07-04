@@ -55,12 +55,7 @@
   .header h1{
     font-size:21px;
     font-weight:600;
-    margin:10px 0 2px;
-  }
-  .header p{
-    font-size:12.5px;
     margin:0;
-    opacity:0.85;
   }
   .container{
     max-width:640px;
@@ -90,6 +85,27 @@
     .conteudo-principal{flex:1;min-width:0;padding-top:24px;}
     #lista{max-width:640px;}
     .card{margin-bottom:10px;}
+  }
+  .destaque-iniciativa{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    max-width:640px;
+    margin:14px auto 0;
+    padding:14px 14px 0;
+  }
+  .destaque-icone{
+    width:36px;height:36px;border-radius:10px;flex-shrink:0;
+    background:var(--azul);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .destaque-icone i{font-size:20px;color:#fff;}
+  .destaque-texto{min-width:0;background:#EEF1FC;border:1px solid #C7D0F0;border-radius:12px;padding:12px 14px;flex:1;}
+  .destaque-eyebrow{font-size:11px;font-weight:600;color:var(--azul-escuro);margin:0 0 3px;text-transform:uppercase;letter-spacing:0.03em;}
+  .destaque-titulo{font-size:13.5px;font-weight:600;margin:0 0 4px;line-height:1.35;}
+  .destaque-corpo{font-size:12px;color:var(--texto-sec);margin:0;line-height:1.5;}
+  @media (min-width: 900px){
+    .destaque-iniciativa{max-width:1360px;padding:20px 32px 0;}
   }
   .filtros-sticky{
     position:sticky;
@@ -377,10 +393,20 @@
         </g>
       </svg>
     </div>
+    <h1>Mapa do Fies</h1>
   </div>
-  <h1>Mapa do Fies</h1>
-  <p>Notas de corte de Medicina, por edição e modalidade</p>
 </div>
+
+  <div class="destaque-iniciativa">
+    <div class="destaque-icone">
+      <i class="ti ti-gift" aria-hidden="true"></i>
+    </div>
+    <div class="destaque-texto">
+      <p class="destaque-eyebrow">iniciativa ProFies</p>
+      <p class="destaque-titulo">Uma ferramenta gratuita para quem sonha em cursar Medicina</p>
+      <p class="destaque-corpo">A ProFies criou e mantém este mapa sem nenhum custo para o estudante, sem cadastro e sem anúncios.</p>
+    </div>
+  </div>
 
 <div class="container">
 
