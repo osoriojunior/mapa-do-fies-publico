@@ -88,8 +88,8 @@
     .filters-row select#fMunicipio{grid-column:auto !important;}
     .limpar-filtros{grid-column:auto !important;}
     .conteudo-principal{flex:1;min-width:0;padding-top:24px;}
-    #lista{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-    .card{margin-bottom:0;}
+    #lista{max-width:640px;}
+    .card{margin-bottom:10px;}
   }
   .filtros-sticky{
     position:sticky;
@@ -517,6 +517,15 @@ function popularMunicipios(){
   ESTADO.municipio = "";
 }
 
+function classificarLinha(d, chave){
+  const m = d.mod[chave];
+  const temNota = m.n !== null && m.n !== undefined;
+  if (temNota) return "comNota";
+  if (d.vTotal === 0) return "zeroVaga";
+  if (d.vTotal !== null && d.vTotal !== undefined) return "semDetalhamento";
+  return "semDado";
+}
+
 function filtrarDados(){
   const chave = modKey();
   const buscaLower = ESTADO.busca.trim().toLowerCase();
@@ -526,16 +535,16 @@ function filtrarDados(){
     if (ESTADO.municipio && d.mun !== ESTADO.municipio) return false;
     const m = d.mod[chave];
     if (!m) return false;
-    const temNota = m.n !== null && m.n !== undefined;
-    const zeroVagas = (d.vTotal === 0);
-    if (!temNota && !zeroVagas) return false;
+    if (classificarLinha(d, chave) === "semDado") return false;
     if (buscaLower && !(d.ies.toLowerCase().includes(buscaLower) || d.mun.toLowerCase().includes(buscaLower))) return false;
     return true;
   }).sort((a,b) => {
-    const na = a.mod[chave].n, nb = b.mod[chave].n;
-    if (na === null || na === undefined) return nb === null || nb === undefined ? a.ies.localeCompare(b.ies) : 1;
-    if (nb === null || nb === undefined) return -1;
-    return na - nb;
+    const ordem = { comNota: 0, semDetalhamento: 1, zeroVaga: 2 };
+    const ca = classificarLinha(a, chave), cb = classificarLinha(b, chave);
+    if (ordem[ca] !== ordem[cb]) return ordem[ca] - ordem[cb];
+    if (ca === "comNota") return a.mod[chave].n - b.mod[chave].n;
+    if (ca === "semDetalhamento") return (b.vTotal || 0) - (a.vTotal || 0);
+    return a.ies.localeCompare(b.ies);
   });
 }
 
@@ -590,9 +599,13 @@ function detalheModalidades(item){
 function renderLista(lista){
   const el = document.getElementById("lista");
   const chave = modKey();
-  const semVaga = lista.filter(d => d.mod[chave].n === null || d.mod[chave].n === undefined).length;
+  const contagemPorEstado = { comNota: 0, semDetalhamento: 0, zeroVaga: 0 };
+  lista.forEach(d => contagemPorEstado[classificarLinha(d, chave)]++);
+  let sufixo = "";
+  if (contagemPorEstado.semDetalhamento) sufixo += `, ${contagemPorEstado.semDetalhamento} sem nota detalhada nesta edição`;
+  if (contagemPorEstado.zeroVaga) sufixo += `, ${contagemPorEstado.zeroVaga} sem vagas nesta edição`;
   document.getElementById("contagem").textContent = lista.length
-    ? `${lista.length} instituição${lista.length>1?'ões':''}` + (semVaga ? `, sendo ${semVaga} sem vagas nesta edição` : "")
+    ? `${lista.length} instituição${lista.length>1?'ões':''}${sufixo}`
     : "";
 
   if (!lista.length){
@@ -609,9 +622,20 @@ function renderLista(lista){
 
   el.innerHTML = lista.map((item, idx) => {
     const m = item.mod[chave];
-    const temNota = m.n !== null && m.n !== undefined;
-    const cor = temNota ? corNota(m.n, min, max) : null;
+    const estado = classificarLinha(item, chave);
+    const cor = estado === "comNota" ? corNota(m.n, min, max) : null;
     const badge = badgeCor(item.conceito);
+    let scoreHtml, footVaga;
+    if (estado === "comNota"){
+      scoreHtml = `<p class="score-value" style="color:${cor}">${fmtNota(m.n)}</p>`;
+      footVaga = `${fmtInt(m.v)} vaga${m.v>1?'s':''}`;
+    } else if (estado === "semDetalhamento"){
+      scoreHtml = `<p class="score-value sem-vaga">Nota não disponível</p>`;
+      footVaga = `${fmtInt(item.vTotal)} vaga${item.vTotal>1?'s':''} no total (sem detalhamento por cota)`;
+    } else {
+      scoreHtml = `<p class="score-value sem-vaga">Sem vagas</p>`;
+      footVaga = `0 vagas nesta edição`;
+    }
     return `
     <div class="card" data-idx="${idx}">
       <div class="card-top">
@@ -622,13 +646,11 @@ function renderLista(lista){
         </div>
         <div class="score-box">
           <p class="score-label">nota de corte</p>
-          ${temNota
-            ? `<p class="score-value" style="color:${cor}">${fmtNota(m.n)}</p>`
-            : `<p class="score-value sem-vaga">Sem vagas</p>`}
+          ${scoreHtml}
         </div>
       </div>
       <div class="card-foot">
-        <span>${fmtInt(m.v)} vaga${m.v>1?'s':''}</span>
+        <span>${footVaga}</span>
         <span>${fmtMoeda(item.mens)}</span>
       </div>
       <div class="card-detail">${detalheModalidades(item)}</div>
