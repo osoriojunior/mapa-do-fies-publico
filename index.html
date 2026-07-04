@@ -67,8 +67,29 @@
     margin:0 auto;
     padding:0 14px 40px;
   }
-  @media (min-width: 700px){
-    .container{max-width:900px;}
+  @media (min-width: 900px){
+    .container{
+      max-width:1360px;
+      display:flex;
+      align-items:flex-start;
+      gap:28px;
+      padding:0 32px 48px;
+    }
+    .filtros-sticky{
+      width:272px;
+      flex-shrink:0;
+      top:24px;
+      padding-top:24px;
+      border-right:1px solid var(--border);
+      padding-right:20px;
+    }
+    .filtros-sticky::after{display:none;}
+    .filters-row{grid-template-columns:1fr !important;}
+    .filters-row select#fMunicipio{grid-column:auto !important;}
+    .limpar-filtros{grid-column:auto !important;}
+    .conteudo-principal{flex:1;min-width:0;padding-top:24px;}
+    #lista{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .card{margin-bottom:0;}
   }
   .filtros-sticky{
     position:sticky;
@@ -214,33 +235,24 @@
     background:var(--azul);
     color:#fff;
   }
-  .chart-card{
+  .comp-lista{display:flex;flex-direction:column;gap:8px;}
+  .comp-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
     background:var(--card);
     border:1px solid var(--border);
-    border-radius:12px;
-    padding:14px 14px 10px;
-    margin-bottom:12px;
+    border-radius:10px;
+    padding:12px 14px;
   }
-  .chart-card h3{
-    font-size:13px;
-    font-weight:600;
-    margin:0 0 10px;
-    color:var(--texto);
-  }
-  .chart-card .chart-sub{
-    font-size:11.5px;
-    color:var(--texto-muted);
-    margin:-8px 0 10px;
-  }
-  .chart-wrap{position:relative;width:100%;}
-  @media (min-width: 700px){
-    .comparativos-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-    }
-    .comparativos-grid .chart-card{margin-bottom:0;}
-  }
+  .comp-info{flex:1;min-width:0;}
+  .comp-nome{font-size:13.5px;font-weight:600;margin:0 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .comp-bar-track{height:6px;border-radius:3px;background:var(--bg);overflow:hidden;}
+  .comp-bar-fill{height:100%;background:var(--azul);border-radius:3px;}
+  .comp-stats{display:flex;gap:18px;flex-shrink:0;}
+  .comp-stat{text-align:right;min-width:52px;}
+  .comp-num{font-size:15px;font-weight:700;margin:0;font-variant-numeric:tabular-nums;}
+  .comp-lbl{font-size:10px;color:var(--texto-muted);margin:1px 0 0;}
   .card{
     background:var(--card);
     border:1px solid var(--border);
@@ -400,6 +412,8 @@
     </div>
   </div>
 
+  <div class="conteudo-principal">
+
   <div class="kpis">
     <div class="kpi"><p class="num" id="kInst">-</p><p class="label">Instituições</p></div>
     <div class="kpi"><p class="num" id="kVagas">-</p><p class="label">Vagas</p></div>
@@ -423,21 +437,27 @@
     <div id="lista"></div>
   </div>
 
+
   <div id="viewComparar" style="display:none;">
+    <div class="toggle-group" id="grupoComparar">
+      <button data-agrupar="uf" class="active">Por estado</button>
+      <button data-agrupar="mun">Por município</button>
+      <button data-agrupar="conceito">Por conceito</button>
+    </div>
     <p class="result-count" id="contagemComparar"></p>
     <div id="comparativos"></div>
   </div>
 
+  </div>
 </div>
 
 <footer id="rodape">Carregando...</footer>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 let DADOS = [];
 let ESTADO = { edicao: null, uf: "", municipio: "", tipo: "Fies", cota: "ampla", busca: "" };
 let ABA_ATIVA = "buscar";
-let GRAFICOS = [];
+let AGRUPAR_POR = "uf";
 
 const modKey = () => ESTADO.cota + ESTADO.tipo.charAt(0).toUpperCase() + ESTADO.tipo.slice(1);
 
@@ -624,55 +644,17 @@ function agruparPor(lista, campoFn){
   }));
 }
 
-function destruirGraficos(){
-  GRAFICOS.forEach(g => g.destroy());
-  GRAFICOS = [];
-}
-
-function criarGraficoBarra(canvasId, dados, opts){
-  const ctx = document.getElementById(canvasId);
-  const cor = opts.cor || "#4256C8";
-  const chart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: dados.map(d => d.label),
-      datasets: [{
-        data: dados.map(d => d.valor),
-        backgroundColor: cor,
-        borderRadius: 4,
-        maxBarThickness: 22
-      }]
-    },
-    options: {
-      indexAxis: "y",
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (item) => opts.formatarTooltip ? opts.formatarTooltip(item.raw) : item.raw
-          }
-        }
-      },
-      scales: {
-        x: { beginAtZero: true, grid: { color: "#E1E0D9" }, ticks: { color: "#6A6D80", font: { size: 11 } } },
-        y: { grid: { display: false }, ticks: { color: "#1B1D29", font: { size: 11.5 } } }
-      }
-    }
-  });
-  GRAFICOS.push(chart);
-}
+const NOMES_AGRUPAMENTO = {
+  uf: { titulo: "estado", campoFn: d => d.uf },
+  mun: { titulo: "município", campoFn: d => `${d.mun}, ${siglaUf(d.uf)}` },
+  conceito: { titulo: "conceito do curso", campoFn: d => d.conceito ? `Conceito ${d.conceito}` : "Sem conceito informado" }
+};
 
 function renderComparativos(lista){
   const el = document.getElementById("comparativos");
-  document.getElementById("contagemComparar").textContent = lista.length
-    ? `Comparativo com base em ${lista.length} registro${lista.length>1?'s':''} do filtro atual`
-    : "";
-
-  destruirGraficos();
 
   if (!lista.length){
+    document.getElementById("contagemComparar").textContent = "";
     el.innerHTML = `<div class="empty">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
       <p>Não há dados suficientes para comparar com esses filtros.</p>
@@ -680,52 +662,34 @@ function renderComparativos(lista){
     return;
   }
 
-  const porEstado = agruparPor(lista, d => d.uf).sort((a,b) => b.vagas - a.vagas).slice(0, 8);
-  const porEstadoNota = agruparPor(lista, d => d.uf).sort((a,b) => a.menorNota - b.menorNota).slice(0, 8);
-  const porConceito = agruparPor(lista, d => d.conceito ? `Conceito ${d.conceito}` : "Sem conceito").sort((a,b) => b.vagas - a.vagas);
-  const porMunicipio = agruparPor(lista, d => `${d.mun}, ${siglaUf(d.uf)}`).sort((a,b) => b.vagas - a.vagas).slice(0, 8);
+  const config = NOMES_AGRUPAMENTO[AGRUPAR_POR];
+  const grupos = agruparPor(lista, config.campoFn).sort((a,b) => a.menorNota - b.menorNota);
+  const maiorVagas = Math.max(...grupos.map(g => g.vagas));
 
-  el.innerHTML = `
-    <div class="comparativos-grid">
-      <div class="chart-card">
-        <h3>Estados com menor nota de corte</h3>
-        <p class="chart-sub">Onde a nota mínima costuma ser mais acessível</p>
-        <div class="chart-wrap" style="height:${porEstadoNota.length*32+40}px;"><canvas id="chEstadoNota"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Vagas por estado</h3>
-        <p class="chart-sub">Estados com mais vagas ofertadas nesta modalidade</p>
-        <div class="chart-wrap" style="height:${porEstado.length*32+40}px;"><canvas id="chEstadoVagas"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Vagas por conceito do curso</h3>
-        <p class="chart-sub">Conceito é a avaliação oficial do curso pelo MEC</p>
-        <div class="chart-wrap" style="height:${porConceito.length*32+40}px;"><canvas id="chConceito"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Municípios com mais vagas</h3>
-        <p class="chart-sub">Top ${porMunicipio.length} cidades nesta modalidade</p>
-        <div class="chart-wrap" style="height:${porMunicipio.length*32+40}px;"><canvas id="chMunicipio"></canvas></div>
-      </div>
-    </div>
-  `;
+  document.getElementById("contagemComparar").textContent =
+    `${grupos.length} ${config.titulo}${grupos.length>1?'s':''}, ordenado do que tem a menor nota para o que tem a maior`;
 
-  criarGraficoBarra("chEstadoNota",
-    porEstadoNota.map(d => ({ label: d.nome, valor: d.menorNota })),
-    { cor: "#63C132", formatarTooltip: v => `nota mínima: ${fmtNota(v)}` }
-  );
-  criarGraficoBarra("chEstadoVagas",
-    porEstado.map(d => ({ label: d.nome, valor: d.vagas })),
-    { cor: "#4256C8", formatarTooltip: v => `${fmtInt(v)} vaga${v>1?'s':''}` }
-  );
-  criarGraficoBarra("chConceito",
-    porConceito.map(d => ({ label: d.nome, valor: d.vagas })),
-    { cor: "#FED766", formatarTooltip: v => `${fmtInt(v)} vaga${v>1?'s':''}` }
-  );
-  criarGraficoBarra("chMunicipio",
-    porMunicipio.map(d => ({ label: d.nome, valor: d.vagas })),
-    { cor: "#EE6A43", formatarTooltip: v => `${fmtInt(v)} vaga${v>1?'s':''}` }
-  );
+  el.innerHTML = `<div class="comp-lista">` + grupos.map((g, i) => {
+    const cor = corNota(g.menorNota, grupos[0].menorNota, grupos[grupos.length-1].menorNota);
+    const largura = maiorVagas ? Math.max(6, Math.round((g.vagas / maiorVagas) * 100)) : 0;
+    return `
+    <div class="comp-row">
+      <div class="comp-info">
+        <p class="comp-nome">${g.nome}</p>
+        <div class="comp-bar-track"><div class="comp-bar-fill" style="width:${largura}%"></div></div>
+      </div>
+      <div class="comp-stats">
+        <div class="comp-stat">
+          <p class="comp-num">${fmtInt(g.vagas)}</p>
+          <p class="comp-lbl">vaga${g.vagas>1?'s':''}</p>
+        </div>
+        <div class="comp-stat">
+          <p class="comp-num" style="color:${cor}">${fmtNota(g.menorNota)}</p>
+          <p class="comp-lbl">menor nota</p>
+        </div>
+      </div>
+    </div>`;
+  }).join("") + `</div>`;
 }
 
 function atualizarTudo(){
@@ -757,6 +721,15 @@ function initEventos(){
       document.querySelectorAll("#grupoCota button").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       ESTADO.cota = btn.dataset.cota;
+      atualizarTudo();
+    });
+  });
+
+  document.querySelectorAll("#grupoComparar button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#grupoComparar button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      AGRUPAR_POR = btn.dataset.agrupar;
       atualizarTudo();
     });
   });
