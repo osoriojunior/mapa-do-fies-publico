@@ -105,37 +105,42 @@
     display:flex;
   }
   .filters-row{
-    display:flex;
+    display:grid;
+    grid-template-columns:1fr 1fr;
     gap:8px;
-    overflow-x:auto;
-    padding-bottom:2px;
     margin-bottom:10px;
-    -webkit-overflow-scrolling:touch;
   }
   .filters-row select{
-    flex-shrink:0;
-    height:38px;
-    font-size:12.5px;
+    width:100%;
+    height:40px;
+    font-size:13px;
     padding:0 10px;
     border-radius:var(--radius);
     border:1px solid var(--border);
     background:var(--card);
     color:var(--texto);
-    min-width:120px;
+  }
+  .filters-row select#fMunicipio{
+    grid-column:1 / -1;
   }
   .limpar-filtros{
-    flex-shrink:0;
-    height:38px;
+    grid-column:1 / -1;
+    height:34px;
     display:flex;
     align-items:center;
+    justify-content:center;
     gap:4px;
     font-size:12.5px;
     color:var(--texto-sec);
     background:none;
     border:none;
     cursor:pointer;
-    padding:0 4px;
-    white-space:nowrap;
+    padding:0;
+  }
+  @media (min-width: 480px){
+    .filters-row{grid-template-columns:1fr 1fr 1fr;}
+    .filters-row select#fMunicipio{grid-column:auto;}
+    .limpar-filtros{grid-column:auto;}
   }
   .limpar-filtros svg{width:14px;height:14px;}
   .toggle-group{
@@ -242,7 +247,6 @@
     border-radius:12px;
     padding:12px 14px;
     margin-bottom:10px;
-    cursor:pointer;
   }
   .card-top{
     display:flex;
@@ -273,9 +277,6 @@
     font-size:12px;
     color:var(--texto-sec);
   }
-  .chev{display:flex;color:var(--texto-muted);transition:transform 0.15s;}
-  .chev svg{width:14px;height:14px;}
-  .card.open .chev{transform:rotate(180deg);}
   .skeleton{
     background:var(--card);
     border:1px solid var(--border);
@@ -295,12 +296,16 @@
     100%{background-position:-200% 0;}
   }
   .card-detail{
-    display:none;
     margin-top:10px;
     padding-top:10px;
     border-top:1px solid var(--border);
   }
-  .card.open .card-detail{display:block;}
+  .detail-heading{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--texto-sec);
+    margin:0 0 8px;
+  }
   .detail-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -537,7 +542,7 @@ function detalheModalidades(item){
     { titulo: "Fies", chaves: ["amplaFies","ppiqFies","pcdFies"], bg: "#EEF1FC" },
     { titulo: "Fies Social", chaves: ["amplaSocial","ppiqSocial","pcdSocial"], bg: "#EAF6E4" }
   ];
-  return `<div class="detail-grid">` + grupos.map(g => `
+  return `<p class="detail-heading">Notas de corte por modalidade</p><div class="detail-grid">` + grupos.map(g => `
     <div>
       <p class="detail-group-title">${g.titulo}</p>
       ${g.chaves.map(k => {
@@ -590,15 +595,10 @@ function renderLista(lista){
       <div class="card-foot">
         <span>${fmtInt(m.v)} vaga${m.v>1?'s':''}</span>
         <span>${fmtMoeda(item.mens)}</span>
-        <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span>
       </div>
       <div class="card-detail">${detalheModalidades(item)}</div>
     </div>`;
   }).join("");
-
-  el.querySelectorAll(".card").forEach(card => {
-    card.addEventListener("click", () => card.classList.toggle("open"));
-  });
 }
 
 const SIGLAS = {"Acre":"AC","Alagoas":"AL","Amapá":"AP","Amazonas":"AM","Bahia":"BA","Ceará":"CE","Distrito Federal":"DF","Espírito Santo":"ES","Goiás":"GO","Maranhão":"MA","Mato Grosso":"MT","Mato Grosso do Sul":"MS","Minas Gerais":"MG","Pará":"PA","Paraíba":"PB","Paraná":"PR","Pernambuco":"PE","Piauí":"PI","Rio de Janeiro":"RJ","Rio Grande do Norte":"RN","Rio Grande do Sul":"RS","Rondônia":"RO","Roraima":"RR","Santa Catarina":"SC","São Paulo":"SP","Sergipe":"SE","Tocantins":"TO"};
