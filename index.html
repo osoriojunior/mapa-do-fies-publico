@@ -517,13 +517,17 @@ function popularMunicipios(){
   ESTADO.municipio = "";
 }
 
+function vagaAgregada(d){
+  return ESTADO.tipo === "Fies" ? d.vFies : d.vSocial;
+}
+
 function classificarLinha(d, chave){
   const m = d.mod[chave];
   const temNota = m.n !== null && m.n !== undefined;
   if (temNota) return "comNota";
-  if (d.vTotal === 0) return "zeroVaga";
-  if (d.vTotal !== null && d.vTotal !== undefined) return "semDetalhamento";
-  return "semDado";
+  const agregado = vagaAgregada(d);
+  if (agregado && agregado > 0) return "semDetalhamento";
+  return "zeroVaga";
 }
 
 function filtrarDados(){
@@ -533,9 +537,7 @@ function filtrarDados(){
     if (d.ed !== ESTADO.edicao) return false;
     if (ESTADO.uf && d.uf !== ESTADO.uf) return false;
     if (ESTADO.municipio && d.mun !== ESTADO.municipio) return false;
-    const m = d.mod[chave];
-    if (!m) return false;
-    if (classificarLinha(d, chave) === "semDado") return false;
+    if (!d.mod[chave]) return false;
     if (buscaLower && !(d.ies.toLowerCase().includes(buscaLower) || d.mun.toLowerCase().includes(buscaLower))) return false;
     return true;
   }).sort((a,b) => {
@@ -543,7 +545,7 @@ function filtrarDados(){
     const ca = classificarLinha(a, chave), cb = classificarLinha(b, chave);
     if (ordem[ca] !== ordem[cb]) return ordem[ca] - ordem[cb];
     if (ca === "comNota") return a.mod[chave].n - b.mod[chave].n;
-    if (ca === "semDetalhamento") return (b.vTotal || 0) - (a.vTotal || 0);
+    if (ca === "semDetalhamento") return (vagaAgregada(b) || 0) - (vagaAgregada(a) || 0);
     return a.ies.localeCompare(b.ies);
   });
 }
@@ -630,8 +632,10 @@ function renderLista(lista){
       scoreHtml = `<p class="score-value" style="color:${cor}">${fmtNota(m.n)}</p>`;
       footVaga = `${fmtInt(m.v)} vaga${m.v>1?'s':''}`;
     } else if (estado === "semDetalhamento"){
+      const agregado = vagaAgregada(item);
+      const rotuloTipo = ESTADO.tipo === "Fies" ? "Fies" : "Fies Social";
       scoreHtml = `<p class="score-value sem-vaga">Nota não disponível</p>`;
-      footVaga = `${fmtInt(item.vTotal)} vaga${item.vTotal>1?'s':''} no total (sem detalhamento por cota)`;
+      footVaga = `${fmtInt(agregado)} vaga${agregado>1?'s':''} ${rotuloTipo} (sem detalhamento por cota)`;
     } else {
       scoreHtml = `<p class="score-value sem-vaga">Sem vagas</p>`;
       footVaga = `0 vagas nesta edição`;
