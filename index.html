@@ -568,7 +568,7 @@ function filtrarDados(){
 function renderKPIs(lista){
   const chave = modKey();
   document.getElementById("kInst").textContent = fmtInt(lista.length);
-  const totalVagas = lista.reduce((s,d) => s + (d.mod[chave].v || 0), 0);
+  const totalVagas = lista.reduce((s,d) => s + (d.mod[chave].v ?? vagaAgregada(d) ?? 0), 0);
   document.getElementById("kVagas").textContent = fmtInt(totalVagas);
   const notas = lista.map(d => d.mod[chave].n).filter(n => n !== null && n !== undefined);
   if (notas.length){
