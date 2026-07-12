@@ -196,19 +196,40 @@
   }
   .kpis{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(2,1fr);
     gap:8px;
-    margin:14px 0;
+    margin:14px 0 8px;
+  }
+  @media (min-width: 480px){
+    .kpis{grid-template-columns:repeat(4,1fr);}
   }
   .kpi{
     background:var(--card);
     border:1px solid var(--border);
     border-radius:var(--radius);
-    padding:9px 6px;
+    padding:12px 10px;
     text-align:center;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    min-height:78px;
   }
-  .kpi .num{font-size:16px;font-weight:700;margin:0;}
-  .kpi .label{font-size:10px;color:var(--texto-sec);margin:2px 0 0;line-height:1.2;}
+  .kpi .num{font-size:20px;font-weight:700;margin:0;color:var(--azul-escuro);font-variant-numeric:tabular-nums;}
+  .kpi .label{font-size:10.5px;color:var(--texto-sec);margin:5px 0 0;line-height:1.25;}
+  .kpis-notas{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    margin:0 0 12px;
+    padding:9px 14px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+  }
+  .kpi-nota{display:flex;align-items:baseline;gap:6px;}
+  .kpi-nota-label{font-size:11px;color:var(--texto-sec);}
+  .kpi-nota-val{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--texto);}
+  .kpi-nota-ctx{margin-left:auto;font-size:10.5px;color:var(--texto-muted);text-transform:uppercase;letter-spacing:0.03em;}
   .result-count{
     font-size:12.5px;
     color:var(--texto-sec);
@@ -432,9 +453,15 @@
 
   <div class="kpis">
     <div class="kpi"><p class="num" id="kInst">-</p><p class="label">Instituições</p></div>
-    <div class="kpi"><p class="num" id="kVagas">-</p><p class="label">Vagas</p></div>
-    <div class="kpi"><p class="num" id="kMin">-</p><p class="label">Menor nota</p></div>
-    <div class="kpi"><p class="num" id="kMax">-</p><p class="label">Maior nota</p></div>
+    <div class="kpi"><p class="num" id="kVagasTotal">-</p><p class="label">Total de vagas (Fies + Fies Social)</p></div>
+    <div class="kpi"><p class="num" id="kVagasFies">-</p><p class="label">Vagas Fies</p></div>
+    <div class="kpi"><p class="num" id="kVagasSocial">-</p><p class="label">Vagas Fies Social</p></div>
+  </div>
+
+  <div class="kpis-notas">
+    <div class="kpi-nota"><span class="kpi-nota-label">Menor nota</span><span class="kpi-nota-val" id="kMin">-</span></div>
+    <div class="kpi-nota"><span class="kpi-nota-label">Maior nota</span><span class="kpi-nota-val" id="kMax">-</span></div>
+    <span class="kpi-nota-ctx" id="kNotaCtx"></span>
   </div>
 
   <div class="abas" id="abas">
@@ -565,11 +592,33 @@ function filtrarDados(){
   });
 }
 
+// Base dos KPIs oficiais: filtra só por edição + geografia + busca,
+// ignorando a cota/tipo selecionados — para bater com o Power BI (fonte da verdade).
+function filtrarBaseKPI(){
+  const buscaLower = ESTADO.busca.trim().toLowerCase();
+  return DADOS.filter(d => {
+    if (d.ed !== ESTADO.edicao) return false;
+    if (ESTADO.uf && d.uf !== ESTADO.uf) return false;
+    if (ESTADO.municipio && d.mun !== ESTADO.municipio) return false;
+    if (buscaLower && !(d.ies.toLowerCase().includes(buscaLower) || d.mun.toLowerCase().includes(buscaLower))) return false;
+    return true;
+  });
+}
+
 function renderKPIs(lista){
   const chave = modKey();
-  document.getElementById("kInst").textContent = fmtInt(lista.length);
-  const totalVagas = lista.reduce((s,d) => s + (d.mod[chave].v ?? vagaAgregada(d) ?? 0), 0);
-  document.getElementById("kVagas").textContent = fmtInt(totalVagas);
+
+  // KPIs oficiais (nível edição/geografia, iguais ao Power BI)
+  const base = filtrarBaseKPI();
+  const instUnicas = new Set(base.map(d => d.ies)).size;   // contagem de nomes únicos
+  const somaFies = base.reduce((s,d) => s + (d.vFies || 0), 0);
+  const somaSocial = base.reduce((s,d) => s + (d.vSocial || 0), 0);
+  document.getElementById("kInst").textContent = fmtInt(instUnicas);
+  document.getElementById("kVagasTotal").textContent = fmtInt(somaFies + somaSocial);
+  document.getElementById("kVagasFies").textContent = fmtInt(somaFies);
+  document.getElementById("kVagasSocial").textContent = fmtInt(somaSocial);
+
+  // Menor/Maior nota — dependem da cota/tipo selecionados
   const notas = lista.map(d => d.mod[chave].n).filter(n => n !== null && n !== undefined);
   if (notas.length){
     document.getElementById("kMin").textContent = fmtNota(Math.min(...notas));
@@ -578,6 +627,10 @@ function renderKPIs(lista){
     document.getElementById("kMin").textContent = "-";
     document.getElementById("kMax").textContent = "-";
   }
+  const rotuloCota = { ampla: "Ampla", ppiq: "PPIQ", pcd: "PCD" }[ESTADO.cota] || "";
+  const rotuloTipo = ESTADO.tipo === "Fies" ? "Fies" : "Fies Social";
+  const ctx = document.getElementById("kNotaCtx");
+  if (ctx) ctx.textContent = notas.length ? `${rotuloCota} · ${rotuloTipo}` : "";
 }
 
 function corNota(valor, min, max){
