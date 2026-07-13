@@ -200,10 +200,11 @@
     text-align:left;
     padding:0 14px;
     color:var(--azul-escuro);
-    background:#F7F2BE;
+    background:var(--card);
     font-variant-numeric:tabular-nums;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.04);
   }
-  .sim-nota-wrap input:focus{outline:2px solid var(--azul);outline-offset:-1px;}
+  .sim-nota-wrap input:focus{outline:none;border-color:var(--azul);box-shadow:inset 0 1px 2px rgba(0,0,0,.04), 0 0 0 2px rgba(66,86,200,.18);}
   /* Placeholder como exemplo: cinza-claro, menor, sem negrito, à esquerda —
      visualmente distinto de um valor já digitado. */
   #notaAluno::placeholder{color:var(--texto-muted);font-weight:400;font-size:14px;opacity:1;}
@@ -330,6 +331,8 @@
   }
   .kpi .num{font-size:20px;font-weight:700;margin:0;color:var(--azul-escuro);font-variant-numeric:tabular-nums;}
   .kpi .label{font-size:10.5px;color:var(--texto-sec);margin:5px 0 0;line-height:1.25;}
+  .selo-rodape{display:flex;justify-content:center;margin:20px 0 8px;}
+  .selo-rodape img{width:160px;height:auto;max-width:55%;}
   .result-count{
     font-size:12.5px;
     color:var(--texto-sec);
@@ -578,6 +581,10 @@
     <div class="kpi"><p class="num" id="kVagasTotal">-</p><p class="label">Total de vagas (Fies + Fies Social)</p></div>
     <div class="kpi"><p class="num" id="kVagasFies">-</p><p class="label">Vagas Fies</p></div>
     <div class="kpi"><p class="num" id="kVagasSocial">-</p><p class="label">Vagas Fies Social</p></div>
+  </div>
+
+  <div class="selo-rodape">
+    <img src="selo-profies.png" alt="ProFies · desde 2002 · a experiência faz a diferença" onerror="this.parentNode.style.display='none'">
   </div>
 
 
