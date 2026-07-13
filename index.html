@@ -61,6 +61,18 @@
     font-weight:600;
     margin:0;
   }
+  .aviso-oficial{background:#FEF3D9;border-bottom:1px solid #F0DFB0;overflow:hidden;max-height:220px;transition:opacity .45s ease, max-height .45s ease;}
+  .aviso-oficial.oculto{opacity:0;max-height:0;border-bottom-color:transparent;}
+  .aviso-oficial-inner{max-width:1200px;margin:0 auto;padding:9px 16px;}
+  .aviso-oficial-txt{display:flex;align-items:flex-start;gap:7px;margin:0;font-size:12px;color:#6E5A1E;line-height:1.45;}
+  .aviso-oficial-txt > svg{width:15px;height:15px;flex-shrink:0;margin-top:1px;color:#B4881E;}
+  .aviso-toggle{background:none;border:none;padding:0;color:var(--azul);font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;}
+  .aviso-completo{margin:6px 0 0;font-size:12px;color:#6E5A1E;line-height:1.5;max-width:900px;}
+  .aviso-completo a{color:var(--azul);}
+  @media (min-width:900px){ .aviso-oficial-inner{padding:9px 32px;} }
+  .rodape-aviso{border-top:1px solid var(--border);padding:20px 16px 32px;}
+  .rodape-aviso p{max-width:900px;margin:0 auto;font-size:11.5px;color:var(--texto-muted);line-height:1.55;text-align:center;}
+  .rodape-aviso a{color:var(--azul);}
   .container{
     max-width:640px;
     margin:0 auto;
@@ -503,6 +515,15 @@
   </div>
 </div>
 
+<div class="aviso-oficial">
+  <div class="aviso-oficial-inner">
+    <p class="aviso-oficial-txt">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4m0 4h.01"/></svg>
+      <span>Ferramenta privada administrada pela ProFies. Este não é um site oficial do Governo Federal. <button type="button" class="aviso-toggle" id="avisoToggle" aria-expanded="false" aria-controls="avisoCompleto">Ver aviso completo</button></span>
+    </p>
+    <p class="aviso-completo" id="avisoCompleto" hidden>O Mapa do Fies é uma ferramenta privada, administrada pela ProFies, sem vínculo com o Governo Federal, o Ministério da Educação, a Caixa Econômica Federal, o Banco do Brasil ou instituições de ensino superior. Para informações oficiais sobre o Fies, acesse <a href="https://acessounico.mec.gov.br/fies" target="_blank" rel="noopener">acessounico.mec.gov.br/fies</a>.</p>
+  </div>
+</div>
 
 <div class="container">
 
@@ -618,6 +639,9 @@
 
 </div>
 
+<footer class="rodape-aviso">
+  <p>O Mapa do Fies é uma ferramenta privada, administrada pela ProFies, sem vínculo com o Governo Federal, o Ministério da Educação, a Caixa Econômica Federal, o Banco do Brasil ou instituições de ensino superior. Para informações oficiais sobre o Fies, acesse <a href="https://acessounico.mec.gov.br/fies" target="_blank" rel="noopener">acessounico.mec.gov.br/fies</a>.</p>
+</footer>
 
 <script>
 let DADOS = [];
@@ -1039,6 +1063,21 @@ function renderSkeleton(){
     </div>
   `).join("");
 }
+
+// Aviso "não é site oficial": expandir/recolher o texto completo.
+(function(){
+  var bar = document.querySelector(".aviso-oficial");
+  var b = document.getElementById("avisoToggle"), f = document.getElementById("avisoCompleto");
+  // Recolhe a faixa após ~10s (o aviso completo continua no rodapé).
+  var t = bar ? setTimeout(function(){ bar.classList.add("oculto"); }, 10000) : null;
+  if (b && f){
+    b.addEventListener("click", function(){
+      clearTimeout(t);   // se o usuário abriu o aviso, mantém na tela
+      if (f.hasAttribute("hidden")){ f.removeAttribute("hidden"); b.setAttribute("aria-expanded","true"); b.textContent = "Ocultar aviso"; }
+      else { f.setAttribute("hidden",""); b.setAttribute("aria-expanded","false"); b.textContent = "Ver aviso completo"; }
+    });
+  }
+})();
 
 renderSkeleton();
 
