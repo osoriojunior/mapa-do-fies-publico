@@ -171,11 +171,6 @@
   .sim-hero.tipo-fies #grupoCota button.active{background:var(--verde-fies);border-color:var(--verde-fies);}
   .sim-hero.tipo-social #grupoCota button.active{background:var(--azul-social);border-color:var(--azul-social);}
   #grupoTipo button{font-size:15px;font-weight:600;}
-  @keyframes pulse-verde{0%,100%{box-shadow:0 0 0 0 rgba(46,125,100,0);}50%{box-shadow:0 0 0 4px rgba(46,125,100,.20);}}
-  @keyframes pulse-azul{0%,100%{box-shadow:0 0 0 0 rgba(46,134,214,0);}50%{box-shadow:0 0 0 4px rgba(46,134,214,.20);}}
-  #grupoTipo button[data-tipo="Fies"]:not(.active){animation:pulse-verde 1.8s ease-in-out infinite;}
-  #grupoTipo button[data-tipo="Social"]:not(.active){animation:pulse-azul 1.8s ease-in-out infinite;}
-  @media (prefers-reduced-motion: reduce){#grupoTipo button{animation:none !important;}}
   .sim-hero{
     background:var(--card);
     border:1px solid #CBD3F2;
