@@ -64,15 +64,19 @@
   .container{
     max-width:640px;
     margin:0 auto;
-    padding:0 14px 40px;
+    padding:16px 14px 40px;
   }
   /* Layout único (sem coluna lateral): o simulador vira bloco herói no
      topo do fluxo, então o antigo layout de 2 colunas (filtros fixos numa
      barra lateral + conteúdo à direita) deixou de fazer sentido — a página
      inteira agora é uma coluna só, só um pouco mais larga no desktop. */
   @media (min-width: 900px){
-    .container{max-width:720px;padding:0 32px 48px;}
+    .container{max-width:720px;padding:20px 32px 48px;}
   }
+  .secao-eyebrow{font-size:11px;font-weight:600;color:var(--azul-escuro);margin:0 0 7px;text-transform:uppercase;letter-spacing:.06em;}
+  .secao-titulo{font-size:16px;font-weight:600;margin:0 0 2px;}
+  .secao-sub{font-size:12.5px;color:var(--texto-sec);margin:0 0 12px;}
+  .secao-divisor{height:1px;background:var(--border);margin:26px 0;}
   .destaque-iniciativa{
     display:flex;
     max-width:640px;
@@ -125,7 +129,7 @@
     background:#F7F2BE;
     color:var(--texto);
   }
-  .filters-row select#fMunicipio{
+  .filters-row select#fEdicao{
     grid-column:1 / -1;
   }
   .limpar-filtros{
@@ -141,10 +145,6 @@
     border:none;
     cursor:pointer;
     padding:0;
-  }
-  @media (min-width: 480px){
-    .filters-row{grid-template-columns:1fr 1fr 1fr;}
-    .filters-row select#fMunicipio{grid-column:auto;}
   }
   .limpar-filtros svg{width:14px;height:14px;}
   .toggle-group{
@@ -478,6 +478,7 @@
 
 <div class="container">
 
+  <p class="secao-eyebrow">Simulador</p>
   <div class="sim-hero tipo-fies">
     <h2 class="sim-titulo">Simule suas chances no Fies</h2>
     <p class="sim-sub">Informe sua média no Enem e estime suas chances de pré-seleção no Fies.</p>
@@ -499,13 +500,19 @@
     <div class="sim-group">
       <p class="sim-group-label">Modalidade de concorrência</p>
       <div class="toggle-group" id="grupoCota">
-        <button type="button" data-cota="ampla" class="active">Ampla concorrência</button>
+        <button type="button" data-cota="ampla" class="active">Ampla</button>
         <button type="button" data-cota="ppiq">PPIQ</button>
         <button type="button" data-cota="pcd">PcD</button>
       </div>
     </div>
     <button type="button" class="btn-primary" id="btnSimular" disabled>Ver minhas chances de pré-seleção</button>
   </div>
+
+  <div class="secao-divisor"></div>
+
+  <p class="secao-eyebrow">Pesquisa de instituições</p>
+  <h2 class="secao-titulo">Pesquisar instituições</h2>
+  <p class="secao-sub">Busque por cidade, instituição, edição, estado ou município.</p>
 
   <div class="filtros-lista">
     <div class="search-wrap">
