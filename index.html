@@ -417,6 +417,7 @@
   .card-sub{font-size:12px;color:var(--texto-sec);margin:2px 0 0;}
   .card-conceito{font-size:11px;color:var(--texto-muted);margin:4px 0 0;}
   .card-mens{font-size:13px;color:var(--texto);margin:6px 0 0;font-variant-numeric:tabular-nums;}
+  .card-mens-rot{color:var(--texto-muted);font-weight:400;}
   .score-box{text-align:right;flex-shrink:0;}
   .score-label{font-size:9.5px;color:var(--texto-muted);margin:0;text-transform:uppercase;letter-spacing:0.03em;}
   .score-value{font-size:19px;font-weight:700;margin:0;font-variant-numeric:tabular-nums;}
@@ -919,7 +920,7 @@ function renderLista(lista){
           <p class="card-name">${item.ies}</p>
           <p class="card-sub">${item.mun}, ${siglaUf(item.uf)} · ${item.local || ''}</p>
           ${item.conceito ? `<p class="card-conceito">Conceito ${item.conceito}</p>` : ''}
-          ${item.mens != null ? `<p class="card-mens">${fmtMoeda(item.mens)}</p>` : ''}
+          ${item.mens != null ? `<p class="card-mens"><span class="card-mens-rot">Mensalidade</span> ${fmtMoeda(item.mens)}</p>` : ''}
         </div>
       </div>
       <div class="card-detail">${detalheModalidades(item, resultado)}</div>
