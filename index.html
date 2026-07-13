@@ -196,7 +196,7 @@
     text-align:left;
     padding:0 14px;
     color:var(--azul-escuro);
-    background:var(--card);
+    background:#F7F2BE;
     font-variant-numeric:tabular-nums;
   }
   .sim-nota-wrap input:focus{outline:2px solid var(--azul);outline-offset:-1px;}
@@ -541,22 +541,9 @@
     <div id="lista"></div>
   </div>
 
-  <div id="viewComparar" style="display:none;">
-    <div class="toggle-group" id="grupoComparar">
-      <button data-agrupar="uf" class="active">Por estado</button>
-      <button data-agrupar="mun">Por município</button>
-      <button data-agrupar="conceito">Por conceito</button>
-    </div>
-    <p class="result-count" id="contagemComparar"></p>
-    <div id="comparativos"></div>
-  </div>
 
 </div>
 
-<footer>
-  <div id="rodape">Carregando...</div>
-  <button class="footer-link" id="linkComparativos">Comparativos</button>
-</footer>
 
 <script>
 let DADOS = [];
@@ -895,11 +882,7 @@ function atualizarTudo(){
   if (hero){ hero.classList.toggle("tipo-fies", ESTADO.tipo === "Fies"); hero.classList.toggle("tipo-social", ESTADO.tipo !== "Fies"); }
   renderKPIs();
   atualizarSimuladorUI();
-  if (ABA_ATIVA === "buscar"){
-    renderLista(lista);
-  } else {
-    renderComparativos(lista);
-  }
+  renderLista(lista);
 }
 
 function initEventos(){
@@ -925,15 +908,6 @@ function initEventos(){
     });
   });
 
-  document.querySelectorAll("#grupoComparar button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll("#grupoComparar button").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      AGRUPAR_POR = btn.dataset.agrupar;
-      atualizarTudo();
-    });
-  });
-
   document.getElementById("btnLimpar").addEventListener("click", () => {
     document.getElementById("busca").value = "";
     document.getElementById("fEstado").value = "";
@@ -946,16 +920,6 @@ function initEventos(){
     document.querySelectorAll("#grupoCota button").forEach(b => b.classList.remove("active"));
     document.querySelector('#grupoCota button[data-cota="ampla"]').classList.add("active");
     ESTADO.cota = "ampla";
-    atualizarTudo();
-  });
-
-  // "Comparativos" deixou de ser aba concorrente com a lista principal e
-  // virou um link discreto no rodapé, que alterna a mesma view existente.
-  document.getElementById("linkComparativos").addEventListener("click", () => {
-    ABA_ATIVA = ABA_ATIVA === "buscar" ? "comparar" : "buscar";
-    document.getElementById("viewBuscar").style.display = ABA_ATIVA === "buscar" ? "" : "none";
-    document.getElementById("viewComparar").style.display = ABA_ATIVA === "comparar" ? "" : "none";
-    document.getElementById("linkComparativos").textContent = ABA_ATIVA === "buscar" ? "Comparativos" : "Voltar para a lista";
     atualizarTudo();
   });
 
@@ -1007,12 +971,6 @@ function renderSkeleton(){
   `).join("");
 }
 
-function renderRodape(){
-  const datas = DADOS.map(d => d.atualizacao).filter(Boolean);
-  const el = document.getElementById("rodape");
-  el.innerHTML = `Fies · Medicina · fonte: base interna ProFies` + (datas.length ? ` · atualizado em ${datas[0]}` : "") + `<br>Confirme sempre no edital oficial do Fies antes de decidir. <a href="https://www.instagram.com/financiamentoestudantil" target="_blank" rel="noopener">@financiamentoestudantil</a>`;
-}
-
 renderSkeleton();
 
 fetch("data.json")
@@ -1024,11 +982,9 @@ fetch("data.json")
     initEventos();
     document.getElementById("fEdicao").value = ESTADO.edicao;
     atualizarTudo();
-    renderRodape();
   })
   .catch(() => {
     document.getElementById("lista").innerHTML = `<div class="empty"><p>Não foi possível carregar os dados agora. Tente novamente em instantes.</p></div>`;
-    document.getElementById("rodape").textContent = "Erro ao carregar dados.";
   });
 </script>
 
