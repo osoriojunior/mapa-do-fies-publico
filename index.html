@@ -317,14 +317,15 @@
   .suporte-titulo{font-size:12.5px;font-weight:600;color:var(--texto);margin:0 0 4px;}
   .suporte-texto{font-size:11.5px;color:var(--texto-sec);margin:0 0 8px;line-height:1.5;}
   .cta-btn:disabled{opacity:0.6;cursor:default;}
-  .badge-margem{
-    display:inline-block;
-    font-size:9.5px;
-    font-weight:600;
-    padding:2px 8px;
-    border-radius:6px;
-    margin-top:3px;
-  }
+  .resultado-sim{border-radius:8px;padding:10px 12px;margin:10px 0 0;border-left:3px solid;}
+  .resultado-eyebrow{font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin:0 0 4px;color:var(--texto-muted);}
+  .resultado-titulo{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;margin:0 0 4px;}
+  .resultado-titulo svg{width:15px;height:15px;flex-shrink:0;}
+  .resultado-texto{font-size:11.5px;color:#4B4B55;margin:0;line-height:1.45;}
+  .resultado-favoravel{background:#E9F7E1;border-left-color:#2E7D32;}
+  .resultado-favoravel .resultado-titulo{color:#1E6B2A;}
+  .resultado-reduzida{background:#FEF3D9;border-left-color:#C8992A;}
+  .resultado-reduzida .resultado-titulo{color:#8A6110;}
   .disclaimer-faixa{font-size:11px;color:var(--texto-sec);margin:0 0 10px;line-height:1.45;}
   .footer-link{
     display:inline-flex;
@@ -783,10 +784,21 @@ function corNota(valor, min, max){
 }
 
 // Estado do simulador (margem = nota do aluno − nota de corte da modalidade).
-function estadoMargem(margem){
-  if (margem >= 0) return { texto: "Chance favorável de pré-seleção", cor: "#4A3488", bg: "#EDE9F9" };
-  if (margem >= LIMIAR_FAIXA_DISPUTA) return { texto: "Faixa de disputa", cor: "#8A6110", bg: "#FEF3D9" };
-  return { texto: "Chance reduzida de pré-seleção", cor: "#A8431F", bg: "#FBEAE3" };
+// Bloco de resultado da simulação, dentro do card. Duas variações:
+// favorável (margem >= 0, verde) e reduzida (margem < 0, âmbar). Sem vermelho.
+function blocoResultado(margem){
+  if (margem >= 0){
+    return `<div class="resultado-sim resultado-favoravel">
+      <p class="resultado-eyebrow">Resultado da simulação</p>
+      <p class="resultado-titulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Chance favorável de pré-seleção</p>
+      <p class="resultado-texto">Estimativa baseada na nota informada e nas notas de corte disponíveis. Não há garantia de pré-seleção.</p>
+    </div>`;
+  }
+  return `<div class="resultado-sim resultado-reduzida">
+    <p class="resultado-eyebrow">Resultado da simulação</p>
+    <p class="resultado-titulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4m0 4h.01"/></svg>Chance reduzida de pré-seleção</p>
+    <p class="resultado-texto">Sua nota está abaixo da nota de corte atualmente exibida para esta opção. As notas podem variar durante o período de inscrições.</p>
+  </div>`;
 }
 
 function atualizarSimuladorUI(){
@@ -859,25 +871,15 @@ function renderLista(lista){
   el.innerHTML = lista.map((item, idx) => {
     const m = item.mod[chave];
     const estado = classificarLinha(item, chave);
-    const cor = estado === "comNota" ? corNota(m.n, min, max) : null;
-    let scoreLabel = "nota de corte";
-    let scoreHtml, footVaga;
+    let footVaga, resultado = "";
     if (estado === "comNota"){
-      if (notaAluno){
-        const em = estadoMargem(notaAluno - m.n);
-        scoreLabel = "";
-        scoreHtml = `<span class="badge-margem" style="background:${em.bg};color:${em.cor}">${em.texto}</span>`;
-      } else {
-        scoreHtml = `<p class="score-value" style="color:${cor}">${fmtNota(m.n)}</p>`;
-      }
       footVaga = `${fmtInt(m.v)} vaga${m.v>1?'s':''}`;
+      if (notaAluno) resultado = blocoResultado(notaAluno - m.n);
     } else if (estado === "semDetalhamento"){
       const agregado = vagaAgregada(item);
       const rotuloTipo = ESTADO.tipo === "Fies" ? "Fies" : "Fies Social";
-      scoreHtml = `<p class="score-value sem-vaga">Nota não disponível</p>`;
       footVaga = `${fmtInt(agregado)} vaga${agregado>1?'s':''} ${rotuloTipo} (sem detalhamento por cota)`;
     } else {
-      scoreHtml = `<p class="score-value sem-vaga">Sem vagas</p>`;
       footVaga = `0 vagas nesta edição`;
     }
     return `
@@ -888,12 +890,12 @@ function renderLista(lista){
           <p class="card-sub">${item.mun}, ${siglaUf(item.uf)} · ${item.local || ''}</p>
           ${item.conceito ? `<p class="card-conceito">Conceito ${item.conceito}</p>` : ''}
         </div>
-        ${notaAluno ? `<div class="score-box"><p class="score-label">${scoreLabel}</p>${scoreHtml}</div>` : ''}
       </div>
       <div class="card-foot">
         <span>${footVaga}</span>
         <span>${fmtMoeda(item.mens)}</span>
       </div>
+      ${resultado}
       <div class="card-detail">${detalheModalidades(item)}</div>
     </div>`;
   }).join("");
@@ -1068,11 +1070,13 @@ function renderSkeleton(){
 (function(){
   var bar = document.querySelector(".aviso-oficial");
   var b = document.getElementById("avisoToggle"), f = document.getElementById("avisoCompleto");
-  // Recolhe a faixa após ~10s (o aviso completo continua no rodapé).
-  var t = bar ? setTimeout(function(){ bar.classList.add("oculto"); }, 10000) : null;
+  function esconder(){ if (bar) bar.classList.add("oculto"); }
+  // Sem interação: some em 10s. Após clicar para ler: some 30s depois.
+  var t = bar ? setTimeout(esconder, 10000) : null;
   if (b && f){
     b.addEventListener("click", function(){
-      clearTimeout(t);   // se o usuário abriu o aviso, mantém na tela
+      clearTimeout(t);
+      t = setTimeout(esconder, 30000);
       if (f.hasAttribute("hidden")){ f.removeAttribute("hidden"); b.setAttribute("aria-expanded","true"); b.textContent = "Ocultar aviso"; }
       else { f.setAttribute("hidden",""); b.setAttribute("aria-expanded","false"); b.textContent = "Ver aviso completo"; }
     });
