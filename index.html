@@ -168,6 +168,8 @@
   }
   #grupoTipo button[data-tipo="Fies"].active{background:var(--verde-fies);border-color:var(--verde-fies);}
   #grupoTipo button[data-tipo="Social"].active{background:var(--azul-social);border-color:var(--azul-social);}
+  .sim-hero.tipo-fies #grupoCota button.active{background:var(--verde-fies);border-color:var(--verde-fies);}
+  .sim-hero.tipo-social #grupoCota button.active{background:var(--azul-social);border-color:var(--azul-social);}
   .sim-hero{
     background:var(--card);
     border:1px solid #CBD3F2;
@@ -479,7 +481,7 @@
 
 <div class="container">
 
-  <div class="sim-hero">
+  <div class="sim-hero tipo-fies">
     <h2 class="sim-titulo">Simule suas chances no Fies</h2>
     <p class="sim-sub">Informe sua média no Enem e estime suas chances de pré-seleção no Fies.</p>
     <div class="sim-nota-wrap">
@@ -899,6 +901,9 @@ function renderComparativos(lista){
 
 function atualizarTudo(){
   const lista = filtrarDados();
+  // Modalidade de concorrência e cards seguem a cor da modalidade do programa.
+  const hero = document.querySelector(".sim-hero");
+  if (hero){ hero.classList.toggle("tipo-fies", ESTADO.tipo === "Fies"); hero.classList.toggle("tipo-social", ESTADO.tipo !== "Fies"); }
   renderKPIs();
   atualizarSimuladorUI();
   if (ABA_ATIVA === "buscar"){
