@@ -305,7 +305,7 @@
     display:grid;
     grid-template-columns:repeat(2,1fr);
     gap:8px;
-    margin:14px 0 8px;
+    margin:28px 0 34px;
   }
   @media (min-width: 480px){
     .kpis{grid-template-columns:repeat(4,1fr);}
@@ -507,13 +507,6 @@
     <button type="button" class="btn-primary" id="btnSimular" disabled>Ver minhas chances de pré-seleção</button>
   </div>
 
-  <div class="kpis">
-    <div class="kpi"><p class="num" id="kInst">-</p><p class="label">Instituições</p></div>
-    <div class="kpi"><p class="num" id="kVagasTotal">-</p><p class="label">Total de vagas (Fies + Fies Social)</p></div>
-    <div class="kpi"><p class="num" id="kVagasFies">-</p><p class="label">Vagas Fies</p></div>
-    <div class="kpi"><p class="num" id="kVagasSocial">-</p><p class="label">Vagas Fies Social</p></div>
-  </div>
-
   <div class="filtros-lista">
     <div class="search-wrap">
       <span class="search-icon">
@@ -539,6 +532,13 @@
       <a class="cta-btn" id="ctaBtnBanner" href="https://api.whatsapp.com/send?phone=5534998622338&text=Ol%C3%A1,%20ProFies!%20Preciso%20de%20ajuda%20com%20o%20Fies%20e%20gostaria%20de%20receber%20o%20atendimento%20de%20um%20especialista." target="_blank" rel="noopener">Falar com um Especialista</a>
     </div>
     <div id="lista"></div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><p class="num" id="kInst">-</p><p class="label">Instituições</p></div>
+    <div class="kpi"><p class="num" id="kVagasTotal">-</p><p class="label">Total de vagas (Fies + Fies Social)</p></div>
+    <div class="kpi"><p class="num" id="kVagasFies">-</p><p class="label">Vagas Fies</p></div>
+    <div class="kpi"><p class="num" id="kVagasSocial">-</p><p class="label">Vagas Fies Social</p></div>
   </div>
 
 
