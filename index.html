@@ -71,7 +71,17 @@
      barra lateral + conteúdo à direita) deixou de fazer sentido — a página
      inteira agora é uma coluna só, só um pouco mais larga no desktop. */
   @media (min-width: 900px){
-    .container{max-width:720px;padding:20px 32px 48px;}
+    .container{
+      max-width:1200px;
+      padding:24px 32px 56px;
+      display:flex;
+      align-items:flex-start;
+      gap:36px;
+    }
+    .col-sim{width:380px;flex-shrink:0;position:sticky;top:24px;}
+    .col-pesquisa{flex:1;min-width:0;}
+    .secao-divisor{display:none;}
+    .sim-hero{margin-top:0;}
   }
   .secao-eyebrow{font-size:11px;font-weight:600;color:var(--azul-escuro);margin:0 0 7px;text-transform:uppercase;letter-spacing:.06em;}
   .secao-titulo{font-size:16px;font-weight:600;margin:0 0 2px;}
@@ -488,6 +498,7 @@
 
 <div class="container">
 
+  <div class="col-sim">
   <p class="secao-eyebrow">Simulador</p>
   <div class="sim-hero tipo-fies">
     <h2 class="sim-titulo">Simule suas chances no Fies</h2>
@@ -517,7 +528,9 @@
     </div>
     <button type="button" class="btn-primary" id="btnSimular" disabled>Ver minhas chances de pré-seleção</button>
   </div>
+  </div>
 
+  <div class="col-pesquisa">
   <div class="secao-divisor"></div>
 
   <p class="secao-eyebrow">Encontre uma instituição</p>
@@ -586,7 +599,7 @@
   <div class="selo-rodape">
     <img src="selo-profies.png" alt="ProFies · desde 2002 · a experiência faz a diferença" onerror="this.parentNode.style.display='none'">
   </div>
-
+  </div>
 
 </div>
 
