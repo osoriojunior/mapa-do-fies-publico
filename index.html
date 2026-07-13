@@ -167,38 +167,61 @@
   }
   .sim-hero{
     background:var(--card);
-    border:2px solid var(--azul);
+    border:1px solid #CBD3F2;
     border-radius:14px;
-    padding:16px;
+    padding:18px;
     margin:14px 0;
+    box-shadow:0 1px 4px rgba(66,86,200,0.06);
   }
   .sim-titulo{font-size:16px;font-weight:600;margin:0 0 2px;}
   .sim-sub{font-size:12.5px;color:var(--texto-sec);margin:0 0 14px;}
-  .sim-nota-wrap{margin-bottom:8px;}
-  .sim-nota-wrap label{display:block;font-size:11px;color:var(--texto-muted);margin-bottom:4px;}
+  .sim-nota-wrap{margin-bottom:14px;}
+  .sim-nota-wrap label{display:block;font-size:12px;font-weight:600;color:var(--texto-sec);margin-bottom:5px;}
   .sim-nota-wrap input{
     width:100%;
-    height:48px;
+    height:50px;
     border-radius:var(--radius);
     border:1px solid var(--border);
     font-size:22px;
     font-weight:700;
-    text-align:center;
+    text-align:left;
+    padding:0 14px;
     color:var(--azul-escuro);
     background:var(--card);
     font-variant-numeric:tabular-nums;
   }
   .sim-nota-wrap input:focus{outline:2px solid var(--azul);outline-offset:-1px;}
+  /* Placeholder como exemplo: cinza-claro, menor, sem negrito, à esquerda —
+     visualmente distinto de um valor já digitado. */
+  #notaAluno::placeholder{color:var(--texto-muted);font-weight:400;font-size:14px;opacity:1;}
+  .sim-group{margin:14px 0 6px;}
+  .sim-group-label{font-size:12px;font-weight:600;color:var(--texto-sec);margin:0 0 6px;}
+  .info-ico{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;margin-left:5px;border-radius:50%;font-size:9px;font-weight:700;font-style:normal;line-height:1;background:rgba(255,255,255,0.35);border:1px solid currentColor;cursor:help;vertical-align:middle;}
+  .info-ico:focus{outline:2px solid var(--azul);outline-offset:1px;}
+  .btn-primary{
+    width:100%;
+    min-height:46px;
+    margin:16px 0 2px;
+    border:none;
+    border-radius:var(--radius);
+    background:var(--azul);
+    color:#fff;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .btn-primary:hover{background:var(--azul-escuro);}
+  .btn-primary:disabled{background:#B7C0E8;cursor:not-allowed;}
   .sim-lembrete{
     display:flex;
     align-items:flex-start;
-    gap:6px;
-    font-size:11.5px;
-    color:var(--texto-sec);
-    margin:0 0 10px;
-    line-height:1.45;
+    gap:7px;
+    font-size:12px;
+    color:var(--texto);
+    margin:12px 0 10px;
+    line-height:1.5;
   }
-  .sim-lembrete svg{width:14px;height:14px;flex-shrink:0;margin-top:2px;color:var(--texto-muted);}
+  .sim-lembrete svg{width:15px;height:15px;flex-shrink:0;margin-top:2px;color:var(--azul);}
   .elig-warning{
     display:flex;
     align-items:center;
@@ -250,7 +273,7 @@
     border-radius:6px;
     margin-top:3px;
   }
-  .disclaimer-faixa{font-size:10.5px;color:var(--texto-muted);margin:0 0 10px;}
+  .disclaimer-faixa{font-size:11px;color:var(--texto-sec);margin:0 0 10px;line-height:1.45;}
   .footer-link{
     display:inline-flex;
     align-items:center;
@@ -448,30 +471,33 @@
 <div class="container">
 
   <div class="sim-hero">
-    <h2 class="sim-titulo">Simule sua nota</h2>
-    <p class="sim-sub">Informe sua média do Enem e veja onde você teria chance de aprovação agora.</p>
+    <h2 class="sim-titulo">Simule suas chances no Fies</h2>
+    <p class="sim-sub">Informe sua média no Enem e estime suas chances de pré-seleção no Fies.</p>
     <div class="sim-nota-wrap">
-      <label for="notaAluno">Nota média do Enem</label>
-      <input type="text" id="notaAluno" inputmode="decimal" placeholder="Ex: 650,5" aria-label="Nota média do Enem">
+      <label for="notaAluno">Sua média no Enem</label>
+      <input type="text" id="notaAluno" inputmode="decimal" placeholder="Ex.: 720,50" aria-label="Sua média no Enem">
     </div>
-    <p class="sim-lembrete">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 11h1v5h1"/></svg>
-      Lembrete de regra federal (não é calculado aqui): para usar o Fies também é preciso ter tirado acima de zero na redação.
-    </p>
     <p class="elig-warning" id="eligWarning" style="display:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4m0 4h.01"/></svg>
       <span id="eligWarningTxt"></span>
     </p>
-    <div class="toggle-group" id="grupoTipo">
-      <button data-tipo="Fies" class="active">Fies</button>
-      <button data-tipo="Social">Fies Social</button>
+    <div class="sim-group">
+      <p class="sim-group-label">Modalidade do programa</p>
+      <div class="toggle-group" id="grupoTipo">
+        <button type="button" data-tipo="Fies" class="active">Fies</button>
+        <button type="button" data-tipo="Social">Fies Social</button>
+      </div>
     </div>
-    <div class="toggle-group" id="grupoCota">
-      <button data-cota="ampla" class="active">Ampla</button>
-      <button data-cota="ppiq">PPIQ</button>
-      <button data-cota="pcd">PCD</button>
+    <div class="sim-group">
+      <p class="sim-group-label">Modalidade de concorrência</p>
+      <div class="toggle-group" id="grupoCota">
+        <button type="button" data-cota="ampla" class="active">Ampla concorrência</button>
+        <button type="button" data-cota="ppiq">PPIQ<span class="info-ico" role="img" tabindex="0" aria-label="PPIQ: vagas reservadas a candidatos pretos, pardos, indígenas e quilombolas." title="Vagas reservadas a candidatos pretos, pardos, indígenas e quilombolas.">i</span></button>
+        <button type="button" data-cota="pcd">PcD<span class="info-ico" role="img" tabindex="0" aria-label="PcD: vagas reservadas a pessoas com deficiência." title="Vagas reservadas a pessoas com deficiência.">i</span></button>
+      </div>
     </div>
-    <p class="sim-hint" id="simHint">Digite sua nota média do Enem para ver onde você passa.</p>
+    <button type="button" class="btn-primary" id="btnSimular" disabled>Ver minhas chances de pré-seleção</button>
+    <p class="sim-hint" id="simHint">Digite sua média no Enem para consultar suas chances de pré-seleção.</p>
   </div>
 
   <div class="kpis">
@@ -667,9 +693,9 @@ function corNota(valor, min, max){
 
 // Estado do simulador (margem = nota do aluno − nota de corte da modalidade).
 function estadoMargem(margem){
-  if (margem >= 0) return { texto: "Você passaria", cor: "#2E7D32", bg: "#E9F7E1" };
+  if (margem >= 0) return { texto: "Chance favorável de pré-seleção", cor: "#2E7D32", bg: "#E9F7E1" };
   if (margem >= LIMIAR_FAIXA_DISPUTA) return { texto: "Faixa de disputa", cor: "#8A6110", bg: "#FEF3D9" };
-  return { texto: "Abaixo do corte", cor: "#A8431F", bg: "#FBEAE3" };
+  return { texto: "Chance reduzida de pré-seleção", cor: "#A8431F", bg: "#FBEAE3" };
 }
 
 function atualizarSimuladorUI(){
@@ -680,7 +706,7 @@ function atualizarSimuladorUI(){
   const disclaimer = document.getElementById("disclaimerFaixa");
   if (notaAluno === null){
     eligEl.style.display = "none";
-    hintEl.textContent = "Digite sua nota média do Enem para ver onde você passa.";
+    hintEl.textContent = "Digite sua média no Enem para consultar suas chances de pré-seleção.";
     ctaBanner.style.display = "none";
     disclaimer.textContent = "";
     return;
@@ -691,14 +717,14 @@ function atualizarSimuladorUI(){
   } else {
     eligEl.style.display = "none";
   }
-  hintEl.textContent = "Ranking ordenado pela sua margem — role a lista abaixo.";
+  hintEl.textContent = "Veja abaixo suas chances de pré-seleção, ordenadas da maior para a menor.";
   ctaBanner.style.display = "flex";
-  disclaimer.textContent = "\"Faixa de disputa\" é uma aproximação com base na variação histórica dos cortes entre edições — não é uma regra oficial do Fies.";
+  disclaimer.textContent = "Esta simulação apresenta uma estimativa baseada nas notas de corte disponíveis e não garante a pré-seleção. As notas podem variar durante o processo seletivo. A \"Faixa de disputa\" é uma aproximação com base na variação histórica dos cortes, não uma regra oficial do Fies.";
 }
 
 const NOMES_MOD = {
-  amplaFies: "Ampla", ppiqFies: "PPIQ", pcdFies: "PCD",
-  amplaSocial: "Ampla", ppiqSocial: "PPIQ", pcdSocial: "PCD"
+  amplaFies: "Ampla", ppiqFies: "PPIQ", pcdFies: "PcD",
+  amplaSocial: "Ampla", ppiqSocial: "PPIQ", pcdSocial: "PcD"
 };
 
 function detalheModalidades(item){
@@ -940,11 +966,27 @@ function initEventos(){
     atualizarTudo();
   });
 
-  // Simulador: campo único de nota do aluno.
-  document.getElementById("notaAluno").addEventListener("input", e => {
-    const v = parseFloat(String(e.target.value).replace(",", "."));
-    ESTADO.notaAluno = (v && v > 0) ? v : null;
+  // Simulador: aceita nota com ponto OU vírgula.
+  const parseNota = (txt) => {
+    const v = parseFloat(String(txt).replace(",", "."));
+    return (isFinite(v) && v > 0) ? v : null;
+  };
+  const inputNota = document.getElementById("notaAluno");
+  const btnSimular = document.getElementById("btnSimular");
+  // O resultado é atualizado AO VIVO enquanto o usuário digita. O botão fica
+  // habilitado quando há nota válida e serve para rolar até o resultado.
+  inputNota.addEventListener("input", e => {
+    const v = parseNota(e.target.value);
+    ESTADO.notaAluno = v;
+    btnSimular.disabled = (v === null);
     atualizarTudo();
+  });
+  inputNota.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !btnSimular.disabled) btnSimular.click();
+  });
+  btnSimular.addEventListener("click", () => {
+    if (btnSimular.disabled) return;
+    document.getElementById("viewBuscar").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   // CTAs de WhatsApp: inertes de propósito, nenhum dado é coletado ou
