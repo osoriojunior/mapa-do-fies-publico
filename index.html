@@ -820,8 +820,8 @@ function atualizarSimuladorUI(){
 }
 
 const NOMES_MOD = {
-  amplaFies: "Ampla", ppiqFies: "PPIQ", pcdFies: "PcD",
-  amplaSocial: "Ampla", ppiqSocial: "PPIQ", pcdSocial: "PcD"
+  amplaFies: "Ampla concorrência", ppiqFies: "PPIQ", pcdFies: "PcD",
+  amplaSocial: "Ampla concorrência", ppiqSocial: "PPIQ", pcdSocial: "PcD"
 };
 
 function detalheModalidades(item){
@@ -836,7 +836,7 @@ function detalheModalidades(item){
         const m = item.mod[k];
         const nota = fmtNota(m.n);
         return `<div class="detail-row ${nota ? '' : 'na'}" style="background:${g.bg}">
-          <span class="nome">${NOMES_MOD[k]}${m.v ? ' · ' + fmtInt(m.v) + ' vg' : ''}</span>
+          <span class="nome">${NOMES_MOD[k]}${m.v ? ' · ' + fmtInt(m.v) + (m.v === 1 ? ' vaga' : ' vagas') : ''}</span>
           <span class="valor">${nota || 'n/o'}</span>
         </div>`;
       }).join("")}
