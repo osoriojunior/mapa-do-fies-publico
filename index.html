@@ -98,7 +98,7 @@
     height:40px;
     padding:0 12px 0 38px;
     border-radius:var(--radius);
-    border:1px solid #E6DE8F;
+    border:1px solid var(--azul);
     font-size:14px;
     background:#F7F2BE;
   }
@@ -121,8 +121,8 @@
     font-size:13px;
     padding:0 10px;
     border-radius:var(--radius);
-    border:1px solid var(--border);
-    background:var(--card);
+    border:1px solid var(--azul);
+    background:#F7F2BE;
     color:var(--texto);
   }
   .filters-row select#fMunicipio{
@@ -171,8 +171,8 @@
   }
   #grupoTipo button[data-tipo="Fies"].active{background:var(--verde-fies);border-color:var(--verde-fies);}
   #grupoTipo button[data-tipo="Social"].active{background:var(--azul-social);border-color:var(--azul-social);}
-  .sim-hero.tipo-fies #grupoCota button.active{background:var(--verde-fies-claro);border-color:var(--verde-fies-claro);color:#124534;}
-  .sim-hero.tipo-social #grupoCota button.active{background:var(--azul-social-claro);border-color:var(--azul-social-claro);color:#0F4A80;}
+  .sim-hero.tipo-fies #grupoCota button.active{background:var(--verde-fies);border-color:var(--verde-fies);}
+  .sim-hero.tipo-social #grupoCota button.active{background:var(--azul-social);border-color:var(--azul-social);}
   #grupoTipo button{font-size:15px;font-weight:600;}
   .sim-hero{
     background:var(--card);
@@ -503,7 +503,6 @@
         <button type="button" data-cota="ppiq">PPIQ</button>
         <button type="button" data-cota="pcd">PcD</button>
       </div>
-      <p class="sim-legenda">PPIQ: pretos, pardos, indígenas e quilombolas. PcD: pessoas com deficiência.</p>
     </div>
     <button type="button" class="btn-primary" id="btnSimular" disabled>Ver minhas chances de pré-seleção</button>
   </div>
@@ -729,8 +728,8 @@ const NOMES_MOD = {
 
 function detalheModalidades(item){
   const grupos = [
-    { titulo: "Fies", chaves: ["amplaFies","ppiqFies","pcdFies"], bg: "#EEF1FC" },
-    { titulo: "Fies Social", chaves: ["amplaSocial","ppiqSocial","pcdSocial"], bg: "#EAF6E4" }
+    { titulo: "Fies", chaves: ["amplaFies","ppiqFies","pcdFies"], bg: "#E4F1EC" },
+    { titulo: "Fies Social", chaves: ["amplaSocial","ppiqSocial","pcdSocial"], bg: "#E6F1FB" }
   ];
   return `<p class="detail-heading">Notas de corte por modalidade</p><div class="detail-grid">` + grupos.map(g => `
     <div>
