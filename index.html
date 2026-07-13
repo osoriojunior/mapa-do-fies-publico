@@ -151,8 +151,8 @@
   }
   .toggle-group button{
     flex:1;
-    min-height:40px;
-    font-size:12.5px;
+    min-height:44px;
+    font-size:14px;
     padding:8px 4px;
     border-radius:var(--radius);
     border:1px solid var(--border);
@@ -170,6 +170,12 @@
   #grupoTipo button[data-tipo="Social"].active{background:var(--azul-social);border-color:var(--azul-social);}
   .sim-hero.tipo-fies #grupoCota button.active{background:var(--verde-fies);border-color:var(--verde-fies);}
   .sim-hero.tipo-social #grupoCota button.active{background:var(--azul-social);border-color:var(--azul-social);}
+  #grupoTipo button{font-size:15px;font-weight:600;}
+  @keyframes pulse-verde{0%,100%{box-shadow:0 0 0 0 rgba(46,125,100,0);}50%{box-shadow:0 0 0 4px rgba(46,125,100,.20);}}
+  @keyframes pulse-azul{0%,100%{box-shadow:0 0 0 0 rgba(46,134,214,0);}50%{box-shadow:0 0 0 4px rgba(46,134,214,.20);}}
+  #grupoTipo button[data-tipo="Fies"]:not(.active){animation:pulse-verde 1.8s ease-in-out infinite;}
+  #grupoTipo button[data-tipo="Social"]:not(.active){animation:pulse-azul 1.8s ease-in-out infinite;}
+  @media (prefers-reduced-motion: reduce){#grupoTipo button{animation:none !important;}}
   .sim-hero{
     background:var(--card);
     border:1px solid #CBD3F2;
@@ -509,7 +515,6 @@
       <p class="sim-legenda">PPIQ: pretos, pardos, indígenas e quilombolas. PcD: pessoas com deficiência.</p>
     </div>
     <button type="button" class="btn-primary" id="btnSimular" disabled>Ver minhas chances de pré-seleção</button>
-    <p class="sim-hint" id="simHint">Digite sua média no Enem para consultar suas chances de pré-seleção.</p>
   </div>
 
   <div class="kpis">
@@ -711,11 +716,9 @@ function estadoMargem(margem){
 function atualizarSimuladorUI(){
   const notaAluno = ESTADO.notaAluno;
   const eligEl = document.getElementById("eligWarning");
-  const hintEl = document.getElementById("simHint");
   const ctaBanner = document.getElementById("ctaBanner");
   if (notaAluno === null){
     eligEl.style.display = "none";
-    hintEl.textContent = "Digite sua média no Enem para consultar suas chances de pré-seleção.";
     ctaBanner.style.display = "none";
     return;
   }
@@ -725,7 +728,6 @@ function atualizarSimuladorUI(){
   } else {
     eligEl.style.display = "none";
   }
-  hintEl.textContent = "Veja abaixo suas chances de pré-seleção, ordenadas da maior para a menor.";
   ctaBanner.style.display = "flex";
 }
 
