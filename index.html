@@ -61,15 +61,17 @@
     font-weight:600;
     margin:0;
   }
-  .aviso-oficial{background:#FEF3D9;border-bottom:1px solid #F0DFB0;overflow:hidden;max-height:220px;transition:opacity .45s ease, max-height .45s ease;}
+  .aviso-oficial{background:#EEF1FC;border-bottom:1px solid #E3E6F0;overflow:hidden;max-height:220px;transition:opacity .45s ease, max-height .45s ease;}
   .aviso-oficial.oculto{opacity:0;max-height:0;border-bottom-color:transparent;}
-  .aviso-oficial-inner{max-width:1200px;margin:0 auto;padding:9px 16px;}
-  .aviso-oficial-txt{display:flex;align-items:flex-start;gap:7px;margin:0;font-size:12px;color:#6E5A1E;line-height:1.45;}
-  .aviso-oficial-txt > svg{width:15px;height:15px;flex-shrink:0;margin-top:1px;color:#B4881E;}
+  .aviso-oficial-inner{max-width:1200px;margin:0 auto;padding:7px 16px;}
+  .aviso-oficial-txt{display:flex;align-items:flex-start;gap:7px;margin:0;font-size:12px;color:var(--texto-sec);line-height:1.4;}
+  .aviso-oficial-txt > svg{width:14px;height:14px;flex-shrink:0;margin-top:1px;color:var(--texto-muted);}
   .aviso-toggle{background:none;border:none;padding:0;color:var(--azul);font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;}
-  .aviso-completo{margin:6px 0 0;font-size:12px;color:#6E5A1E;line-height:1.5;max-width:900px;}
+  .aviso-toggle:focus{outline:none;}
+  .aviso-toggle:focus-visible{outline:2px solid var(--azul);outline-offset:2px;border-radius:2px;}
+  .aviso-completo{margin:6px 0 0;font-size:11px;color:var(--texto-sec);line-height:1.5;max-width:820px;}
   .aviso-completo a{color:var(--azul);}
-  @media (min-width:900px){ .aviso-oficial-inner{padding:9px 32px;} }
+  @media (min-width:900px){ .aviso-oficial-inner{padding:7px 32px;} }
   .rodape-aviso{border-top:1px solid var(--border);padding:20px 16px 32px;}
   .rodape-aviso p{max-width:900px;margin:0 auto;font-size:11.5px;color:var(--texto-muted);line-height:1.55;text-align:center;}
   .rodape-aviso a{color:var(--azul);}
@@ -176,8 +178,11 @@
   .limpar-filtros:disabled{color:var(--texto-muted);cursor:default;opacity:.6;}
   .limpar-filtros svg{width:14px;height:14px;}
   .filtros-auto-msg{font-size:11.5px;color:var(--texto-sec);margin:8px 0 0;}
-  .filtros-aviso{display:flex;align-items:flex-start;gap:6px;font-size:10px;color:var(--texto-muted);margin:-4px 0 4px;line-height:1.4;}
-  .filtros-aviso svg{width:13px;height:13px;flex-shrink:0;margin-top:1px;}
+  .filtros-aviso{display:flex;align-items:flex-start;gap:7px;margin:14px 0 6px;color:#4B4B55;}
+  .filtros-aviso svg{width:14px;height:14px;flex-shrink:0;margin-top:2px;color:var(--texto-muted);}
+  .filtros-aviso-txt p{font-size:11px;font-weight:400;margin:0;line-height:1.5;}
+  .filtros-aviso-txt p + p{margin-top:8px;}
+  .levantamento-info{color:#3F3F49;}
   .toggle-group{
     display:flex;
     gap:6px;
@@ -520,10 +525,10 @@
 <div class="aviso-oficial">
   <div class="aviso-oficial-inner">
     <p class="aviso-oficial-txt">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4m0 4h.01"/></svg>
-      <span>Ferramenta privada administrada pela ProFies. Este não é um site oficial do Governo Federal. <button type="button" class="aviso-toggle" id="avisoToggle" aria-expanded="false" aria-controls="avisoCompleto">Ver aviso completo</button></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 11h1v5h1"/></svg>
+      <span>Ferramenta privada da ProFies — este não é um site oficial do Governo Federal. <button type="button" class="aviso-toggle" id="avisoToggle" aria-expanded="false" aria-controls="avisoCompleto">Saiba mais</button></span>
     </p>
-    <p class="aviso-completo" id="avisoCompleto" hidden>O Mapa do Fies é uma ferramenta privada, administrada pela ProFies, sem vínculo com o Governo Federal, o Ministério da Educação, a Caixa Econômica Federal, o Banco do Brasil ou instituições de ensino superior. Para informações oficiais sobre o Fies, acesse <a href="https://acessounico.mec.gov.br/fies" target="_blank" rel="noopener">acessounico.mec.gov.br/fies</a>.</p>
+    <p class="aviso-completo" id="avisoCompleto" hidden>O Mapa do Fies é administrado pela ProFies, empresa privada e sem vínculo institucional com o Governo Federal, o MEC, a Caixa Econômica Federal, o Banco do Brasil ou instituições de ensino superior. Para informações oficiais sobre o Fies, acesse <a href="https://acessounico.mec.gov.br/fies" target="_blank" rel="noopener">acessounico.mec.gov.br/fies</a>.</p>
   </div>
 </div>
 
@@ -611,6 +616,15 @@
 
   </div>
 
+  <div class="filtros-aviso">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 11h1v5h1"/></svg>
+    <div class="filtros-aviso-txt">
+      <p>Os resultados serão atualizados conforme os filtros selecionados.</p>
+      <p>As notas de corte têm caráter informativo e refletem o último levantamento realizado pela ProFies para a edição selecionada. Os valores podem ter sofrido alterações após esse levantamento e não garantem a pré-seleção.</p>
+      <p class="levantamento-info" id="levantamento"></p>
+    </div>
+  </div>
+
   <div id="viewBuscar">
     <div class="cta-banner" id="ctaBanner" style="display:none;">
       <div class="cta-texto">
@@ -675,6 +689,24 @@ function fmtMoeda(n){
 }
 function fmtInt(n){
   return Math.round(n || 0).toLocaleString("pt-BR");
+}
+
+// Data do último levantamento da edição selecionada, a partir do campo
+// "atualizacao" (DD/MM/AAAA HH:MM, já no fuso de Brasília) que vem no JSON.
+// Pega a data mais recente entre os registros da edição. Sem device date,
+// sem API. Formato: "DD/MM/AAAA, às HHhMM" (ou "HHh" quando minutos = 00).
+function ultimoLevantamento(){
+  let melhor = null, info = null;
+  DADOS.forEach(d => {
+    if (d.ed !== ESTADO.edicao || !d.atualizacao) return;
+    const m = String(d.atualizacao).trim().match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{1,2}):(\d{2})/);
+    if (!m) return;
+    const dt = new Date(+m[3], +m[2]-1, +m[1], +m[4], +m[5]);
+    if (!melhor || dt > melhor){ melhor = dt; info = { data: `${m[1]}/${m[2]}/${m[3]}`, h: parseInt(m[4],10), min: m[5] }; }
+  });
+  if (!info) return null;
+  const hora = info.min === "00" ? `${info.h}h` : `${info.h}h${info.min}`;
+  return `${info.data}, às ${hora}`;
 }
 
 function ordenarEdicoes(lista){
@@ -975,6 +1007,8 @@ function atualizarTudo(){
   if (hero){ hero.classList.toggle("tipo-fies", ESTADO.tipo === "Fies"); hero.classList.toggle("tipo-social", ESTADO.tipo !== "Fies"); }
   const btnLimpar = document.getElementById("btnLimpar");
   if (btnLimpar) btnLimpar.disabled = !(ESTADO.busca || ESTADO.uf || ESTADO.municipio);
+  const lev = document.getElementById("levantamento");
+  if (lev){ const t = ultimoLevantamento(); lev.textContent = t ? `Último levantamento da ProFies: ${t}.` : "Data do último levantamento indisponível."; }
   renderKPIs();
   atualizarSimuladorUI();
   renderLista(lista);
@@ -1071,8 +1105,8 @@ function renderSkeleton(){
     b.addEventListener("click", function(){
       clearTimeout(t);
       t = setTimeout(esconder, 30000);
-      if (f.hasAttribute("hidden")){ f.removeAttribute("hidden"); b.setAttribute("aria-expanded","true"); b.textContent = "Ocultar aviso"; }
-      else { f.setAttribute("hidden",""); b.setAttribute("aria-expanded","false"); b.textContent = "Ver aviso completo"; }
+      if (f.hasAttribute("hidden")){ f.removeAttribute("hidden"); b.setAttribute("aria-expanded","true"); b.textContent = "Recolher"; }
+      else { f.setAttribute("hidden",""); b.setAttribute("aria-expanded","false"); b.textContent = "Saiba mais"; }
     });
   }
 })();
