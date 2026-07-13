@@ -195,7 +195,7 @@
   #notaAluno::placeholder{color:var(--texto-muted);font-weight:400;font-size:14px;opacity:1;}
   .sim-group{margin:14px 0 6px;}
   .sim-group-label{font-size:12px;font-weight:600;color:var(--texto-sec);margin:0 0 6px;}
-  .sim-legenda{font-size:11px;color:var(--texto-sec);margin:6px 0 0;line-height:1.4;}
+  .sim-legenda{font-size:11px;color:var(--texto-sec);margin:6px 0 0;line-height:1.4;text-align:right;}
   .btn-primary{
     width:100%;
     min-height:46px;
@@ -251,6 +251,7 @@
   }
   .cta-banner span{font-size:12px;color:var(--azul-escuro);}
   .cta-btn{
+    display:inline-block;
     font-size:11.5px;
     padding:6px 12px;
     border-radius:999px;
@@ -260,8 +261,13 @@
     cursor:pointer;
     white-space:nowrap;
     flex-shrink:0;
+    text-decoration:none;
+    text-align:center;
   }
   .cta-btn.small{font-size:11px;padding:5px 10px;margin-top:8px;}
+  .card-suporte{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+  .suporte-titulo{font-size:12.5px;font-weight:600;color:var(--texto);margin:0 0 4px;}
+  .suporte-texto{font-size:11.5px;color:var(--texto-sec);margin:0 0 8px;line-height:1.5;}
   .cta-btn:disabled{opacity:0.6;cursor:default;}
   .badge-margem{
     display:inline-block;
@@ -353,6 +359,7 @@
   }
   .card-name{font-size:14px;font-weight:600;margin:0;line-height:1.3;}
   .card-sub{font-size:12px;color:var(--texto-sec);margin:2px 0 0;}
+  .card-conceito{font-size:11px;color:var(--texto-muted);margin:4px 0 0;}
   .score-box{text-align:right;flex-shrink:0;}
   .score-label{font-size:9.5px;color:var(--texto-muted);margin:0;text-transform:uppercase;letter-spacing:0.03em;}
   .score-value{font-size:19px;font-weight:700;margin:0;font-variant-numeric:tabular-nums;}
@@ -526,11 +533,9 @@
   </div>
 
   <div id="viewBuscar">
-    <p class="result-count" id="contagem"></p>
-    <p class="disclaimer-faixa" id="disclaimerFaixa"></p>
     <div class="cta-banner" id="ctaBanner" style="display:none;">
       <span>A ProFies te acompanha em cada passo da adesão ao Fies.</span>
-      <button class="cta-btn" id="ctaBtnBanner">Receber no WhatsApp</button>
+      <a class="cta-btn" id="ctaBtnBanner" href="https://api.whatsapp.com/send?phone=5534998622338&text=Ol%C3%A1,%20ProFies!%20Preciso%20de%20ajuda%20com%20o%20Fies%20e%20gostaria%20de%20receber%20o%20atendimento%20de%20um%20especialista." target="_blank" rel="noopener">Falar com um Especialista</a>
     </div>
     <div id="lista"></div>
   </div>
@@ -702,12 +707,10 @@ function atualizarSimuladorUI(){
   const eligEl = document.getElementById("eligWarning");
   const hintEl = document.getElementById("simHint");
   const ctaBanner = document.getElementById("ctaBanner");
-  const disclaimer = document.getElementById("disclaimerFaixa");
   if (notaAluno === null){
     eligEl.style.display = "none";
     hintEl.textContent = "Digite sua média no Enem para consultar suas chances de pré-seleção.";
     ctaBanner.style.display = "none";
-    disclaimer.textContent = "";
     return;
   }
   if (notaAluno < 450){
@@ -718,7 +721,6 @@ function atualizarSimuladorUI(){
   }
   hintEl.textContent = "Veja abaixo suas chances de pré-seleção, ordenadas da maior para a menor.";
   ctaBanner.style.display = "flex";
-  disclaimer.textContent = "Esta simulação apresenta uma estimativa baseada nas notas de corte disponíveis e não garante a pré-seleção. As notas podem variar durante o processo seletivo. A \"Faixa de disputa\" é uma aproximação com base na variação histórica dos cortes, não uma regra oficial do Fies.";
 }
 
 const NOMES_MOD = {
@@ -744,21 +746,17 @@ function detalheModalidades(item){
       }).join("")}
     </div>
   `).join("") + `</div>
-  <button class="cta-btn small" type="button">Receber passo a passo desta inscrição</button>`;
+  <div class="card-suporte">
+    <p class="suporte-titulo">Tenha suporte em todas as etapas do Fies</p>
+    <p class="suporte-texto">Fale com um Especialista de Suporte da ProFies e receba orientação na inscrição, na validação junto à CPSA, nos procedimentos perante a Caixa e na manutenção do contrato após a contratação do Fies.</p>
+    <a class="cta-btn small" href="https://api.whatsapp.com/send?phone=5534998622338&text=Ol%C3%A1,%20ProFies!%20Preciso%20de%20ajuda%20com%20o%20Fies%20e%20gostaria%20de%20receber%20o%20atendimento%20de%20um%20especialista." target="_blank" rel="noopener">Falar com um especialista no WhatsApp</a>
+  </div>`;
 }
 
 function renderLista(lista){
   const el = document.getElementById("lista");
   const chave = modKey();
   const notaAluno = ESTADO.notaAluno;
-  const contagemPorEstado = { comNota: 0, semDetalhamento: 0, zeroVaga: 0 };
-  lista.forEach(d => contagemPorEstado[classificarLinha(d, chave)]++);
-  let sufixo = "";
-  if (contagemPorEstado.semDetalhamento) sufixo += `, ${contagemPorEstado.semDetalhamento} sem nota detalhada nesta edição`;
-  if (contagemPorEstado.zeroVaga) sufixo += `, ${contagemPorEstado.zeroVaga} sem vagas nesta edição`;
-  document.getElementById("contagem").textContent = lista.length
-    ? `${lista.length} instituição${lista.length>1?'ões':''}${sufixo}${notaAluno ? " — ordenadas pela sua margem" : ""}`
-    : "";
 
   if (!lista.length){
     el.innerHTML = `<div class="empty">
@@ -780,15 +778,13 @@ function renderLista(lista){
     const m = item.mod[chave];
     const estado = classificarLinha(item, chave);
     const cor = estado === "comNota" ? corNota(m.n, min, max) : null;
-    const badge = badgeCor(item.conceito);
     let scoreLabel = "nota de corte";
     let scoreHtml, footVaga;
     if (estado === "comNota"){
       if (notaAluno){
-        const margem = notaAluno - m.n;
-        const em = estadoMargem(margem);
-        scoreLabel = "margem";
-        scoreHtml = `<p class="score-value" style="color:${em.cor}">${margem>=0?'+':''}${margem.toFixed(2).replace('.',',')}</p><span class="badge-margem" style="background:${em.bg};color:${em.cor}">${em.texto}</span>`;
+        const em = estadoMargem(notaAluno - m.n);
+        scoreLabel = "";
+        scoreHtml = `<span class="badge-margem" style="background:${em.bg};color:${em.cor}">${em.texto}</span>`;
       } else {
         scoreHtml = `<p class="score-value" style="color:${cor}">${fmtNota(m.n)}</p>`;
       }
@@ -806,9 +802,9 @@ function renderLista(lista){
     <div class="card" data-idx="${idx}">
       <div class="card-top">
         <div style="min-width:0;">
-          ${item.conceito ? `<span class="badge" style="background:${badge.bg};color:${badge.fg}">Conceito ${item.conceito}</span>` : ''}
           <p class="card-name">${item.ies}</p>
           <p class="card-sub">${item.mun}, ${siglaUf(item.uf)} · ${item.local || ''}</p>
+          ${item.conceito ? `<p class="card-conceito">Conceito ${item.conceito}</p>` : ''}
         </div>
         <div class="score-box">
           <p class="score-label">${scoreLabel}</p>
@@ -974,13 +970,18 @@ function initEventos(){
   const btnSimular = document.getElementById("btnSimular");
   // O resultado é atualizado AO VIVO enquanto o usuário digita. O botão fica
   // habilitado quando há nota válida e serve para rolar até o resultado.
+  // Guarda o último conteúdo válido do campo, para bloquear valores > 1000.
+  let ultimaNota = "";
   inputNota.addEventListener("input", e => {
-    let v = parseNota(e.target.value);
-    // Nota máxima possível no Enem é 1000 — não permite valor acima disso.
+    const v = parseNota(e.target.value);
+    // Nota máxima do Enem é 1000: se passar disso (ex.: um dígito digitado
+    // por engano em 456 -> 4567), reverte para o último valor válido em vez
+    // de "pular" para 1000.
     if (v !== null && v > 1000){
-      v = 1000;
-      e.target.value = "1000";
+      e.target.value = ultimaNota;
+      return;
     }
+    ultimaNota = e.target.value;
     ESTADO.notaAluno = v;
     btnSimular.disabled = (v === null);
     atualizarTudo();
@@ -993,17 +994,8 @@ function initEventos(){
     document.getElementById("viewBuscar").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  // CTAs de WhatsApp: inertes de propósito, nenhum dado é coletado ou
-  // enviado — só um placeholder visual até o destino do lead e o
-  // consentimento LGPD serem definidos numa etapa seguinte.
-  document.getElementById("ctaBtnBanner").addEventListener("click", () => {
-    const b = document.getElementById("ctaBtnBanner");
-    b.textContent = "Em breve"; b.disabled = true;
-  });
-  document.getElementById("lista").addEventListener("click", e => {
-    const btn = e.target.closest(".cta-btn.small");
-    if (btn){ btn.textContent = "Em breve"; btn.disabled = true; }
-  });
+  // Ambos os CTAs (banner e dentro de cada card) são links diretos para o
+  // WhatsApp da ProFies — não há coleta de dados nem formulário.
 }
 
 function renderSkeleton(){
