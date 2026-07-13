@@ -20,6 +20,8 @@
     --texto:#1B1D29;
     --texto-sec:#6A6D80;
     --texto-muted:#9EA1B3;
+    --verde-fies:#2E7D64;
+    --azul-social:#2E86D6;
     --radius:10px;
   }
   *{box-sizing:border-box;}
@@ -164,6 +166,8 @@
     border-color:var(--azul);
     color:#fff;
   }
+  #grupoTipo button[data-tipo="Fies"].active{background:var(--verde-fies);border-color:var(--verde-fies);}
+  #grupoTipo button[data-tipo="Social"].active{background:var(--azul-social);border-color:var(--azul-social);}
   .sim-hero{
     background:var(--card);
     border:1px solid #CBD3F2;
@@ -264,7 +268,7 @@
     text-decoration:none;
     text-align:center;
   }
-  .cta-btn.small{font-size:11px;padding:5px 10px;margin-top:8px;}
+  .cta-btn.small{font-size:11px;padding:6px 12px;margin-top:8px;display:inline-flex;align-items:center;gap:6px;}
   .card-suporte{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
   .suporte-titulo{font-size:12.5px;font-weight:600;color:var(--texto);margin:0 0 4px;}
   .suporte-texto{font-size:11.5px;color:var(--texto-sec);margin:0 0 8px;line-height:1.5;}
@@ -697,7 +701,7 @@ function corNota(valor, min, max){
 
 // Estado do simulador (margem = nota do aluno − nota de corte da modalidade).
 function estadoMargem(margem){
-  if (margem >= 0) return { texto: "Chance favorável de pré-seleção", cor: "#2E7D32", bg: "#E9F7E1" };
+  if (margem >= 0) return { texto: "Chance favorável de pré-seleção", cor: "#4A3488", bg: "#EDE9F9" };
   if (margem >= LIMIAR_FAIXA_DISPUTA) return { texto: "Faixa de disputa", cor: "#8A6110", bg: "#FEF3D9" };
   return { texto: "Chance reduzida de pré-seleção", cor: "#A8431F", bg: "#FBEAE3" };
 }
@@ -747,9 +751,9 @@ function detalheModalidades(item){
     </div>
   `).join("") + `</div>
   <div class="card-suporte">
-    <p class="suporte-titulo">Tenha suporte em todas as etapas do Fies</p>
-    <p class="suporte-texto">Fale com um Especialista de Suporte da ProFies e receba orientação na inscrição, na validação junto à CPSA, nos procedimentos perante a Caixa e na manutenção do contrato após a contratação do Fies.</p>
-    <a class="cta-btn small" href="https://api.whatsapp.com/send?phone=5534998622338&text=Ol%C3%A1,%20ProFies!%20Preciso%20de%20ajuda%20com%20o%20Fies%20e%20gostaria%20de%20receber%20o%20atendimento%20de%20um%20especialista." target="_blank" rel="noopener">Falar com um especialista no WhatsApp</a>
+    <p class="suporte-titulo">Mais segurança em todas as etapas do Fies</p>
+    <p class="suporte-texto">Conte com a orientação da ProFies desde a inscrição até a validação na CPSA, os procedimentos junto à Caixa e a manutenção do contrato.</p>
+    <a class="cta-btn small" href="https://api.whatsapp.com/send?phone=5534998622338&text=Ol%C3%A1,%20ProFies!%20Preciso%20de%20ajuda%20com%20o%20Fies%20e%20gostaria%20de%20receber%20o%20atendimento%20de%20um%20especialista." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" style="flex-shrink:0" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.359.101 11.943c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a11.93 11.93 0 005.71 1.454h.006c6.585 0 11.946-5.359 11.949-11.945a11.86 11.86 0 00-3.48-8.418z"/></svg>Falar com a ProFies</a>
   </div>`;
 }
 
@@ -799,7 +803,7 @@ function renderLista(lista){
       footVaga = `0 vagas nesta edição`;
     }
     return `
-    <div class="card" data-idx="${idx}">
+    <div class="card" style="border-top:3px solid ${ESTADO.tipo === 'Fies' ? 'var(--verde-fies)' : 'var(--azul-social)'}" data-idx="${idx}">
       <div class="card-top">
         <div style="min-width:0;">
           <p class="card-name">${item.ies}</p>
