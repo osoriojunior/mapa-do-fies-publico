@@ -140,7 +140,6 @@
   @media (min-width: 480px){
     .filters-row{grid-template-columns:1fr 1fr 1fr;}
     .filters-row select#fMunicipio{grid-column:auto;}
-    .limpar-filtros{grid-column:auto;}
   }
   .limpar-filtros svg{width:14px;height:14px;}
   .toggle-group{
@@ -196,8 +195,7 @@
   #notaAluno::placeholder{color:var(--texto-muted);font-weight:400;font-size:14px;opacity:1;}
   .sim-group{margin:14px 0 6px;}
   .sim-group-label{font-size:12px;font-weight:600;color:var(--texto-sec);margin:0 0 6px;}
-  .info-ico{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;margin-left:5px;border-radius:50%;font-size:9px;font-weight:700;font-style:normal;line-height:1;background:rgba(255,255,255,0.35);border:1px solid currentColor;cursor:help;vertical-align:middle;}
-  .info-ico:focus{outline:2px solid var(--azul);outline-offset:1px;}
+  .sim-legenda{font-size:11px;color:var(--texto-sec);margin:6px 0 0;line-height:1.4;}
   .btn-primary{
     width:100%;
     min-height:46px;
@@ -492,9 +490,10 @@
       <p class="sim-group-label">Modalidade de concorrência</p>
       <div class="toggle-group" id="grupoCota">
         <button type="button" data-cota="ampla" class="active">Ampla concorrência</button>
-        <button type="button" data-cota="ppiq">PPIQ<span class="info-ico" role="img" tabindex="0" aria-label="PPIQ: vagas reservadas a candidatos pretos, pardos, indígenas e quilombolas." title="Vagas reservadas a candidatos pretos, pardos, indígenas e quilombolas.">i</span></button>
-        <button type="button" data-cota="pcd">PcD<span class="info-ico" role="img" tabindex="0" aria-label="PcD: vagas reservadas a pessoas com deficiência." title="Vagas reservadas a pessoas com deficiência.">i</span></button>
+        <button type="button" data-cota="ppiq">PPIQ</button>
+        <button type="button" data-cota="pcd">PcD</button>
       </div>
+      <p class="sim-legenda">PPIQ: pretos, pardos, indígenas e quilombolas. PcD: pessoas com deficiência.</p>
     </div>
     <button type="button" class="btn-primary" id="btnSimular" disabled>Ver minhas chances de pré-seleção</button>
     <p class="sim-hint" id="simHint">Digite sua média no Enem para consultar suas chances de pré-seleção.</p>
@@ -530,7 +529,7 @@
     <p class="result-count" id="contagem"></p>
     <p class="disclaimer-faixa" id="disclaimerFaixa"></p>
     <div class="cta-banner" id="ctaBanner" style="display:none;">
-      <span>Quer o passo a passo da inscrição pronto?</span>
+      <span>A ProFies te acompanha em cada passo da adesão ao Fies.</span>
       <button class="cta-btn" id="ctaBtnBanner">Receber no WhatsApp</button>
     </div>
     <div id="lista"></div>
@@ -713,7 +712,7 @@ function atualizarSimuladorUI(){
   }
   if (notaAluno < 450){
     eligEl.style.display = "flex";
-    document.getElementById("eligWarningTxt").textContent = "Média abaixo de 450: essa é a média mínima federal para participar do Fies. Isso é diferente da nota de corte de cada instituição, mostrada abaixo.";
+    document.getElementById("eligWarningTxt").textContent = "Para participar do Fies, é necessário ter média mínima de 450 pontos no Enem. A média informada está abaixo desse requisito.";
   } else {
     eligEl.style.display = "none";
   }
@@ -976,7 +975,12 @@ function initEventos(){
   // O resultado é atualizado AO VIVO enquanto o usuário digita. O botão fica
   // habilitado quando há nota válida e serve para rolar até o resultado.
   inputNota.addEventListener("input", e => {
-    const v = parseNota(e.target.value);
+    let v = parseNota(e.target.value);
+    // Nota máxima possível no Enem é 1000 — não permite valor acima disso.
+    if (v !== null && v > 1000){
+      v = 1000;
+      e.target.value = "1000";
+    }
     ESTADO.notaAluno = v;
     btnSimular.disabled = (v === null);
     atualizarTudo();
