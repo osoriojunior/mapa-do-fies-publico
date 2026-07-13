@@ -74,10 +74,8 @@
     .container{
       max-width:1200px;
       padding:24px 32px 56px;
-      display:flex;
-      align-items:flex-start;
-      gap:36px;
     }
+    .colunas{display:flex;align-items:flex-start;gap:36px;}
     .col-sim{width:380px;flex-shrink:0;position:sticky;top:24px;}
     .col-pesquisa{flex:1;min-width:0;}
     .secao-divisor{display:none;}
@@ -87,6 +85,13 @@
   .secao-titulo{font-size:16px;font-weight:600;margin:0 0 2px;}
   .secao-sub{font-size:12.5px;color:var(--texto-sec);margin:0 0 12px;}
   .secao-divisor{height:1px;background:var(--border);margin:26px 0;}
+  .intro{margin:0 0 22px;}
+  .intro-eyebrow{font-size:11px;font-weight:600;color:var(--azul-escuro);margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em;}
+  .intro-titulo{font-size:20px;font-weight:600;margin:0 0 6px;line-height:1.25;}
+  .intro-sub{font-size:13px;color:var(--texto-sec);margin:0 0 14px;line-height:1.55;max-width:680px;}
+  .intro-confianca{display:flex;flex-wrap:wrap;gap:10px 22px;background:#EEF1FC;border:1px solid #D7DEF6;border-radius:10px;padding:10px 14px;}
+  .intro-confianca span{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--azul-escuro);}
+  .intro-confianca svg{width:14px;height:14px;flex-shrink:0;}
   .destaque-iniciativa{
     display:flex;
     max-width:640px;
@@ -501,6 +506,18 @@
 
 <div class="container">
 
+  <div class="intro">
+    <p class="intro-eyebrow">Uma iniciativa gratuita da ProFies</p>
+    <h2 class="intro-titulo">Mapa do Fies: informação para decidir com mais segurança</h2>
+    <p class="intro-sub">Consulte notas de corte, encontre instituições e estime suas chances de pré-seleção com uma ferramenta criada pela ProFies, que atua há 24 anos com Fies.</p>
+    <div class="intro-confianca">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="#37805F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>24 anos de experiência</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="#37805F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Ferramenta gratuita</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="#37805F" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Suporte da inscrição à manutenção do contrato</span>
+    </div>
+  </div>
+
+  <div class="colunas">
   <div class="col-sim">
   <p class="secao-eyebrow">Simulador</p>
   <div class="sim-hero tipo-fies">
@@ -600,6 +617,7 @@
 
   <div class="selo-rodape">
     <img src="selo-profies.png" alt="ProFies · desde 2002 · a experiência faz a diferença" onerror="this.parentNode.style.display='none'">
+  </div>
   </div>
   </div>
 
