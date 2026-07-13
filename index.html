@@ -62,29 +62,12 @@
     margin:0 auto;
     padding:0 14px 40px;
   }
+  /* Layout único (sem coluna lateral): o simulador vira bloco herói no
+     topo do fluxo, então o antigo layout de 2 colunas (filtros fixos numa
+     barra lateral + conteúdo à direita) deixou de fazer sentido — a página
+     inteira agora é uma coluna só, só um pouco mais larga no desktop. */
   @media (min-width: 900px){
-    .container{
-      max-width:1360px;
-      display:flex;
-      align-items:flex-start;
-      gap:28px;
-      padding:0 32px 48px;
-    }
-    .filtros-sticky{
-      width:272px;
-      flex-shrink:0;
-      top:24px;
-      padding-top:24px;
-      border-right:1px solid var(--border);
-      padding-right:20px;
-    }
-    .filtros-sticky::after{display:none;}
-    .filters-row{grid-template-columns:1fr !important;}
-    .filters-row select#fMunicipio{grid-column:auto !important;}
-    .limpar-filtros{grid-column:auto !important;}
-    .conteudo-principal{flex:1;min-width:0;padding-top:24px;}
-    #lista{max-width:640px;}
-    .card{margin-bottom:10px;}
+    .container{max-width:720px;padding:0 32px 48px;}
   }
   .destaque-iniciativa{
     display:flex;
@@ -99,20 +82,8 @@
   @media (min-width: 900px){
     .destaque-iniciativa{max-width:1360px;padding:20px 32px 0;}
   }
-  .filtros-sticky{
-    position:sticky;
-    top:0;
-    z-index:5;
-    background:var(--bg);
-    padding-top:14px;
-    margin-bottom:2px;
-  }
-  .filtros-sticky::after{
-    content:"";
-    display:block;
-    height:8px;
-    margin-top:8px;
-    background:linear-gradient(to bottom, var(--bg), rgba(247,248,252,0));
+  .filtros-lista{
+    margin:18px 0 2px;
   }
   .search-wrap{
     position:relative;
@@ -194,6 +165,105 @@
     border-color:var(--azul);
     color:#fff;
   }
+  .sim-hero{
+    background:var(--card);
+    border:2px solid var(--azul);
+    border-radius:14px;
+    padding:16px;
+    margin:14px 0;
+  }
+  .sim-titulo{font-size:16px;font-weight:600;margin:0 0 2px;}
+  .sim-sub{font-size:12.5px;color:var(--texto-sec);margin:0 0 14px;}
+  .sim-nota-wrap{margin-bottom:8px;}
+  .sim-nota-wrap label{display:block;font-size:11px;color:var(--texto-muted);margin-bottom:4px;}
+  .sim-nota-wrap input{
+    width:100%;
+    height:48px;
+    border-radius:var(--radius);
+    border:1px solid var(--border);
+    font-size:22px;
+    font-weight:700;
+    text-align:center;
+    color:var(--azul-escuro);
+    background:var(--card);
+    font-variant-numeric:tabular-nums;
+  }
+  .sim-nota-wrap input:focus{outline:2px solid var(--azul);outline-offset:-1px;}
+  .sim-lembrete{
+    display:flex;
+    align-items:flex-start;
+    gap:6px;
+    font-size:11.5px;
+    color:var(--texto-sec);
+    margin:0 0 10px;
+    line-height:1.45;
+  }
+  .sim-lembrete svg{width:14px;height:14px;flex-shrink:0;margin-top:2px;color:var(--texto-muted);}
+  .elig-warning{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    padding:8px 10px;
+    border-radius:8px;
+    margin:0 0 10px;
+    background:#FBEAE3;
+    color:#A8431F;
+  }
+  .elig-warning svg{width:15px;height:15px;flex-shrink:0;}
+  .sim-hint{
+    font-size:12px;
+    color:var(--texto-sec);
+    margin:10px 0 0;
+    padding-top:10px;
+    border-top:1px solid var(--border);
+  }
+  .cta-banner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:#EEF1FC;
+    border-radius:10px;
+    padding:9px 12px;
+    margin:0 0 10px;
+  }
+  .cta-banner span{font-size:12px;color:var(--azul-escuro);}
+  .cta-btn{
+    font-size:11.5px;
+    padding:6px 12px;
+    border-radius:999px;
+    border:1px solid var(--azul);
+    background:transparent;
+    color:var(--azul);
+    cursor:pointer;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .cta-btn.small{font-size:11px;padding:5px 10px;margin-top:8px;}
+  .cta-btn:disabled{opacity:0.6;cursor:default;}
+  .badge-margem{
+    display:inline-block;
+    font-size:9.5px;
+    font-weight:600;
+    padding:2px 8px;
+    border-radius:6px;
+    margin-top:3px;
+  }
+  .disclaimer-faixa{font-size:10.5px;color:var(--texto-muted);margin:0 0 10px;}
+  .footer-link{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    font-size:11.5px;
+    color:var(--texto-sec);
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:0;
+    margin-top:8px;
+    text-decoration:underline;
+  }
   .kpis{
     display:grid;
     grid-template-columns:repeat(2,1fr);
@@ -216,53 +286,10 @@
   }
   .kpi .num{font-size:20px;font-weight:700;margin:0;color:var(--azul-escuro);font-variant-numeric:tabular-nums;}
   .kpi .label{font-size:10.5px;color:var(--texto-sec);margin:5px 0 0;line-height:1.25;}
-  .kpis-notas{
-    display:flex;
-    align-items:center;
-    gap:18px;
-    margin:0 0 12px;
-    padding:9px 14px;
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-  }
-  .kpi-nota{display:flex;align-items:baseline;gap:6px;}
-  .kpi-nota-label{font-size:11px;color:var(--texto-sec);}
-  .kpi-nota-val{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--texto);}
-  .kpi-nota-ctx{margin-left:auto;font-size:10.5px;color:var(--texto-muted);text-transform:uppercase;letter-spacing:0.03em;}
   .result-count{
     font-size:12.5px;
     color:var(--texto-sec);
     margin:0 0 10px;
-  }
-  .abas{
-    display:flex;
-    gap:4px;
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:3px;
-    margin:14px 0;
-  }
-  .aba-btn{
-    flex:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    min-height:38px;
-    font-size:12.5px;
-    font-weight:500;
-    border:none;
-    border-radius:7px;
-    background:transparent;
-    color:var(--texto-sec);
-    cursor:pointer;
-  }
-  .aba-btn svg{width:15px;height:15px;flex-shrink:0;}
-  .aba-btn.active{
-    background:var(--azul);
-    color:#fff;
   }
   .comp-lista{display:flex;flex-direction:column;gap:8px;}
   .comp-row{
@@ -420,7 +447,41 @@
 
 <div class="container">
 
-  <div class="filtros-sticky">
+  <div class="sim-hero">
+    <h2 class="sim-titulo">Simule sua nota</h2>
+    <p class="sim-sub">Informe sua média do Enem e veja onde você teria chance de aprovação agora.</p>
+    <div class="sim-nota-wrap">
+      <label for="notaAluno">Nota média do Enem</label>
+      <input type="text" id="notaAluno" inputmode="decimal" placeholder="Ex: 650,5" aria-label="Nota média do Enem">
+    </div>
+    <p class="sim-lembrete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 11h1v5h1"/></svg>
+      Lembrete de regra federal (não é calculado aqui): para usar o Fies também é preciso ter tirado acima de zero na redação.
+    </p>
+    <p class="elig-warning" id="eligWarning" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4m0 4h.01"/></svg>
+      <span id="eligWarningTxt"></span>
+    </p>
+    <div class="toggle-group" id="grupoTipo">
+      <button data-tipo="Fies" class="active">Fies</button>
+      <button data-tipo="Social">Fies Social</button>
+    </div>
+    <div class="toggle-group" id="grupoCota">
+      <button data-cota="ampla" class="active">Ampla</button>
+      <button data-cota="ppiq">PPIQ</button>
+      <button data-cota="pcd">PCD</button>
+    </div>
+    <p class="sim-hint" id="simHint">Digite sua nota média do Enem para ver onde você passa.</p>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><p class="num" id="kInst">-</p><p class="label">Instituições</p></div>
+    <div class="kpi"><p class="num" id="kVagasTotal">-</p><p class="label">Total de vagas (Fies + Fies Social)</p></div>
+    <div class="kpi"><p class="num" id="kVagasFies">-</p><p class="label">Vagas Fies</p></div>
+    <div class="kpi"><p class="num" id="kVagasSocial">-</p><p class="label">Vagas Fies Social</p></div>
+  </div>
+
+  <div class="filtros-lista">
     <div class="search-wrap">
       <span class="search-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -437,49 +498,17 @@
         Limpar
       </button>
     </div>
-
-    <div class="toggle-group" id="grupoTipo">
-      <button data-tipo="Fies" class="active">Fies</button>
-      <button data-tipo="Social">Fies Social</button>
-    </div>
-    <div class="toggle-group" id="grupoCota">
-      <button data-cota="ampla" class="active">Ampla</button>
-      <button data-cota="ppiq">PPIQ</button>
-      <button data-cota="pcd">PCD</button>
-    </div>
-  </div>
-
-  <div class="conteudo-principal">
-
-  <div class="kpis">
-    <div class="kpi"><p class="num" id="kInst">-</p><p class="label">Instituições</p></div>
-    <div class="kpi"><p class="num" id="kVagasTotal">-</p><p class="label">Total de vagas (Fies + Fies Social)</p></div>
-    <div class="kpi"><p class="num" id="kVagasFies">-</p><p class="label">Vagas Fies</p></div>
-    <div class="kpi"><p class="num" id="kVagasSocial">-</p><p class="label">Vagas Fies Social</p></div>
-  </div>
-
-  <div class="kpis-notas">
-    <div class="kpi-nota"><span class="kpi-nota-label">Menor nota</span><span class="kpi-nota-val" id="kMin">-</span></div>
-    <div class="kpi-nota"><span class="kpi-nota-label">Maior nota</span><span class="kpi-nota-val" id="kMax">-</span></div>
-    <span class="kpi-nota-ctx" id="kNotaCtx"></span>
-  </div>
-
-  <div class="abas" id="abas">
-    <button class="aba-btn active" data-aba="buscar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      Buscar instituições
-    </button>
-    <button class="aba-btn" data-aba="comparar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M8 17V9m6 8V5m-3 12v-5"/></svg>
-      Comparativos
-    </button>
   </div>
 
   <div id="viewBuscar">
     <p class="result-count" id="contagem"></p>
+    <p class="disclaimer-faixa" id="disclaimerFaixa"></p>
+    <div class="cta-banner" id="ctaBanner" style="display:none;">
+      <span>Quer o passo a passo da inscrição pronto?</span>
+      <button class="cta-btn" id="ctaBtnBanner">Receber no WhatsApp</button>
+    </div>
     <div id="lista"></div>
   </div>
-
 
   <div id="viewComparar" style="display:none;">
     <div class="toggle-group" id="grupoComparar">
@@ -491,14 +520,25 @@
     <div id="comparativos"></div>
   </div>
 
-  </div>
 </div>
 
-<footer id="rodape">Carregando...</footer>
+<footer>
+  <div id="rodape">Carregando...</div>
+  <button class="footer-link" id="linkComparativos">Comparativos</button>
+</footer>
 
 <script>
 let DADOS = [];
-let ESTADO = { edicao: null, uf: "", municipio: "", tipo: "Fies", cota: "ampla", busca: "" };
+let ESTADO = { edicao: null, uf: "", municipio: "", tipo: "Fies", cota: "ampla", busca: "", notaAluno: null };
+
+// Limiar da "faixa de disputa": pontos abaixo do corte que ainda contam
+// como disputa acirrada (não é reprovação clara nem regra oficial do
+// Fies). Constante única para facilitar recalibração.
+// Referência (medida em 2026-07 sobre o data.json real, comparando a
+// mesma IES+local+modalidade entre edições Regular consecutivas —
+// 2025.1→2025.2→2026.1, 1.508 comparações): variação mediana ≈ 17
+// pontos, p25 ≈ 7, p75 ≈ 31. -15 fica perto da mediana observada.
+const LIMIAR_FAIXA_DISPUTA = -15;
 let ABA_ATIVA = "buscar";
 let AGRUPAR_POR = "uf";
 
@@ -605,9 +645,7 @@ function filtrarBaseKPI(){
   });
 }
 
-function renderKPIs(lista){
-  const chave = modKey();
-
+function renderKPIs(){
   // KPIs oficiais (nível edição/geografia, iguais ao Power BI)
   const base = filtrarBaseKPI();
   const instUnicas = new Set(base.map(d => d.ies)).size;   // contagem de nomes únicos
@@ -617,20 +655,6 @@ function renderKPIs(lista){
   document.getElementById("kVagasTotal").textContent = fmtInt(somaFies + somaSocial);
   document.getElementById("kVagasFies").textContent = fmtInt(somaFies);
   document.getElementById("kVagasSocial").textContent = fmtInt(somaSocial);
-
-  // Menor/Maior nota — dependem da cota/tipo selecionados
-  const notas = lista.map(d => d.mod[chave].n).filter(n => n !== null && n !== undefined);
-  if (notas.length){
-    document.getElementById("kMin").textContent = fmtNota(Math.min(...notas));
-    document.getElementById("kMax").textContent = fmtNota(Math.max(...notas));
-  } else {
-    document.getElementById("kMin").textContent = "-";
-    document.getElementById("kMax").textContent = "-";
-  }
-  const rotuloCota = { ampla: "Ampla", ppiq: "PPIQ", pcd: "PCD" }[ESTADO.cota] || "";
-  const rotuloTipo = ESTADO.tipo === "Fies" ? "Fies" : "Fies Social";
-  const ctx = document.getElementById("kNotaCtx");
-  if (ctx) ctx.textContent = notas.length ? `${rotuloCota} · ${rotuloTipo}` : "";
 }
 
 function corNota(valor, min, max){
@@ -639,6 +663,37 @@ function corNota(valor, min, max){
   if (t < 0.33) return "#2E7D32";
   if (t < 0.66) return "#B8860B";
   return "#B23A1F";
+}
+
+// Estado do simulador (margem = nota do aluno − nota de corte da modalidade).
+function estadoMargem(margem){
+  if (margem >= 0) return { texto: "Você passaria", cor: "#2E7D32", bg: "#E9F7E1" };
+  if (margem >= LIMIAR_FAIXA_DISPUTA) return { texto: "Faixa de disputa", cor: "#8A6110", bg: "#FEF3D9" };
+  return { texto: "Abaixo do corte", cor: "#A8431F", bg: "#FBEAE3" };
+}
+
+function atualizarSimuladorUI(){
+  const notaAluno = ESTADO.notaAluno;
+  const eligEl = document.getElementById("eligWarning");
+  const hintEl = document.getElementById("simHint");
+  const ctaBanner = document.getElementById("ctaBanner");
+  const disclaimer = document.getElementById("disclaimerFaixa");
+  if (notaAluno === null){
+    eligEl.style.display = "none";
+    hintEl.textContent = "Digite sua nota média do Enem para ver onde você passa.";
+    ctaBanner.style.display = "none";
+    disclaimer.textContent = "";
+    return;
+  }
+  if (notaAluno < 450){
+    eligEl.style.display = "flex";
+    document.getElementById("eligWarningTxt").textContent = "Média abaixo de 450: essa é a média mínima federal para participar do Fies. Isso é diferente da nota de corte de cada instituição, mostrada abaixo.";
+  } else {
+    eligEl.style.display = "none";
+  }
+  hintEl.textContent = "Ranking ordenado pela sua margem — role a lista abaixo.";
+  ctaBanner.style.display = "flex";
+  disclaimer.textContent = "\"Faixa de disputa\" é uma aproximação com base na variação histórica dos cortes entre edições — não é uma regra oficial do Fies.";
 }
 
 const NOMES_MOD = {
@@ -663,19 +718,21 @@ function detalheModalidades(item){
         </div>`;
       }).join("")}
     </div>
-  `).join("") + `</div>`;
+  `).join("") + `</div>
+  <button class="cta-btn small" type="button">Receber passo a passo desta inscrição</button>`;
 }
 
 function renderLista(lista){
   const el = document.getElementById("lista");
   const chave = modKey();
+  const notaAluno = ESTADO.notaAluno;
   const contagemPorEstado = { comNota: 0, semDetalhamento: 0, zeroVaga: 0 };
   lista.forEach(d => contagemPorEstado[classificarLinha(d, chave)]++);
   let sufixo = "";
   if (contagemPorEstado.semDetalhamento) sufixo += `, ${contagemPorEstado.semDetalhamento} sem nota detalhada nesta edição`;
   if (contagemPorEstado.zeroVaga) sufixo += `, ${contagemPorEstado.zeroVaga} sem vagas nesta edição`;
   document.getElementById("contagem").textContent = lista.length
-    ? `${lista.length} instituição${lista.length>1?'ões':''}${sufixo}`
+    ? `${lista.length} instituição${lista.length>1?'ões':''}${sufixo}${notaAluno ? " — ordenadas pela sua margem" : ""}`
     : "";
 
   if (!lista.length){
@@ -690,14 +747,26 @@ function renderLista(lista){
   const min = notas.length ? Math.min(...notas) : 0;
   const max = notas.length ? Math.max(...notas) : 0;
 
+  // filtrarDados() já ordena quem tem nota por corte crescente. Como
+  // margem = notaAluno − corte, corte crescente é o MESMO que margem
+  // decrescente (notaAluno é constante) — então a ordem por margem já
+  // sai pronta de filtrarDados, sem precisar reordenar aqui de novo.
   el.innerHTML = lista.map((item, idx) => {
     const m = item.mod[chave];
     const estado = classificarLinha(item, chave);
     const cor = estado === "comNota" ? corNota(m.n, min, max) : null;
     const badge = badgeCor(item.conceito);
+    let scoreLabel = "nota de corte";
     let scoreHtml, footVaga;
     if (estado === "comNota"){
-      scoreHtml = `<p class="score-value" style="color:${cor}">${fmtNota(m.n)}</p>`;
+      if (notaAluno){
+        const margem = notaAluno - m.n;
+        const em = estadoMargem(margem);
+        scoreLabel = "margem";
+        scoreHtml = `<p class="score-value" style="color:${em.cor}">${margem>=0?'+':''}${margem.toFixed(2).replace('.',',')}</p><span class="badge-margem" style="background:${em.bg};color:${em.cor}">${em.texto}</span>`;
+      } else {
+        scoreHtml = `<p class="score-value" style="color:${cor}">${fmtNota(m.n)}</p>`;
+      }
       footVaga = `${fmtInt(m.v)} vaga${m.v>1?'s':''}`;
     } else if (estado === "semDetalhamento"){
       const agregado = vagaAgregada(item);
@@ -717,7 +786,7 @@ function renderLista(lista){
           <p class="card-sub">${item.mun}, ${siglaUf(item.uf)} · ${item.local || ''}</p>
         </div>
         <div class="score-box">
-          <p class="score-label">nota de corte</p>
+          <p class="score-label">${scoreLabel}</p>
           ${scoreHtml}
         </div>
       </div>
@@ -805,7 +874,8 @@ function renderComparativos(lista){
 
 function atualizarTudo(){
   const lista = filtrarDados();
-  renderKPIs(lista);
+  renderKPIs();
+  atualizarSimuladorUI();
   if (ABA_ATIVA === "buscar"){
     renderLista(lista);
   } else {
@@ -860,15 +930,33 @@ function initEventos(){
     atualizarTudo();
   });
 
-  document.querySelectorAll(".aba-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".aba-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      ABA_ATIVA = btn.dataset.aba;
-      document.getElementById("viewBuscar").style.display = ABA_ATIVA === "buscar" ? "" : "none";
-      document.getElementById("viewComparar").style.display = ABA_ATIVA === "comparar" ? "" : "none";
-      atualizarTudo();
-    });
+  // "Comparativos" deixou de ser aba concorrente com a lista principal e
+  // virou um link discreto no rodapé, que alterna a mesma view existente.
+  document.getElementById("linkComparativos").addEventListener("click", () => {
+    ABA_ATIVA = ABA_ATIVA === "buscar" ? "comparar" : "buscar";
+    document.getElementById("viewBuscar").style.display = ABA_ATIVA === "buscar" ? "" : "none";
+    document.getElementById("viewComparar").style.display = ABA_ATIVA === "comparar" ? "" : "none";
+    document.getElementById("linkComparativos").textContent = ABA_ATIVA === "buscar" ? "Comparativos" : "Voltar para a lista";
+    atualizarTudo();
+  });
+
+  // Simulador: campo único de nota do aluno.
+  document.getElementById("notaAluno").addEventListener("input", e => {
+    const v = parseFloat(String(e.target.value).replace(",", "."));
+    ESTADO.notaAluno = (v && v > 0) ? v : null;
+    atualizarTudo();
+  });
+
+  // CTAs de WhatsApp: inertes de propósito, nenhum dado é coletado ou
+  // enviado — só um placeholder visual até o destino do lead e o
+  // consentimento LGPD serem definidos numa etapa seguinte.
+  document.getElementById("ctaBtnBanner").addEventListener("click", () => {
+    const b = document.getElementById("ctaBtnBanner");
+    b.textContent = "Em breve"; b.disabled = true;
+  });
+  document.getElementById("lista").addEventListener("click", e => {
+    const btn = e.target.closest(".cta-btn.small");
+    if (btn){ btn.textContent = "Em breve"; btn.disabled = true; }
   });
 }
 
