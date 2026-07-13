@@ -890,11 +890,21 @@ function ctaSuporte(){
   </div>`;
 }
 
+// Tradução da coluna "vest" (Sim/Não da planilha) pro que importa ao
+// cliente. Usada tanto nos cards remanescentes quanto nos regulares.
+function textoVestibular(item){
+  const vest = normalizarVest(item.vest);
+  if (vest === "Sim") return "Aberta a calouros e veteranos";
+  if (vest === "Não") return "Somente veteranos (já matriculados)";
+  return null;
+}
+
 function detalheModalidades(item, resultado){
   const grupos = [
     { titulo: "Fies", chaves: ["amplaFies","ppiqFies","pcdFies"], bg: "#E4F1EC" },
     { titulo: "Fies Social", chaves: ["amplaSocial","ppiqSocial","pcdSocial"], bg: "#E6F1FB" }
   ];
+  const vestTexto = textoVestibular(item);
   return `<p class="detail-heading">Notas de corte por modalidade</p><div class="detail-grid">` + grupos.map(g => `
     <div>
       <p class="detail-group-title">${g.titulo}</p>
@@ -908,6 +918,7 @@ function detalheModalidades(item, resultado){
       }).join("")}
     </div>
   `).join("") + `</div>
+  ${vestTexto ? `<p class="detail-vest">${vestTexto}</p>` : ''}
   ${resultado || ""}
   ${ctaSuporte()}`;
 }
@@ -917,8 +928,7 @@ function detalheModalidades(item, resultado){
 // explícito de nota não divulgada, e vestibular (quando a planilha informa).
 function detalheRemanescente(item){
   const vagas = vagaAgregada(item) || 0;
-  const vest = normalizarVest(item.vest);
-  const vestTexto = vest === "Sim" ? "Aberta a calouros e veteranos" : vest === "Não" ? "Somente veteranos (já matriculados)" : null;
+  const vestTexto = textoVestibular(item);
   return `
   <p class="detail-vagas">${fmtInt(vagas)} vaga${vagas === 1 ? '' : 's'}</p>
   <p class="detail-nota-nd">Nota: não divulgada pelo MEC</p>
@@ -966,7 +976,7 @@ function renderLista(lista){
     <div class="card" style="border-top:3px solid ${ESTADO.tipo === 'Fies' ? 'var(--verde-fies)' : 'var(--azul-social)'}" data-idx="${idx}">
       <div class="card-top">
         <div style="min-width:0;">
-          ${remanescente ? `<span class="badge selo-edicao">${item.ed.replace(" - ", " · ")}</span>` : ''}
+          <span class="badge selo-edicao">${item.ed.replace(" - ", " · ")}</span>
           <p class="card-name">${item.ies}</p>
           <p class="card-sub">${item.mun}, ${siglaUf(item.uf)} · ${item.local || ''}</p>
           ${item.conceito ? `<p class="card-conceito">Conceito ${item.conceito}</p>` : ''}
