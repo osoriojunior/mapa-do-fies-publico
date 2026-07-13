@@ -187,7 +187,7 @@
   .limpar-filtros:disabled{color:var(--texto-muted);cursor:default;opacity:.6;}
   .limpar-filtros svg{width:14px;height:14px;}
   .filtros-auto-msg{font-size:11.5px;color:var(--texto-sec);margin:8px 0 0;}
-  .compartilhar-wrap{display:flex;justify-content:flex-end;margin:0 0 10px;}
+  .compartilhar-wrap{position:relative;display:flex;justify-content:flex-end;margin:0 0 10px;}
   .btn-compartilhar{
     height:32px;
     display:inline-flex;
@@ -205,6 +205,34 @@
   .btn-compartilhar:hover{background:var(--bg);}
   .btn-compartilhar svg{width:14px;height:14px;flex-shrink:0;}
   .btn-compartilhar.copiado{color:var(--verde-fies);border-color:var(--verde-fies);}
+  .compartilhar-menu{
+    position:absolute;
+    top:calc(100% + 6px);
+    right:0;
+    z-index:20;
+    min-width:180px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:0 8px 24px rgba(7,9,20,0.12);
+    padding:6px;
+  }
+  .compartilhar-item{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:13px;
+    color:var(--texto);
+    background:none;
+    border:none;
+    border-radius:7px;
+    padding:8px 10px;
+    cursor:pointer;
+    text-align:left;
+  }
+  .compartilhar-item:hover{background:var(--bg);}
+  .compartilhar-item svg{flex-shrink:0;color:var(--texto-sec);}
   .filtros-aviso{display:flex;align-items:flex-start;gap:7px;margin:14px 0 24px;color:#4B4B55;}
   .filtros-aviso svg{width:14px;height:14px;flex-shrink:0;margin-top:2px;color:var(--texto-muted);}
   .filtros-aviso-txt p{font-size:11px;font-weight:400;margin:0;line-height:1.5;}
@@ -657,10 +685,32 @@
   </div>
 
   <div class="compartilhar-wrap">
-    <button type="button" class="btn-compartilhar" id="btnCompartilhar" aria-label="Compartilhar o Mapa do Fies">
+    <button type="button" class="btn-compartilhar" id="btnCompartilhar" aria-label="Compartilhar o Mapa do Fies" aria-haspopup="true" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
       <span id="btnCompartilharTxt">Compartilhar</span>
     </button>
+    <div class="compartilhar-menu" id="compartilharMenu" role="menu" hidden>
+      <button type="button" class="compartilhar-item" role="menuitem" data-canal="whatsapp">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.359.101 11.943c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a11.93 11.93 0 005.71 1.454h.006c6.585 0 11.946-5.359 11.949-11.945a11.86 11.86 0 00-3.48-8.418z"/></svg>
+        WhatsApp
+      </button>
+      <button type="button" class="compartilhar-item" role="menuitem" data-canal="telegram">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Telegram
+      </button>
+      <button type="button" class="compartilhar-item" role="menuitem" data-canal="instagram">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
+        Instagram
+      </button>
+      <button type="button" class="compartilhar-item" role="menuitem" data-canal="email">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>
+        E-mail
+      </button>
+      <button type="button" class="compartilhar-item" role="menuitem" data-canal="copiar">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17H7a5 5 0 010-10h2M15 7h2a5 5 0 010 10h-2M8 12h8"/></svg>
+        Copiar link
+      </button>
+    </div>
   </div>
 
   <div id="viewBuscar">
@@ -1094,24 +1144,19 @@ function mensagemCompartilhamento(){
   return edicaoTxt ? `Estou vendo as vagas de ${edicaoTxt}.\n${base}` : base;
 }
 
-async function compartilhar(){
-  const texto = mensagemCompartilhamento();
-  if (navigator.share){
-    try { await navigator.share({ text: texto }); }
-    catch(e){ /* usuário cancelou o share nativo — sem feedback de erro */ }
-    return;
-  }
-  const btn = document.getElementById("btnCompartilhar");
-  const txtEl = document.getElementById("btnCompartilharTxt");
-  const original = txtEl.textContent;
-  const marcarCopiado = () => {
-    txtEl.textContent = "Link copiado!";
-    btn.classList.add("copiado");
-    setTimeout(() => { txtEl.textContent = original; btn.classList.remove("copiado"); }, 2000);
-  };
+// Share sheet nativo só é confiável em Android/iOS (lista os apps de
+// mensagem instalados). No Windows/Mac/Linux o navigator.share até existe,
+// mas a folha do sistema operacional só mostra apps Microsoft (Teams,
+// Copilot, Outlook) — sem WhatsApp. Por isso: desktop SEMPRE usa o menu
+// próprio abaixo, independente de o navegador suportar share() ou não.
+function ehMobile(){
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+async function copiarTexto(texto){
   try {
     await navigator.clipboard.writeText(texto);
-    marcarCopiado();
+    return true;
   } catch(e){
     // Fallback pra navegador sem Clipboard API: textarea temporário + execCommand.
     const ta = document.createElement("textarea");
@@ -1120,9 +1165,78 @@ async function compartilhar(){
     ta.style.opacity = "0";
     document.body.appendChild(ta);
     ta.select();
-    try { document.execCommand("copy"); marcarCopiado(); } catch(e2){ /* nada a fazer */ }
+    let ok = false;
+    try { document.execCommand("copy"); ok = true; } catch(e2){ /* nada a fazer */ }
     document.body.removeChild(ta);
+    return ok;
   }
+}
+
+// Feedback textual no próprio botão (reaproveitado pro "Link copiado!" e
+// pro aviso do Instagram, que não tem share de texto direto).
+function marcarBotaoCompartilhar(mensagem){
+  const btn = document.getElementById("btnCompartilhar");
+  const txtEl = document.getElementById("btnCompartilharTxt");
+  const original = txtEl.textContent;
+  txtEl.textContent = mensagem;
+  btn.classList.add("copiado");
+  setTimeout(() => { txtEl.textContent = original; btn.classList.remove("copiado"); }, 2500);
+}
+
+function fecharMenuCompartilharForaClick(e){
+  const wrap = document.querySelector(".compartilhar-wrap");
+  if (!wrap.contains(e.target)) fecharMenuCompartilhar();
+}
+function fecharMenuCompartilharEsc(e){
+  if (e.key === "Escape") fecharMenuCompartilhar();
+}
+function fecharMenuCompartilhar(){
+  document.getElementById("compartilharMenu").hidden = true;
+  document.getElementById("btnCompartilhar").setAttribute("aria-expanded", "false");
+  document.removeEventListener("click", fecharMenuCompartilharForaClick);
+  document.removeEventListener("keydown", fecharMenuCompartilharEsc);
+}
+function abrirMenuCompartilhar(){
+  document.getElementById("compartilharMenu").hidden = false;
+  document.getElementById("btnCompartilhar").setAttribute("aria-expanded", "true");
+  // Listener de "clique fora" só entra no próximo tick, senão o mesmo
+  // clique que abriu o menu já dispararia o fechamento.
+  setTimeout(() => {
+    document.addEventListener("click", fecharMenuCompartilharForaClick);
+    document.addEventListener("keydown", fecharMenuCompartilharEsc);
+  }, 0);
+}
+
+async function executarCanalCompartilhar(canal){
+  const texto = mensagemCompartilhamento();
+  const url = "https://mapa.fies.com.br";
+  if (canal === "whatsapp"){
+    window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, "_blank");
+  } else if (canal === "telegram"){
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(texto)}`, "_blank");
+  } else if (canal === "instagram"){
+    // Instagram não tem endpoint de compartilhamento de texto direto —
+    // copia a mensagem e abre o site, pro usuário colar no Direct.
+    await copiarTexto(texto);
+    window.open("https://instagram.com", "_blank");
+    marcarBotaoCompartilhar("Mensagem copiada: cole no Direct");
+  } else if (canal === "email"){
+    window.location.href = `mailto:?subject=${encodeURIComponent("Mapa do Fies")}&body=${encodeURIComponent(texto)}`;
+  } else if (canal === "copiar"){
+    const ok = await copiarTexto(texto);
+    if (ok) marcarBotaoCompartilhar("Link copiado!");
+  }
+  fecharMenuCompartilhar();
+}
+
+async function compartilhar(){
+  if (ehMobile() && navigator.share){
+    try { await navigator.share({ text: mensagemCompartilhamento() }); }
+    catch(e){ /* usuário cancelou o share nativo — sem feedback de erro */ }
+    return;
+  }
+  const menu = document.getElementById("compartilharMenu");
+  if (menu.hidden) abrirMenuCompartilhar(); else fecharMenuCompartilhar();
 }
 
 function atualizarTudo(){
@@ -1142,7 +1256,10 @@ function initEventos(){
   document.getElementById("fEstado").addEventListener("change", e => { ESTADO.uf = e.target.value; popularMunicipios(); atualizarTudo(); });
   document.getElementById("fMunicipio").addEventListener("change", e => { ESTADO.municipio = e.target.value; atualizarTudo(); });
   document.getElementById("busca").addEventListener("input", e => { ESTADO.busca = e.target.value; atualizarTudo(); });
-  document.getElementById("btnCompartilhar").addEventListener("click", compartilhar);
+  document.getElementById("btnCompartilhar").addEventListener("click", (e) => { e.stopPropagation(); compartilhar(); });
+  document.querySelectorAll(".compartilhar-item").forEach(btn => {
+    btn.addEventListener("click", () => executarCanalCompartilhar(btn.dataset.canal));
+  });
 
   document.querySelectorAll("#grupoTipo button").forEach(btn => {
     btn.addEventListener("click", () => {
