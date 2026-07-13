@@ -804,10 +804,7 @@ function renderLista(lista){
           <p class="card-sub">${item.mun}, ${siglaUf(item.uf)} · ${item.local || ''}</p>
           ${item.conceito ? `<p class="card-conceito">Conceito ${item.conceito}</p>` : ''}
         </div>
-        <div class="score-box">
-          <p class="score-label">${scoreLabel}</p>
-          ${scoreHtml}
-        </div>
+        ${notaAluno ? `<div class="score-box"><p class="score-label">${scoreLabel}</p>${scoreHtml}</div>` : ''}
       </div>
       <div class="card-foot">
         <span>${footVaga}</span>
