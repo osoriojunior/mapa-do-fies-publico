@@ -620,9 +620,8 @@
   <div class="filtros-aviso">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 11h1v5h1"/></svg>
     <div class="filtros-aviso-txt">
-      <p>Os resultados serão atualizados conforme os filtros selecionados.</p>
+      <p>Os resultados são atualizados conforme os filtros selecionados.</p>
       <p>As notas de corte têm caráter informativo e refletem o último levantamento realizado pela ProFies para a edição selecionada. Os valores podem ter sofrido alterações após esse levantamento e não garantem a pré-seleção.</p>
-      <p class="levantamento-info" id="levantamento"></p>
     </div>
   </div>
 
@@ -1008,8 +1007,6 @@ function atualizarTudo(){
   if (hero){ hero.classList.toggle("tipo-fies", ESTADO.tipo === "Fies"); hero.classList.toggle("tipo-social", ESTADO.tipo !== "Fies"); }
   const btnLimpar = document.getElementById("btnLimpar");
   if (btnLimpar) btnLimpar.disabled = !(ESTADO.busca || ESTADO.uf || ESTADO.municipio);
-  const lev = document.getElementById("levantamento");
-  if (lev){ const t = ultimoLevantamento(); lev.textContent = t ? `Último levantamento da ProFies: ${t}.` : "Data do último levantamento indisponível."; }
   renderKPIs();
   atualizarSimuladorUI();
   renderLista(lista);
