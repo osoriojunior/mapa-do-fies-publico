@@ -93,60 +93,62 @@
   .filtros-lista{
     margin:18px 0 2px;
   }
+  .campo{margin:0 0 12px;}
+  .campos-2col .campo{margin:0;}
+  .filtro-label{display:block;font-size:12px;font-weight:600;color:var(--texto-sec);margin:0 0 5px;}
   .search-wrap{
     position:relative;
-    margin:0 0 10px;
   }
   .search-wrap input{
     width:100%;
-    height:40px;
+    height:42px;
     padding:0 12px 0 38px;
     border-radius:var(--radius);
-    border:1px solid var(--azul);
+    border:1px solid var(--border);
     font-size:14px;
-    background:#F7F2BE;
+    background:var(--card);
+    color:var(--texto);
   }
-  .search-wrap input::placeholder{color:#8A8455;}
-  .search-wrap input:focus{outline:2px solid var(--azul);outline-offset:-1px;}
+  .search-wrap input::placeholder{color:var(--texto-muted);}
+  .search-wrap input:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 2px rgba(66,86,200,.18);}
   .search-icon{
     position:absolute;left:12px;top:50%;transform:translateY(-50%);
     color:var(--texto-muted);
     display:flex;
   }
-  .filters-row{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-    margin-bottom:10px;
-  }
-  .filters-row select{
+  .filtros-lista select{
     width:100%;
-    height:40px;
+    height:42px;
     font-size:13px;
     padding:0 10px;
     border-radius:var(--radius);
-    border:1px solid var(--azul);
-    background:#F7F2BE;
+    border:1px solid var(--border);
+    background:var(--card);
     color:var(--texto);
   }
-  .filters-row select#fEdicao{
-    grid-column:1 / -1;
+  .filtros-lista select:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 2px rgba(66,86,200,.18);}
+  .filtros-lista select:disabled{background:var(--bg);color:var(--texto-muted);cursor:not-allowed;}
+  .campos-2col{display:grid;grid-template-columns:1fr;gap:12px;margin:0 0 6px;}
+  @media (min-width: 480px){
+    .campos-2col{grid-template-columns:1fr 1fr;}
   }
+  .filtros-acoes{display:flex;justify-content:flex-end;margin:2px 0 0;}
   .limpar-filtros{
-    grid-column:1 / -1;
-    height:34px;
-    display:flex;
+    height:32px;
+    display:inline-flex;
     align-items:center;
-    justify-content:center;
-    gap:4px;
+    gap:5px;
     font-size:12.5px;
     color:var(--texto-sec);
     background:none;
     border:none;
     cursor:pointer;
-    padding:0;
+    padding:0 2px;
   }
+  .limpar-filtros:hover{color:var(--texto);}
+  .limpar-filtros:disabled{color:var(--texto-muted);cursor:default;opacity:.6;}
   .limpar-filtros svg{width:14px;height:14px;}
+  .filtros-auto-msg{font-size:11.5px;color:var(--texto-muted);margin:8px 0 0;}
   .toggle-group{
     display:flex;
     gap:6px;
@@ -510,27 +512,45 @@
 
   <div class="secao-divisor"></div>
 
-  <p class="secao-eyebrow">Pesquisa de instituições</p>
-  <h2 class="secao-titulo">Pesquisar instituições</h2>
-  <p class="secao-sub">Busque por cidade, instituição, edição, estado ou município.</p>
+  <p class="secao-eyebrow">Encontre uma instituição</p>
+  <h2 class="secao-titulo">Pesquise por cidade ou instituição</h2>
+  <p class="secao-sub">Consulte as instituições participantes e refine sua busca por edição, estado e município.</p>
 
   <div class="filtros-lista">
-    <div class="search-wrap">
-      <span class="search-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      </span>
-      <input type="text" id="busca" placeholder="Cidade ou instituição" aria-label="Buscar por cidade ou instituição">
+    <div class="campo">
+      <label class="filtro-label" for="busca">Buscar instituição</label>
+      <div class="search-wrap">
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </span>
+        <input type="text" id="busca" placeholder="Digite o nome da cidade ou da instituição" aria-label="Buscar instituição">
+      </div>
     </div>
 
-    <div class="filters-row">
-      <select id="fEdicao" aria-label="Edição"></select>
-      <select id="fEstado" aria-label="Estado"><option value="">Estado: todos</option></select>
-      <select id="fMunicipio" aria-label="Município"><option value="">Município: todos</option></select>
-      <button class="limpar-filtros" id="btnLimpar" aria-label="Limpar filtros">
+    <div class="campo">
+      <label class="filtro-label" for="fEdicao">Edição do processo seletivo</label>
+      <select id="fEdicao" aria-label="Edição do processo seletivo"></select>
+    </div>
+
+    <div class="campos-2col">
+      <div class="campo">
+        <label class="filtro-label" for="fEstado">Estado</label>
+        <select id="fEstado" aria-label="Estado"><option value="">Todos os estados</option></select>
+      </div>
+      <div class="campo">
+        <label class="filtro-label" for="fMunicipio">Município</label>
+        <select id="fMunicipio" aria-label="Município" disabled><option value="">Todos os municípios</option></select>
+      </div>
+    </div>
+
+    <div class="filtros-acoes">
+      <button class="limpar-filtros" id="btnLimpar" aria-label="Limpar filtros" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0l-1 14a1 1 0 01-1 1H7a1 1 0 01-1-1L5 6"/></svg>
-        Limpar
+        Limpar filtros
       </button>
     </div>
+
+    <p class="filtros-auto-msg">Os resultados serão atualizados conforme os filtros selecionados.</p>
   </div>
 
   <div id="viewBuscar">
@@ -604,7 +624,7 @@ function ordenarEdicoes(lista){
 function popularFiltros(){
   const edicoes = ordenarEdicoes([...new Set(DADOS.map(d => d.ed))]);
   const selEd = document.getElementById("fEdicao");
-  selEd.innerHTML = edicoes.map(e => `<option value="${e}">${e}</option>`).join("");
+  selEd.innerHTML = edicoes.map(e => `<option value="${e}">${e.replace(" - ", " — ")}</option>`).join("");
   ESTADO.edicao = edicoes[0];
 
   const estados = [...new Set(DADOS.map(d => d.uf))].sort((a,b)=>a.localeCompare(b,"pt"));
@@ -620,8 +640,9 @@ function popularMunicipios(){
   const selMun = document.getElementById("fMunicipio");
   const base = ESTADO.uf ? DADOS.filter(d => d.uf === ESTADO.uf) : DADOS;
   const municipios = [...new Set(base.map(d => d.mun))].sort((a,b)=>a.localeCompare(b,"pt"));
-  selMun.innerHTML = `<option value="">Município: todos</option>` + municipios.map(m => `<option value="${m}">${m}</option>`).join("");
+  selMun.innerHTML = `<option value="">Todos os municípios</option>` + municipios.map(m => `<option value="${m}">${m}</option>`).join("");
   ESTADO.municipio = "";
+  selMun.disabled = !ESTADO.uf;   // só habilita com um estado selecionado
 }
 
 function vagaAgregada(d){
@@ -887,6 +908,8 @@ function atualizarTudo(){
   // Modalidade de concorrência e cards seguem a cor da modalidade do programa.
   const hero = document.querySelector(".sim-hero");
   if (hero){ hero.classList.toggle("tipo-fies", ESTADO.tipo === "Fies"); hero.classList.toggle("tipo-social", ESTADO.tipo !== "Fies"); }
+  const btnLimpar = document.getElementById("btnLimpar");
+  if (btnLimpar) btnLimpar.disabled = !(ESTADO.busca || ESTADO.uf || ESTADO.municipio);
   renderKPIs();
   atualizarSimuladorUI();
   renderLista(lista);
@@ -921,12 +944,6 @@ function initEventos(){
     ESTADO.busca = "";
     ESTADO.uf = "";
     popularMunicipios();
-    document.querySelectorAll("#grupoTipo button").forEach(b => b.classList.remove("active"));
-    document.querySelector('#grupoTipo button[data-tipo="Fies"]').classList.add("active");
-    ESTADO.tipo = "Fies";
-    document.querySelectorAll("#grupoCota button").forEach(b => b.classList.remove("active"));
-    document.querySelector('#grupoCota button[data-cota="ampla"]').classList.add("active");
-    ESTADO.cota = "ampla";
     atualizarTudo();
   });
 
