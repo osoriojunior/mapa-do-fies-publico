@@ -21,7 +21,9 @@
     --texto-sec:#6A6D80;
     --texto-muted:#9EA1B3;
     --verde-fies:#2E7D64;
+    --verde-fies-claro:#86C6AF;
     --azul-social:#2E86D6;
+    --azul-social-claro:#93C6EC;
     --radius:10px;
   }
   *{box-sizing:border-box;}
@@ -96,10 +98,11 @@
     height:40px;
     padding:0 12px 0 38px;
     border-radius:var(--radius);
-    border:1px solid var(--border);
+    border:1px solid #E6DE8F;
     font-size:14px;
-    background:var(--card);
+    background:#F7F2BE;
   }
+  .search-wrap input::placeholder{color:#8A8455;}
   .search-wrap input:focus{outline:2px solid var(--azul);outline-offset:-1px;}
   .search-icon{
     position:absolute;left:12px;top:50%;transform:translateY(-50%);
@@ -168,8 +171,8 @@
   }
   #grupoTipo button[data-tipo="Fies"].active{background:var(--verde-fies);border-color:var(--verde-fies);}
   #grupoTipo button[data-tipo="Social"].active{background:var(--azul-social);border-color:var(--azul-social);}
-  .sim-hero.tipo-fies #grupoCota button.active{background:var(--verde-fies);border-color:var(--verde-fies);}
-  .sim-hero.tipo-social #grupoCota button.active{background:var(--azul-social);border-color:var(--azul-social);}
+  .sim-hero.tipo-fies #grupoCota button.active{background:var(--verde-fies-claro);border-color:var(--verde-fies-claro);color:#124534;}
+  .sim-hero.tipo-social #grupoCota button.active{background:var(--azul-social-claro);border-color:var(--azul-social-claro);color:#0F4A80;}
   #grupoTipo button{font-size:15px;font-weight:600;}
   .sim-hero{
     background:var(--card);
@@ -472,13 +475,6 @@
   </div>
 </div>
 
-  <div class="destaque-iniciativa">
-    <div class="destaque-texto">
-      <p class="destaque-eyebrow">iniciativa ProFies</p>
-      <p class="destaque-titulo">Uma ferramenta gratuita para quem sonha em cursar Medicina</p>
-      <p class="destaque-corpo">A ProFies criou e mantém este mapa sem nenhum custo para o estudante, sem cadastro e sem anúncios.</p>
-    </div>
-  </div>
 
 <div class="container">
 
