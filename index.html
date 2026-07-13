@@ -187,6 +187,24 @@
   .limpar-filtros:disabled{color:var(--texto-muted);cursor:default;opacity:.6;}
   .limpar-filtros svg{width:14px;height:14px;}
   .filtros-auto-msg{font-size:11.5px;color:var(--texto-sec);margin:8px 0 0;}
+  .compartilhar-wrap{display:flex;justify-content:flex-end;margin:0 0 10px;}
+  .btn-compartilhar{
+    height:32px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--azul);
+    background:none;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:0 12px;
+    cursor:pointer;
+  }
+  .btn-compartilhar:hover{background:var(--bg);}
+  .btn-compartilhar svg{width:14px;height:14px;flex-shrink:0;}
+  .btn-compartilhar.copiado{color:var(--verde-fies);border-color:var(--verde-fies);}
   .filtros-aviso{display:flex;align-items:flex-start;gap:7px;margin:14px 0 24px;color:#4B4B55;}
   .filtros-aviso svg{width:14px;height:14px;flex-shrink:0;margin-top:2px;color:var(--texto-muted);}
   .filtros-aviso-txt p{font-size:11px;font-weight:400;margin:0;line-height:1.5;}
@@ -638,6 +656,13 @@
     </div>
   </div>
 
+  <div class="compartilhar-wrap">
+    <button type="button" class="btn-compartilhar" id="btnCompartilhar" aria-label="Compartilhar o Mapa do Fies">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      <span id="btnCompartilharTxt">Compartilhar</span>
+    </button>
+  </div>
+
   <div id="viewBuscar">
     <div class="cta-banner" id="ctaBanner" style="display:none;">
       <div class="cta-texto">
@@ -1061,6 +1086,45 @@ function renderComparativos(lista){
   }).join("") + `</div>`;
 }
 
+// Mensagem fixa + edição em exibição (quando houver), sem estado de filtros
+// (busca/UF/município não entram — é só um convite genérico ao Mapa).
+function mensagemCompartilhamento(){
+  const base = "Consulte as vagas de Medicina pelo Fies no Mapa do Fies: https://mapa.fies.com.br";
+  const edicaoTxt = ESTADO.edicao ? ESTADO.edicao.replace(" - ", " · ") : "";
+  return edicaoTxt ? `Estou vendo as vagas de ${edicaoTxt}.\n${base}` : base;
+}
+
+async function compartilhar(){
+  const texto = mensagemCompartilhamento();
+  if (navigator.share){
+    try { await navigator.share({ text: texto }); }
+    catch(e){ /* usuário cancelou o share nativo — sem feedback de erro */ }
+    return;
+  }
+  const btn = document.getElementById("btnCompartilhar");
+  const txtEl = document.getElementById("btnCompartilharTxt");
+  const original = txtEl.textContent;
+  const marcarCopiado = () => {
+    txtEl.textContent = "Link copiado!";
+    btn.classList.add("copiado");
+    setTimeout(() => { txtEl.textContent = original; btn.classList.remove("copiado"); }, 2000);
+  };
+  try {
+    await navigator.clipboard.writeText(texto);
+    marcarCopiado();
+  } catch(e){
+    // Fallback pra navegador sem Clipboard API: textarea temporário + execCommand.
+    const ta = document.createElement("textarea");
+    ta.value = texto;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); marcarCopiado(); } catch(e2){ /* nada a fazer */ }
+    document.body.removeChild(ta);
+  }
+}
+
 function atualizarTudo(){
   const lista = filtrarDados();
   // Modalidade de concorrência e cards seguem a cor da modalidade do programa.
@@ -1078,6 +1142,7 @@ function initEventos(){
   document.getElementById("fEstado").addEventListener("change", e => { ESTADO.uf = e.target.value; popularMunicipios(); atualizarTudo(); });
   document.getElementById("fMunicipio").addEventListener("change", e => { ESTADO.municipio = e.target.value; atualizarTudo(); });
   document.getElementById("busca").addEventListener("input", e => { ESTADO.busca = e.target.value; atualizarTudo(); });
+  document.getElementById("btnCompartilhar").addEventListener("click", compartilhar);
 
   document.querySelectorAll("#grupoTipo button").forEach(btn => {
     btn.addEventListener("click", () => {
