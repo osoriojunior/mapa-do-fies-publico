@@ -1139,9 +1139,14 @@ function renderComparativos(lista){
 // Mensagem fixa + edição em exibição (quando houver), sem estado de filtros
 // (busca/UF/município não entram — é só um convite genérico ao Mapa).
 function mensagemCompartilhamento(){
-  const base = "Consulte as vagas de Medicina pelo Fies no Mapa do Fies: https://mapa.fies.com.br";
+  // Endereço oficial divulgado: fies.com.br/fies-notas-de-corte (não o
+  // domínio mapa.fies.com.br, que é só onde o site está hospedado hoje).
+  const url = "https://www.fies.com.br/fies-notas-de-corte";
+  const base = `Consulte as vagas de Medicina pelo Fies no Mapa do Fies: ${url}`;
   const edicaoTxt = ESTADO.edicao ? ESTADO.edicao.replace(" - ", " · ") : "";
-  return edicaoTxt ? `Estou vendo as vagas de ${edicaoTxt}.\n${base}` : base;
+  return edicaoTxt
+    ? `Consulte as vagas de Medicina pelo Fies no Mapa do Fies - estou vendo a edição ${edicaoTxt}: ${url}`
+    : base;
 }
 
 // Share sheet nativo só é confiável em Android/iOS (lista os apps de
@@ -1209,7 +1214,7 @@ function abrirMenuCompartilhar(){
 
 async function executarCanalCompartilhar(canal){
   const texto = mensagemCompartilhamento();
-  const url = "https://mapa.fies.com.br";
+  const url = "https://www.fies.com.br/fies-notas-de-corte";
   if (canal === "whatsapp"){
     window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, "_blank");
   } else if (canal === "telegram"){
