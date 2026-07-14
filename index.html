@@ -526,9 +526,8 @@
   .share-ic svg{width:17px;height:17px;}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(16px);background:var(--grafite);color:#fff;font-size:13px;font-weight:500;padding:10px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2);}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  .carimbo-edicao{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--azul-escuro);background:#EEF1FC;border:1px solid #D7DEF6;border-radius:8px;padding:8px 12px;margin:0 0 14px;line-height:1.45;}
-  .carimbo-edicao svg{width:14px;height:14px;flex-shrink:0;margin-top:1px;}
-  .carimbo-edicao b{font-weight:600;}
+  .card-edicao{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--azul-escuro);background:#EEF1FC;border:1px solid #D7DEF6;border-radius:999px;padding:3px 10px;margin:0 0 9px;}
+  .card-edicao svg{width:12px;height:12px;flex-shrink:0;}
   .card-vagas{font-size:13px;color:var(--texto);margin:6px 0 0;font-variant-numeric:tabular-nums;}
   .card-vagas .card-mens-rot{color:var(--texto-muted);font-weight:400;}
   .card-vest{font-size:12px;color:var(--texto-sec);margin:4px 0 0;line-height:1.45;}
@@ -668,8 +667,6 @@
       <p>As notas de corte têm caráter informativo e refletem o último levantamento realizado pela ProFies para a edição selecionada. Os valores podem ter sofrido alterações após esse levantamento e não garantem a pré-seleção.</p>
     </div>
   </div>
-
-  <p class="carimbo-edicao" id="carimboEdicao"></p>
 
   <div id="viewBuscar">
     <div class="cta-banner" id="ctaBanner" style="display:none;">
@@ -971,14 +968,20 @@ function renderLista(lista){
     }
     const totalOfertadas = item.vTotal != null ? item.vTotal : ((item.vFies || 0) + (item.vSocial || 0));
     const vagasHtml = totalOfertadas ? `<p class="card-vagas"><span class="card-mens-rot">Vagas ofertadas</span> ${fmtInt(totalOfertadas)}</p>` : "";
-    const vestNorm = (item.vest || "").trim().toUpperCase();
-    const vestHtml = vestNorm === "SIM"
-      ? `<p class="card-vest">Vestibular neste semestre: <strong>Sim</strong> — concorrem calouros e veteranos.</p>`
-      : (vestNorm === "NÃO" || vestNorm === "NAO")
-      ? `<p class="card-vest">Vestibular neste semestre: <strong>Não</strong> — concorrem apenas veteranos.</p>`
-      : "";
+    let vestHtml;
+    if (/Remanescentes/i.test(item.ed || "")){
+      vestHtml = `<p class="card-vest">Vestibular neste semestre: <strong>Não</strong> — concorrem apenas alunos matriculados.</p>`;
+    } else {
+      const vestNorm = (item.vest || "").trim().toUpperCase();
+      vestHtml = vestNorm === "SIM"
+        ? `<p class="card-vest">Vestibular neste semestre: <strong>Sim</strong> — concorrem calouros e veteranos.</p>`
+        : (vestNorm === "NÃO" || vestNorm === "NAO")
+        ? `<p class="card-vest">Vestibular neste semestre: <strong>Não</strong> — concorrem apenas veteranos.</p>`
+        : "";
+    }
     return `
     <div class="card" style="border-top:3px solid ${ESTADO.tipo === 'Fies' ? 'var(--verde-fies)' : 'var(--azul-social)'}" data-idx="${idx}">
+      <div class="card-edicao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1.4" fill="currentColor" stroke="none"/></svg>Fies ${item.ed}</div>
       <div class="card-top">
         <div style="min-width:0;">
           <p class="card-name">${item.ies}</p>
@@ -1075,7 +1078,6 @@ function atualizarTudo(){
   const btnLimpar = document.getElementById("btnLimpar");
   if (btnLimpar) btnLimpar.disabled = !(ESTADO.busca || ESTADO.uf || ESTADO.municipio);
   renderKPIs();
-  renderCarimbo();
   atualizarSimuladorUI();
   renderLista(lista);
 }
