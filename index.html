@@ -39,10 +39,8 @@
     background:var(--azul);
     color:#fff;
     padding:16px 0 14px;
-    position:sticky;
-    top:0;
-    z-index:50;
   }
+  .topo-fixo{position:sticky;top:0;z-index:50;}
   .map-status{background:#fff;border-bottom:1px solid var(--border);}
   .map-status-inner{max-width:1200px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:8px;color:var(--texto-sec);font-size:12px;font-weight:500;line-height:1.4;}
   @media (min-width:900px){ .map-status-inner{padding:9px 32px;} }
@@ -103,7 +101,7 @@
       padding:24px 32px 56px;
     }
     .colunas{display:flex;align-items:flex-start;gap:36px;}
-    .col-sim{width:380px;flex-shrink:0;position:sticky;top:64px;align-self:flex-start;max-height:calc(100vh - 80px);overflow-y:auto;}
+    .col-sim{width:380px;flex-shrink:0;position:sticky;top:104px;align-self:flex-start;max-height:calc(100vh - 120px);overflow-y:auto;}
     .col-pesquisa{flex:1;min-width:0;}
     .secao-divisor{display:none;}
     .sim-hero{margin-top:0;}
@@ -552,6 +550,7 @@
 </head>
 <body>
 
+<div class="topo-fixo">
 <div class="header">
   <div class="header-top">
     <a class="brand" href="https://www.fies.com.br" target="_blank" rel="noopener" aria-label="Ir para o site da ProFies">
@@ -584,6 +583,7 @@
     <span class="dot" aria-hidden="true"></span>
     <span>Aguardando a divulgação das notas de corte da edição Fies 2026.2 - Regular.</span>
   </div>
+</div>
 </div>
 
 <div class="aviso-oficial">
