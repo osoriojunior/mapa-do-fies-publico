@@ -507,6 +507,13 @@
   .profies-banner a{display:block;}
   .profies-banner img{display:block;width:100%;height:auto;cursor:pointer;}
   .brand{cursor:pointer;text-decoration:none;}
+  .header-right{display:flex;align-items:center;gap:12px;}
+  .share-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.55);border-radius:999px;padding:7px 13px;cursor:pointer;white-space:nowrap;line-height:1;}
+  .share-btn:hover{background:rgba(255,255,255,.28);}
+  .share-btn svg{width:15px;height:15px;flex-shrink:0;}
+  @media (max-width:420px){ .share-btn span{display:none;} .share-btn{padding:7px;} }
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(16px);background:var(--grafite);color:#fff;font-size:13px;font-weight:500;padding:10px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
@@ -528,7 +535,13 @@
         </g>
       </svg>
     </a>
-    <h1>Mapa do Fies</h1>
+    <div class="header-right">
+      <h1>Mapa do Fies</h1>
+      <button type="button" class="share-btn" id="btnShare" aria-label="Compartilhar o Mapa do Fies">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+        <span>Compartilhar</span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -1136,6 +1149,47 @@ fetch("data.json")
   .catch(() => {
     document.getElementById("lista").innerHTML = `<div class="empty"><p>Não foi possível carregar os dados agora. Tente novamente em instantes.</p></div>`;
   });
+</script>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(function(){
+  var url = "https://mapa.fies.com.br";
+  var texto = "Consulte as notas de corte do Fies para Medicina no Mapa do Fies:";
+  var btn = document.getElementById("btnShare");
+  var toastEl = document.getElementById("toast");
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(function(){ toastEl.classList.remove("show"); }, 2600);
+  }
+  function copiarLink(){
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(function(){ toast("Link copiado!"); }, fallback);
+    } else { fallback(); }
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = url; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); toast("Link copiado!"); }
+      catch(e){ window.prompt("Copie o link do Mapa do Fies:", url); }
+      document.body.removeChild(ta);
+    }
+  }
+  if (btn){
+    btn.addEventListener("click", function(){
+      if (navigator.share){
+        navigator.share({ title: "Mapa do Fies", text: texto, url: url }).catch(function(e){
+          if (e && e.name === "AbortError") return;
+          copiarLink();
+        });
+      } else {
+        copiarLink();
+      }
+    });
+  }
+})();
 </script>
 
 </body>
