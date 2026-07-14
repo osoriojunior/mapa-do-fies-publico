@@ -705,25 +705,7 @@
 let DADOS = [];
 let ESTADO = { edicao: null, uf: "", municipio: "", tipo: "Fies", cota: "ampla", busca: "", notaAluno: null };
 
-// Limiar da "faixa de disputa": pontos abaixo do corte que ainda contam
-// como disputa acirrada (não é reprovação clara nem regra oficial do
-// Fies). Constante única para facilitar recalibração.
-// Referência (medida em 2026-07 sobre o data.json real, comparando a
-// mesma IES+local+modalidade entre edições Regular consecutivas —
-// 2025.1→2025.2→2026.1, 1.508 comparações): variação mediana ≈ 17
-// pontos, p25 ≈ 7, p75 ≈ 31. -15 fica perto da mediana observada.
-const LIMIAR_FAIXA_DISPUTA = -15;
-let ABA_ATIVA = "buscar";
-let AGRUPAR_POR = "uf";
-
 const modKey = () => ESTADO.cota + ESTADO.tipo.charAt(0).toUpperCase() + ESTADO.tipo.slice(1);
-
-const badgeCor = (conceito) => {
-  if (conceito >= 4) return { bg: "#E9F7E1", fg: "#2E7D32" };
-  if (conceito === 3) return { bg: "#FEF3D9", fg: "#8A6110" };
-  if (conceito > 0) return { bg: "#FBEAE3", fg: "#A8431F" };
-  return { bg: "#EEEFF5", fg: "#6A6D80" };
-};
 
 function fmtNota(n){
   if (n === null || n === undefined) return null;
@@ -735,35 +717,6 @@ function fmtMoeda(n){
 }
 function fmtInt(n){
   return Math.round(n || 0).toLocaleString("pt-BR");
-}
-
-// Data do último levantamento da edição selecionada, a partir do campo
-// "atualizacao" (DD/MM/AAAA HH:MM, já no fuso de Brasília) que vem no JSON.
-// Pega a data mais recente entre os registros da edição. Sem device date,
-// sem API. Formato: "DD/MM/AAAA, às HHhMM" (ou "HHh" quando minutos = 00).
-function ultimoLevantamento(){
-  let melhor = null, info = null;
-  DADOS.forEach(d => {
-    if (d.ed !== ESTADO.edicao || !d.atualizacao) return;
-    const m = String(d.atualizacao).trim().match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{1,2}):(\d{2})/);
-    if (!m) return;
-    const dt = new Date(+m[3], +m[2]-1, +m[1], +m[4], +m[5]);
-    if (!melhor || dt > melhor){ melhor = dt; info = { data: `${m[1]}/${m[2]}/${m[3]}`, h: parseInt(m[4],10), min: m[5] }; }
-  });
-  if (!info) return null;
-  const hora = info.min === "00" ? `${info.h}h` : `${info.h}h${info.min}`;
-  return `${info.data}, às ${hora}`;
-}
-
-// Carimbo: mostra a qual edição a consulta se refere e a data do último
-// levantamento daquela edição (quando disponível no data.json).
-function renderCarimbo(){
-  const el = document.getElementById("carimboEdicao");
-  if (!el) return;
-  if (!ESTADO.edicao){ el.style.display = "none"; return; }
-  el.style.display = "";
-  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1.4" fill="currentColor" stroke="none"/></svg>`
-    + `<span><b>Fies ${ESTADO.edicao}</b></span>`;
 }
 
 function ordenarEdicoes(lista){
@@ -859,14 +812,6 @@ function renderKPIs(){
   document.getElementById("kVagasTotal").textContent = fmtInt(somaFies + somaSocial);
   document.getElementById("kVagasFies").textContent = fmtInt(somaFies);
   document.getElementById("kVagasSocial").textContent = fmtInt(somaSocial);
-}
-
-function corNota(valor, min, max){
-  if (max === min) return "#4256C8";
-  const t = (valor - min) / (max - min);
-  if (t < 0.33) return "#2E7D32";
-  if (t < 0.66) return "#B8860B";
-  return "#B23A1F";
 }
 
 // Estado do simulador (margem = nota do aluno − nota de corte da modalidade).
@@ -965,18 +910,8 @@ function renderLista(lista){
   // sai pronta de filtrarDados, sem precisar reordenar aqui de novo.
   el.innerHTML = lista.map((item, idx) => {
     const m = item.mod[chave];
-    const estado = classificarLinha(item, chave);
-    let footVaga, resultado = "";
-    if (estado === "comNota"){
-      footVaga = `${fmtInt(m.v)} vaga${m.v>1?'s':''}`;
-      if (notaAluno) resultado = blocoResultado(notaAluno - m.n);
-    } else if (estado === "semDetalhamento"){
-      const agregado = vagaAgregada(item);
-      const rotuloTipo = ESTADO.tipo === "Fies" ? "Fies" : "Fies Social";
-      footVaga = `${fmtInt(agregado)} vaga${agregado>1?'s':''} ${rotuloTipo} (sem detalhamento por cota)`;
-    } else {
-      footVaga = `0 vagas nesta edição`;
-    }
+    let resultado = "";
+    if (notaAluno != null && m.n != null) resultado = blocoResultado(notaAluno - m.n);
     const totalOfertadas = item.vTotal != null ? item.vTotal : ((item.vFies || 0) + (item.vSocial || 0));
     const vagasHtml = totalOfertadas ? `<p class="card-vagas"><span class="card-mens-rot">Vagas ofertadas</span> ${fmtInt(totalOfertadas)}</p>` : "";
     let vestHtml;
@@ -1010,76 +945,6 @@ function renderLista(lista){
 
 const SIGLAS = {"Acre":"AC","Alagoas":"AL","Amapá":"AP","Amazonas":"AM","Bahia":"BA","Ceará":"CE","Distrito Federal":"DF","Espírito Santo":"ES","Goiás":"GO","Maranhão":"MA","Mato Grosso":"MT","Mato Grosso do Sul":"MS","Minas Gerais":"MG","Pará":"PA","Paraíba":"PB","Paraná":"PR","Pernambuco":"PE","Piauí":"PI","Rio de Janeiro":"RJ","Rio Grande do Norte":"RN","Rio Grande do Sul":"RS","Rondônia":"RO","Roraima":"RR","Santa Catarina":"SC","São Paulo":"SP","Sergipe":"SE","Tocantins":"TO"};
 function siglaUf(nome){ return SIGLAS[nome] || nome; }
-
-function agruparPor(lista, campoFn){
-  const chave = modKey();
-  const mapa = new Map();
-  lista.forEach(item => {
-    const k = campoFn(item);
-    if (k === null || k === undefined || k === "") return;
-    const m = item.mod[chave];
-    if (!mapa.has(k)) mapa.set(k, { vagas: 0, notas: [] });
-    const registro = mapa.get(k);
-    registro.vagas += (m.v || 0);
-    if (m.n !== null && m.n !== undefined) registro.notas.push(m.n);
-  });
-  return Array.from(mapa.entries())
-    .filter(([, r]) => r.notas.length > 0)
-    .map(([nome, r]) => ({
-    nome,
-    vagas: r.vagas,
-    menorNota: Math.min(...r.notas),
-    maiorNota: Math.max(...r.notas)
-  }));
-}
-
-const NOMES_AGRUPAMENTO = {
-  uf: { titulo: "estado", campoFn: d => d.uf },
-  mun: { titulo: "município", campoFn: d => `${d.mun}, ${siglaUf(d.uf)}` },
-  conceito: { titulo: "conceito do curso", campoFn: d => d.conceito ? `Conceito ${d.conceito}` : "Sem conceito informado" }
-};
-
-function renderComparativos(lista){
-  const el = document.getElementById("comparativos");
-
-  if (!lista.length){
-    document.getElementById("contagemComparar").textContent = "";
-    el.innerHTML = `<div class="empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-      <p>Não há dados suficientes para comparar com esses filtros.</p>
-    </div>`;
-    return;
-  }
-
-  const config = NOMES_AGRUPAMENTO[AGRUPAR_POR];
-  const grupos = agruparPor(lista, config.campoFn).sort((a,b) => a.menorNota - b.menorNota);
-  const maiorVagas = Math.max(...grupos.map(g => g.vagas));
-
-  document.getElementById("contagemComparar").textContent =
-    `${grupos.length} ${config.titulo}${grupos.length>1?'s':''}, ordenado do que tem a menor nota para o que tem a maior`;
-
-  el.innerHTML = `<div class="comp-lista">` + grupos.map((g, i) => {
-    const cor = corNota(g.menorNota, grupos[0].menorNota, grupos[grupos.length-1].menorNota);
-    const largura = maiorVagas ? Math.max(6, Math.round((g.vagas / maiorVagas) * 100)) : 0;
-    return `
-    <div class="comp-row">
-      <div class="comp-info">
-        <p class="comp-nome">${g.nome}</p>
-        <div class="comp-bar-track"><div class="comp-bar-fill" style="width:${largura}%"></div></div>
-      </div>
-      <div class="comp-stats">
-        <div class="comp-stat">
-          <p class="comp-num">${fmtInt(g.vagas)}</p>
-          <p class="comp-lbl">vaga${g.vagas>1?'s':''}</p>
-        </div>
-        <div class="comp-stat">
-          <p class="comp-num" style="color:${cor}">${fmtNota(g.menorNota)}</p>
-          <p class="comp-lbl">menor nota</p>
-        </div>
-      </div>
-    </div>`;
-  }).join("") + `</div>`;
-}
 
 function atualizarTudo(){
   const lista = filtrarDados();
@@ -1192,9 +1057,10 @@ function renderSkeleton(){
 
 renderSkeleton();
 
-fetch("data.json")
-  .then(r => r.json())
+fetch("data.json?v=" + Date.now(), { cache: "no-store" })
+  .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
   .then(dados => {
+    if (!Array.isArray(dados) || !dados.length) throw new Error("data.json vazio ou inválido");
     DADOS = dados;
     popularFiltros();
     popularMunicipios();
