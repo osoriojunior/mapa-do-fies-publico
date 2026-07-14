@@ -38,13 +38,18 @@
   .header{
     background:var(--azul);
     color:#fff;
-    padding:16px 16px 14px;
+    padding:16px 0 14px;
   }
   .header-top{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    margin-bottom:2px;
+    margin:0 auto 2px;
+    max-width:1200px;
+    padding:0 16px;
+  }
+  @media (min-width:900px){
+    .header-top{padding:0 32px;}
   }
   .brand{
     display:flex;
