@@ -956,11 +956,8 @@ function renderLista(lista){
     const m = item.mod[chave];
     let resultado = "";
     if (notaAluno != null && m.n != null) resultado = blocoResultado(notaAluno - m.n);
-    // Total SEMPRE calculado (Vagas Fies + Vagas Fies Social), nunca copiado da
-    // coluna "Total de vagas" da planilha: essa coluna vem inconsistente em
-    // algumas linhas da origem, e calcular garante que o card nunca contradiga
-    // as modalidades nem o KPI (que também soma Fies + Fies Social).
-    const totalOfertadas = (item.vFies || 0) + (item.vSocial || 0);
+    // Usa o "Total de vagas" da planilha (fonte), com soma apenas como reserva.
+    const totalOfertadas = item.vTotal != null ? item.vTotal : ((item.vFies || 0) + (item.vSocial || 0));
     const vagasHtml = totalOfertadas ? `<p class="card-vagas"><span class="card-mens-rot">Vagas ofertadas</span> ${fmtInt(totalOfertadas)}</p>` : "";
     let vestHtml;
     if (/Remanescentes/i.test(item.ed || "")){
