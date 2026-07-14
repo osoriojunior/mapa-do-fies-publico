@@ -532,6 +532,9 @@
   .card-vagas .card-mens-rot{color:var(--texto-muted);font-weight:400;}
   .card-vest{font-size:12px;color:var(--texto-sec);margin:4px 0 0;line-height:1.45;}
   .card-vest strong{color:var(--texto);font-weight:600;}
+  .detail-row.na-mec{display:block;}
+  .detail-row.na-mec .nome{display:block;color:var(--texto-sec);}
+  .valor-mec{display:block;font-size:11px;color:var(--texto-muted);font-style:italic;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -912,14 +915,22 @@ function detalheModalidades(item, resultado){
     { titulo: "Fies", chaves: ["amplaFies","ppiqFies","pcdFies"], bg: "#E4F1EC" },
     { titulo: "Fies Social", chaves: ["amplaSocial","ppiqSocial","pcdSocial"], bg: "#E6F1FB" }
   ];
+  const remanescentes = /Remanescentes/i.test(item.ed || "");
   return `<p class="detail-heading">Notas de corte por modalidade</p><div class="detail-grid">` + grupos.map(g => `
     <div>
       <p class="detail-group-title">${g.titulo}</p>
       ${g.chaves.map(k => {
         const m = item.mod[k];
+        const vagasTxt = m.v ? ' · ' + fmtInt(m.v) + (m.v === 1 ? ' vaga' : ' vagas') : '';
+        if (remanescentes){
+          return `<div class="detail-row na na-mec" style="background:${g.bg}">
+            <span class="nome">${NOMES_MOD[k]}${vagasTxt}</span>
+            <span class="valor-mec">Nota de corte não divulgada pelo MEC</span>
+          </div>`;
+        }
         const nota = fmtNota(m.n);
         return `<div class="detail-row ${nota ? '' : 'na'}" style="background:${g.bg}">
-          <span class="nome">${NOMES_MOD[k]}${m.v ? ' · ' + fmtInt(m.v) + (m.v === 1 ? ' vaga' : ' vagas') : ''}</span>
+          <span class="nome">${NOMES_MOD[k]}${vagasTxt}</span>
           <span class="valor">${nota || 'n/o'}</span>
         </div>`;
       }).join("")}
