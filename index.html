@@ -511,7 +511,19 @@
   .share-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.55);border-radius:999px;padding:7px 13px;cursor:pointer;white-space:nowrap;line-height:1;}
   .share-btn:hover{background:rgba(255,255,255,.28);}
   .share-btn svg{width:15px;height:15px;flex-shrink:0;}
-  @media (max-width:420px){ .share-btn span{display:none;} .share-btn{padding:7px;} }
+  @media (max-width:480px){ .share-btn span{display:none;} .share-btn{padding:7px;} }
+  .share-modal[hidden]{display:none;}
+  .share-modal{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;}
+  .share-backdrop{position:absolute;inset:0;background:rgba(15,17,30,.5);}
+  .share-sheet{position:relative;background:#fff;border-radius:16px;width:100%;max-width:360px;padding:16px 16px 18px;box-shadow:0 14px 44px rgba(0,0,0,.28);}
+  .share-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px;}
+  .share-head strong{font-size:15px;font-weight:600;color:var(--texto);}
+  .share-close{background:none;border:none;font-size:24px;line-height:1;color:var(--texto-muted);cursor:pointer;padding:0 2px;}
+  .share-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .share-opt{display:flex;align-items:center;gap:10px;padding:11px 10px;border:1px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;text-decoration:none;color:var(--texto);font-size:13px;font-weight:500;font-family:inherit;text-align:left;}
+  .share-opt:hover{background:var(--bg);border-color:#CBD3F2;}
+  .share-ic{width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-weight:700;font-size:15px;}
+  .share-ic svg{width:17px;height:17px;}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(16px);background:var(--grafite);color:#fff;font-size:13px;font-weight:500;padding:10px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2);}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
@@ -1151,44 +1163,68 @@ fetch("data.json")
   });
 </script>
 
+<div class="share-modal" id="shareModal" hidden>
+  <div class="share-backdrop" data-close></div>
+  <div class="share-sheet" role="dialog" aria-modal="true" aria-label="Compartilhar o Mapa do Fies">
+    <div class="share-head">
+      <strong>Compartilhar</strong>
+      <button type="button" class="share-close" data-close aria-label="Fechar">&times;</button>
+    </div>
+    <div class="share-opts">
+      <a class="share-opt" id="shWhats" target="_blank" rel="noopener">
+        <span class="share-ic" style="background:#25D366"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.359.101 11.943c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a11.93 11.93 0 005.71 1.454h.006c6.585 0 11.946-5.359 11.949-11.945a11.86 11.86 0 00-3.48-8.418z"/></svg></span>WhatsApp</a>
+      <button type="button" class="share-opt" id="shCopy">
+        <span class="share-ic" style="background:var(--azul)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 007.07 0l2-2A5 5 0 0012 4l-1 1"/><path d="M14 11a5 5 0 00-7.07 0l-2 2A5 5 0 0012 20l1-1"/></svg></span>Copiar link</button>
+      <a class="share-opt" id="shTelegram" target="_blank" rel="noopener">
+        <span class="share-ic" style="background:#2AABEE"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.94 4.9l-3.32 15.66c-.25 1.1-.9 1.38-1.83.86l-5.05-3.72-2.44 2.35c-.27.27-.5.5-1.02.5l.36-5.14L18 6.35c.4-.36-.09-.56-.63-.2L6.6 13.2 1.6 11.64c-1.09-.34-1.11-1.09.23-1.61L20.53 3.2c.9-.34 1.69.2 1.4 1.7z"/></svg></span>Telegram</a>
+      <a class="share-opt" id="shMail">
+        <span class="share-ic" style="background:#6A6D80"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>E-mail</a>
+      <a class="share-opt" id="shFace" target="_blank" rel="noopener">
+        <span class="share-ic" style="background:#1877F2">f</span>Facebook</a>
+      <a class="share-opt" id="shX" target="_blank" rel="noopener">
+        <span class="share-ic" style="background:#111">X</span>X</a>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 (function(){
   var url = "https://mapa.fies.com.br";
   var texto = "Consulte as notas de corte do Fies para Medicina no Mapa do Fies:";
+  var e = encodeURIComponent;
   var btn = document.getElementById("btnShare");
+  var modal = document.getElementById("shareModal");
   var toastEl = document.getElementById("toast");
+  var g = function(id){ return document.getElementById(id); };
+  g("shWhats").href = "https://api.whatsapp.com/send?text=" + e(texto + " " + url);
+  g("shTelegram").href = "https://t.me/share/url?url=" + e(url) + "&text=" + e(texto);
+  g("shFace").href = "https://www.facebook.com/sharer/sharer.php?u=" + e(url);
+  g("shX").href = "https://twitter.com/intent/tweet?text=" + e(texto) + "&url=" + e(url);
+  g("shMail").href = "mailto:?subject=" + e("Mapa do Fies") + "&body=" + e(texto + " " + url);
   function toast(msg){
-    toastEl.textContent = msg;
-    toastEl.classList.add("show");
-    clearTimeout(toastEl._t);
-    toastEl._t = setTimeout(function(){ toastEl.classList.remove("show"); }, 2600);
+    toastEl.textContent = msg; toastEl.classList.add("show");
+    clearTimeout(toastEl._t); toastEl._t = setTimeout(function(){ toastEl.classList.remove("show"); }, 2600);
   }
-  function copiarLink(){
+  function abrir(){ modal.hidden = false; }
+  function fechar(){ modal.hidden = true; }
+  function copiar(){
     if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(url).then(function(){ toast("Link copiado!"); }, fallback);
-    } else { fallback(); }
-    function fallback(){
+      navigator.clipboard.writeText(url).then(function(){ toast("Link copiado!"); }, fb);
+    } else { fb(); }
+    function fb(){
       var ta = document.createElement("textarea");
       ta.value = url; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.opacity="0";
       document.body.appendChild(ta); ta.select();
       try { document.execCommand("copy"); toast("Link copiado!"); }
-      catch(e){ window.prompt("Copie o link do Mapa do Fies:", url); }
+      catch(err){ window.prompt("Copie o link do Mapa do Fies:", url); }
       document.body.removeChild(ta);
     }
   }
-  if (btn){
-    btn.addEventListener("click", function(){
-      if (navigator.share){
-        navigator.share({ title: "Mapa do Fies", text: texto, url: url }).catch(function(e){
-          if (e && e.name === "AbortError") return;
-          copiarLink();
-        });
-      } else {
-        copiarLink();
-      }
-    });
-  }
+  if (btn) btn.addEventListener("click", abrir);
+  modal.querySelectorAll("[data-close]").forEach(function(el){ el.addEventListener("click", fechar); });
+  g("shCopy").addEventListener("click", function(){ copiar(); fechar(); });
+  modal.querySelectorAll("a.share-opt").forEach(function(a){ a.addEventListener("click", fechar); });
+  document.addEventListener("keydown", function(ev){ if (ev.key === "Escape" && !modal.hidden) fechar(); });
 })();
 </script>
 
