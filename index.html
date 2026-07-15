@@ -615,6 +615,23 @@
   @media (min-width:900px){ .sim-btn-wrap:has(.btn-primary:disabled):hover::after{opacity:1;} }
   .intro-lead{font-size:15px;font-weight:600;margin:0 0 8px;line-height:1.35;color:var(--texto);}
   .sim-group-hint{font-size:11.5px;color:var(--texto-sec);margin:6px 0 0;line-height:1.4;}
+  .ms{position:relative;}
+  .ms-field{width:100%;min-height:46px;display:flex;align-items:center;gap:6px;justify-content:space-between;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);cursor:pointer;}
+  .ms-field:focus-visible{outline:none;border-color:var(--azul);box-shadow:0 0 0 2px rgba(66,86,200,.18);}
+  .ms-chips{display:flex;flex-wrap:wrap;gap:5px;align-items:center;min-width:0;flex:1;}
+  .ms-placeholder{color:var(--texto-muted);font-size:13px;}
+  .ms-chip{display:inline-flex;align-items:center;gap:3px;background:#EEF1FC;color:var(--azul-escuro);border:1px solid #D3E0F5;border-radius:999px;padding:2px 4px 2px 9px;font-size:12.5px;font-weight:500;line-height:1.5;}
+  .ms-chip-x{border:none;background:none;color:var(--texto-sec);font-size:16px;line-height:1;cursor:pointer;padding:0 3px;}
+  .ms-caret{color:var(--texto-muted);flex-shrink:0;}
+  .ms-panel{position:absolute;z-index:60;top:calc(100% + 4px);left:0;right:0;max-height:260px;overflow-y:auto;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.12);padding:4px;}
+  .ms-panel[hidden]{display:none;}
+  .ms-item{width:100%;display:flex;align-items:center;gap:9px;padding:9px 10px;border:none;background:none;border-radius:8px;cursor:pointer;font-size:13px;color:var(--texto);text-align:left;font-family:inherit;}
+  .ms-item:hover{background:var(--bg);}
+  .ms-check{width:17px;height:17px;flex-shrink:0;border:1.5px solid #C3C7D6;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;}
+  .ms-item.sel .ms-check{background:var(--azul);border-color:var(--azul);}
+  .ms-item.sel .ms-check::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);}
+  .ms-legenda{display:flex;align-items:flex-start;gap:5px;font-size:11.5px;color:var(--texto-sec);margin:6px 0 0;line-height:1.4;}
+  .ms-legenda svg{flex-shrink:0;margin-top:1px;color:var(--azul);}
 </style>
 </head>
 <body>
@@ -740,12 +757,19 @@
 
     <div class="campos-2col">
       <div class="campo">
-        <label class="filtro-label" for="fEstado">Estado</label>
-        <select id="fEstado" aria-label="Estado"><option value="">Todos os estados</option></select>
+        <label class="filtro-label" for="msEstadoBtn">Estado</label>
+        <div class="ms" id="msEstado">
+          <div class="ms-field" id="msEstadoBtn" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false" aria-label="Selecionar estados">
+            <span class="ms-chips" id="msEstadoChips"><span class="ms-placeholder">Todos os estados</span></span>
+            <svg class="ms-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="ms-panel" id="msEstadoPanel" hidden role="listbox" aria-multiselectable="true"></div>
+        </div>
+        <p class="ms-legenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 11h1v5h1"/></svg><span>Selecione um ou mais estados para comparar.</span></p>
       </div>
       <div class="campo">
         <label class="filtro-label" for="fMunicipio">Cidade</label>
-        <select id="fMunicipio" aria-label="Município" disabled><option value="">Todos os municípios</option></select>
+        <select id="fMunicipio" aria-label="Cidade" disabled><option value="">Todas as cidades</option></select>
       </div>
     </div>
 
@@ -800,7 +824,7 @@
 
 <script>
 let DADOS = [];
-let ESTADO = { edicao: null, uf: "", municipio: "", tipo: "Fies", cota: "ampla", busca: "", notaAluno: null };
+let ESTADO = { edicao: null, ufs: [], municipio: "", tipo: "Fies", cota: "ampla", busca: "", notaAluno: null };
 
 const modKey = () => ESTADO.cota + ESTADO.tipo.charAt(0).toUpperCase() + ESTADO.tipo.slice(1);
 
@@ -872,21 +896,36 @@ function popularFiltros(){
   ESTADO.edicao = edicoes[0];
 
   const estados = [...new Set(DADOS.map(d => d.uf))].sort((a,b)=>a.localeCompare(b,"pt"));
-  const selUf = document.getElementById("fEstado");
-  estados.forEach(uf => {
-    const opt = document.createElement("option");
-    opt.value = uf; opt.textContent = uf;
-    selUf.appendChild(opt);
-  });
+  document.getElementById("msEstadoPanel").innerHTML = estados.map(uf =>
+    `<button type="button" class="ms-item" role="option" aria-selected="false" data-uf="${uf}"><span class="ms-check"></span><span>${uf}</span></button>`
+  ).join("");
+  renderChipsEstado();
 }
 
 function popularMunicipios(){
   const selMun = document.getElementById("fMunicipio");
-  const base = ESTADO.uf ? DADOS.filter(d => d.uf === ESTADO.uf) : DADOS;
+  const base = ESTADO.ufs.length ? DADOS.filter(d => ESTADO.ufs.includes(d.uf)) : DADOS;
   const municipios = [...new Set(base.map(d => d.mun))].sort((a,b)=>a.localeCompare(b,"pt"));
-  selMun.innerHTML = `<option value="">Todos os municípios</option>` + municipios.map(m => `<option value="${m}">${m}</option>`).join("");
+  selMun.innerHTML = `<option value="">Todas as cidades</option>` + municipios.map(m => `<option value="${m}">${m}</option>`).join("");
   ESTADO.municipio = "";
-  selMun.disabled = !ESTADO.uf;   // só habilita com um estado selecionado
+  selMun.disabled = !ESTADO.ufs.length;   // só habilita com estado(s) selecionado(s)
+}
+
+function renderChipsEstado(){
+  const wrap = document.getElementById("msEstadoChips");
+  if (!ESTADO.ufs.length){ wrap.innerHTML = '<span class="ms-placeholder">Todos os estados</span>'; return; }
+  wrap.innerHTML = ESTADO.ufs.map(uf => `<span class="ms-chip">${uf}<button type="button" class="ms-chip-x" data-uf="${uf}" aria-label="Remover ${uf}">×</button></span>`).join("");
+}
+function toggleEstado(uf){
+  const i = ESTADO.ufs.indexOf(uf);
+  if (i >= 0) ESTADO.ufs.splice(i,1); else ESTADO.ufs.push(uf);
+  document.querySelectorAll("#msEstadoPanel .ms-item").forEach(el => {
+    const sel = ESTADO.ufs.includes(el.dataset.uf);
+    el.classList.toggle("sel", sel); el.setAttribute("aria-selected", String(sel));
+  });
+  renderChipsEstado();
+  popularMunicipios();
+  atualizarTudo();
 }
 
 function vagaAgregada(d){
@@ -907,7 +946,7 @@ function filtrarDados(){
   const buscaLower = ESTADO.busca.trim().toLowerCase();
   return DADOS.filter(d => {
     if (d.ed !== ESTADO.edicao) return false;
-    if (ESTADO.uf && d.uf !== ESTADO.uf) return false;
+    if (ESTADO.ufs.length && !ESTADO.ufs.includes(d.uf)) return false;
     if (ESTADO.municipio && d.mun !== ESTADO.municipio) return false;
     if (!d.mod[chave]) return false;
     if (buscaLower && !(d.ies.toLowerCase().includes(buscaLower) || d.mun.toLowerCase().includes(buscaLower))) return false;
@@ -928,7 +967,7 @@ function filtrarBaseKPI(){
   const buscaLower = ESTADO.busca.trim().toLowerCase();
   return DADOS.filter(d => {
     if (d.ed !== ESTADO.edicao) return false;
-    if (ESTADO.uf && d.uf !== ESTADO.uf) return false;
+    if (ESTADO.ufs.length && !ESTADO.ufs.includes(d.uf)) return false;
     if (ESTADO.municipio && d.mun !== ESTADO.municipio) return false;
     if (buscaLower && !(d.ies.toLowerCase().includes(buscaLower) || d.mun.toLowerCase().includes(buscaLower))) return false;
     return true;
@@ -1086,7 +1125,7 @@ function atualizarTudo(){
   const hero = document.querySelector(".sim-hero");
   if (hero){ hero.classList.toggle("tipo-fies", ESTADO.tipo === "Fies"); hero.classList.toggle("tipo-social", ESTADO.tipo !== "Fies"); }
   const btnLimpar = document.getElementById("btnLimpar");
-  if (btnLimpar) btnLimpar.disabled = !(ESTADO.busca || ESTADO.uf || ESTADO.municipio);
+  if (btnLimpar) btnLimpar.disabled = !(ESTADO.busca || ESTADO.ufs.length || ESTADO.municipio);
   renderKPIs();
   renderAvisoEdicao();
   atualizarSimuladorUI();
@@ -1095,7 +1134,15 @@ function atualizarTudo(){
 
 function initEventos(){
   document.getElementById("fEdicao").addEventListener("change", e => { ESTADO.edicao = e.target.value; atualizarTudo(); });
-  document.getElementById("fEstado").addEventListener("change", e => { ESTADO.uf = e.target.value; popularMunicipios(); atualizarTudo(); });
+  const msBtn = document.getElementById("msEstadoBtn");
+  const msPanel = document.getElementById("msEstadoPanel");
+  const setPanel = (open) => { msPanel.hidden = !open; msBtn.setAttribute("aria-expanded", String(open)); };
+  msBtn.addEventListener("click", () => setPanel(msPanel.hidden));
+  msBtn.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); setPanel(msPanel.hidden); } });
+  msPanel.addEventListener("click", (ev) => { const it = ev.target.closest(".ms-item"); if (it) toggleEstado(it.dataset.uf); });
+  document.getElementById("msEstadoChips").addEventListener("click", (ev) => { const x = ev.target.closest(".ms-chip-x"); if (x){ ev.stopPropagation(); toggleEstado(x.dataset.uf); } });
+  document.addEventListener("click", (ev) => { if (!document.getElementById("msEstado").contains(ev.target)) setPanel(false); });
+  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") setPanel(false); });
   document.getElementById("fMunicipio").addEventListener("change", e => { ESTADO.municipio = e.target.value; atualizarTudo(); });
   document.getElementById("busca").addEventListener("input", e => { ESTADO.busca = e.target.value; atualizarTudo(); });
 
@@ -1118,9 +1165,10 @@ function initEventos(){
 
   document.getElementById("btnLimpar").addEventListener("click", () => {
     document.getElementById("busca").value = "";
-    document.getElementById("fEstado").value = "";
     ESTADO.busca = "";
-    ESTADO.uf = "";
+    ESTADO.ufs = [];
+    document.querySelectorAll("#msEstadoPanel .ms-item").forEach(el => { el.classList.remove("sel"); el.setAttribute("aria-selected","false"); });
+    renderChipsEstado();
     popularMunicipios();
     atualizarTudo();
   });
