@@ -584,6 +584,15 @@
      desativado; some sozinha quando a nota e digitada. Aditivo. ===== */
   .sim-hint-digite{display:none;font-size:12.5px;color:var(--texto-sec);text-align:center;margin:8px 0 0;line-height:1.4;}
   .btn-primary:disabled ~ .sim-hint-digite{display:block;}
+
+  /* ===== COR nos botoes do simulador quando NAO selecionados (opcao B: so
+     borda). Fies = borda verde; Fies Social = borda azul; concorrencia
+     acompanha a modalidade ativa. Selecionado (.active) permanece forte.
+     So CSS. ===== */
+  #grupoTipo button[data-tipo="Fies"]:not(.active){background:#fff;border:1.5px solid #37805F;color:#2F6B4E;}
+  #grupoTipo button[data-tipo="Social"]:not(.active){background:#fff;border:1.5px solid #3866C0;color:#2F569E;}
+  .sim-hero.tipo-fies #grupoCota button:not(.active){background:#fff;border:1.5px solid #37805F;color:#2F6B4E;}
+  .sim-hero.tipo-social #grupoCota button:not(.active){background:#fff;border:1.5px solid #3866C0;color:#2F569E;}
 </style>
 </head>
 <body>
@@ -615,7 +624,7 @@
 <div class="map-status" role="status">
   <div class="map-status-inner">
     <span class="dot" aria-hidden="true"></span>
-    <span>Notas de corte do Fies 2026.2 sendo atualizadas no Mapa.</span>
+    <span>Aguardando a divulgação das notas de corte da edição Fies 2026.2 - Regular.</span>
   </div>
 </div>
 </div>
@@ -643,10 +652,10 @@
   <p class="secao-eyebrow">Simulador</p>
   <div class="sim-hero tipo-fies">
     <h2 class="sim-titulo">Simule suas chances no Fies</h2>
-    <p class="sim-sub">Informe sua média do Enem e veja suas chances de pré-seleção no Fies.</p>
+    <p class="sim-sub">Informe sua média no Enem e estime suas chances de pré-seleção no Fies.</p>
     <div class="sim-nota-wrap">
       <label for="notaAluno">Sua média no Enem</label>
-      <input type="text" id="notaAluno" inputmode="decimal" placeholder="Digite sua média do Enem. Ex.: 720,50" aria-label="Sua média no Enem">
+      <input type="text" id="notaAluno" inputmode="decimal" placeholder="Ex.: 720,50" aria-label="Sua média no Enem">
     </div>
     <p class="elig-warning" id="eligWarning" style="display:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4m0 4h.01"/></svg>
