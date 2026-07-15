@@ -579,6 +579,11 @@
     .container{padding:28px 32px 60px;}
     .colunas{gap:40px;}
   }
+
+  /* ===== DICA DO BOTAO (discreta) — aparece so quando o botao esta
+     desativado; some sozinha quando a nota e digitada. Aditivo. ===== */
+  .sim-hint-digite{display:none;font-size:12.5px;color:var(--texto-sec);text-align:center;margin:8px 0 0;line-height:1.4;}
+  .btn-primary:disabled ~ .sim-hint-digite{display:block;}
 </style>
 </head>
 <body>
@@ -663,6 +668,7 @@
       </div>
     </div>
     <button type="button" class="btn-primary" id="btnSimular" disabled>Ver minhas chances de pré-seleção</button>
+    <p class="sim-hint-digite">Digite sua nota do Enem para continuar</p>
     <p class="sim-aviso" id="simAviso" style="display:none;"></p>
   </div>
   <div class="profies-banner">
