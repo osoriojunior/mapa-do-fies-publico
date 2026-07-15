@@ -101,7 +101,7 @@
       padding:24px 32px 56px;
     }
     .colunas{display:flex;align-items:flex-start;gap:36px;}
-    .col-sim{width:380px;flex-shrink:0;position:sticky;top:104px;align-self:flex-start;max-height:calc(100vh - 120px);overflow-y:auto;}
+    .col-sim{width:380px;flex-shrink:0;position:sticky;top:104px;align-self:flex-start;}
     .col-pesquisa{flex:1;min-width:0;}
     .secao-divisor{display:none;}
     .sim-hero{margin-top:0;}
@@ -600,6 +600,8 @@
   /* botao principal — amarelo ouro com texto branco */
   .btn-primary{background:#E5952B;color:#fff;}
   .btn-primary:hover{background:#CE821F;}
+  .titulo-share{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 2px;}
+  .titulo-share .secao-titulo{margin:0;}
 </style>
 </head>
 <body>
@@ -696,7 +698,13 @@
   <div class="secao-divisor"></div>
 
   <p class="secao-eyebrow">Encontre uma instituição</p>
-  <h2 class="secao-titulo">Pesquise por cidade ou instituição</h2>
+  <div class="titulo-share">
+    <h2 class="secao-titulo">Pesquise por cidade ou instituição</h2>
+    <button type="button" class="share-btn" id="btnShare" aria-label="Compartilhar o Mapa do Fies">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+      <span>Compartilhar</span>
+    </button>
+  </div>
   <p class="secao-sub">Consulte as instituições participantes e refine sua busca por edição, estado e município.</p>
 
   <div class="filtros-lista">
@@ -733,13 +741,6 @@
       </button>
     </div>
 
-  </div>
-
-  <div class="share-row">
-    <button type="button" class="share-btn" id="btnShare" aria-label="Compartilhar o Mapa do Fies">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
-      <span>Compartilhar</span>
-    </button>
   </div>
 
   <div class="filtros-aviso">
