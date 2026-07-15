@@ -585,14 +585,21 @@
   .sim-hint-digite{display:none;font-size:12.5px;color:var(--texto-sec);text-align:center;margin:8px 0 0;line-height:1.4;}
   .btn-primary:disabled ~ .sim-hint-digite{display:block;}
 
-  /* ===== COR nos botoes do simulador quando NAO selecionados (opcao B: so
-     borda). Fies = borda verde; Fies Social = borda azul; concorrencia
-     acompanha a modalidade ativa. Selecionado (.active) permanece forte.
-     So CSS. ===== */
-  #grupoTipo button[data-tipo="Fies"]:not(.active){background:#fff;border:1.5px solid #37805F;color:#2F6B4E;}
-  #grupoTipo button[data-tipo="Social"]:not(.active){background:#fff;border:1.5px solid #3866C0;color:#2F569E;}
-  .sim-hero.tipo-fies #grupoCota button:not(.active){background:#fff;border:1.5px solid #37805F;color:#2F6B4E;}
-  .sim-hero.tipo-social #grupoCota button:not(.active){background:#fff;border:1.5px solid #3866C0;color:#2F569E;}
+  /* ===== CORES OFICIAIS FIES Selecao (aprovado) — verde #2A9D78,
+     azul #3D86E5, ouro #E5952B. So CSS, so aparencia dos botoes. ===== */
+  /* nao selecionados (opcao B: so borda) */
+  #grupoTipo button[data-tipo="Fies"]:not(.active){background:#fff;border:1.5px solid #2A9D78;color:#217A5E;}
+  #grupoTipo button[data-tipo="Social"]:not(.active){background:#fff;border:1.5px solid #3D86E5;color:#2C63AE;}
+  .sim-hero.tipo-fies #grupoCota button:not(.active){background:#fff;border:1.5px solid #2A9D78;color:#217A5E;}
+  .sim-hero.tipo-social #grupoCota button:not(.active){background:#fff;border:1.5px solid #3D86E5;color:#2C63AE;}
+  /* selecionados (fill forte) */
+  #grupoTipo button[data-tipo="Fies"].active{background:#2A9D78;border-color:#2A9D78;color:#fff;}
+  #grupoTipo button[data-tipo="Social"].active{background:#3D86E5;border-color:#3D86E5;color:#fff;}
+  .sim-hero.tipo-fies #grupoCota button.active{background:#2A9D78;border-color:#2A9D78;color:#fff;}
+  .sim-hero.tipo-social #grupoCota button.active{background:#3D86E5;border-color:#3D86E5;color:#fff;}
+  /* botao principal — amarelo ouro com texto branco */
+  .btn-primary{background:#E5952B;color:#fff;}
+  .btn-primary:hover{background:#CE821F;}
 </style>
 </head>
 <body>
