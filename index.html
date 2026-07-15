@@ -42,7 +42,7 @@
   }
   .topo-fixo{position:sticky;top:0;z-index:50;}
   .map-status{background:#fff;border-bottom:1px solid var(--border);}
-  .map-status-inner{max-width:1200px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:8px;color:var(--texto-sec);font-size:12px;font-weight:500;line-height:1.4;}
+  .map-status-inner{max-width:1220px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:8px;color:var(--texto-sec);font-size:12px;font-weight:500;line-height:1.4;}
   @media (min-width:900px){ .map-status-inner{padding:9px 32px;} }
   .map-status .dot{width:7px;height:7px;border-radius:50%;background:var(--azul);flex-shrink:0;animation:hu-pulse 1.9s ease-in-out infinite;}
   @keyframes hu-pulse{0%,100%{opacity:.4;}50%{opacity:1;}}
@@ -51,7 +51,7 @@
     align-items:center;
     justify-content:space-between;
     margin:0 auto 2px;
-    max-width:1200px;
+    max-width:1220px;
     padding:0 16px;
   }
   @media (min-width:900px){
@@ -74,7 +74,7 @@
   }
   .aviso-oficial{background:#EEF1FC;border-bottom:1px solid #E3E6F0;overflow:hidden;max-height:220px;transition:opacity .45s ease, max-height .45s ease;}
   .aviso-oficial.oculto{opacity:0;max-height:0;border-bottom-color:transparent;}
-  .aviso-oficial-inner{max-width:1200px;margin:0 auto;padding:7px 16px;}
+  .aviso-oficial-inner{max-width:1220px;margin:0 auto;padding:7px 16px;}
   .aviso-oficial-txt{display:flex;align-items:flex-start;gap:7px;margin:0;font-size:12px;color:var(--texto-sec);line-height:1.4;}
   .aviso-oficial-txt > svg{width:14px;height:14px;flex-shrink:0;margin-top:1px;color:var(--texto-muted);}
   .aviso-toggle{background:none;border:none;padding:0;color:var(--azul);font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;}
@@ -97,7 +97,7 @@
      inteira agora é uma coluna só, só um pouco mais larga no desktop. */
   @media (min-width: 900px){
     .container{
-      max-width:1200px;
+      max-width:1220px;
       padding:24px 32px 56px;
     }
     .colunas{display:flex;align-items:flex-start;gap:36px;}
@@ -567,6 +567,18 @@
   .toggle-group button{min-height:46px;}
   #grupoTipo button{font-size:15.5px;}
   .btn-primary{min-height:50px;font-size:15px;}
+
+  /* ===== ESPACAMENTO (discreto) — mais respiro entre cartoes, campos e
+     colunas. Aditivo e reversivel. ===== */
+  .card{padding:14px 16px;margin-bottom:12px;}
+  .sim-hero{padding:20px;}
+  .campo{margin:0 0 14px;}
+  .detail-grid{gap:10px;}
+  .filtros-lista{margin:20px 0 24px;}
+  @media (min-width:900px){
+    .container{padding:28px 32px 60px;}
+    .colunas{gap:40px;}
+  }
 </style>
 </head>
 <body>
