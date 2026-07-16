@@ -49,6 +49,8 @@
   @keyframes hu-ping{0%{transform:scale(1);opacity:.45;}70%,100%{transform:scale(2.6);opacity:0;}}
   .map-status .ld-dot{animation:hu-dots 1.4s infinite;}
   @keyframes hu-dots{0%{opacity:.2;}20%{opacity:1;}100%{opacity:.2;}}
+  .map-status .dot.encerrado{background:#9EA1B3;}
+  .map-status .dot.encerrado::after{display:none;}
   .header-top{
     display:flex;
     align-items:center;
@@ -672,8 +674,8 @@
 
 <div class="map-status" role="status">
   <div class="map-status-inner">
-    <span class="dot" aria-hidden="true"></span>
-    <span>Atualizando as notas de corte<span class="ld-dot">.</span><span class="ld-dot" style="animation-delay:.2s">.</span><span class="ld-dot" style="animation-delay:.4s">.</span></span>
+    <span class="dot" id="mapStatusDot" aria-hidden="true"></span>
+    <span id="mapStatusTxt">Atualizando as notas de corte<span class="ld-dot">.</span><span class="ld-dot" style="animation-delay:.2s">.</span><span class="ld-dot" style="animation-delay:.4s">.</span></span>
   </div>
 </div>
 </div>
@@ -1385,6 +1387,19 @@ fetch("data.json?v=" + Date.now(), { cache: "no-store" })
     if (document.visibilityState === "visible") heartbeat();
   });
   window.addEventListener("online", heartbeat);
+})();
+</script>
+<script>
+(function(){
+  try{
+    var alvo = new Date("2026-07-18T00:00:00-03:00"); /* 00:00 de sábado 18/07, horário de Brasília */
+    if (new Date() >= alvo){
+      var txt = document.getElementById("mapStatusTxt");
+      var dot = document.getElementById("mapStatusDot");
+      if (txt) txt.textContent = "Inscrições Fies 2026.2 encerradas";
+      if (dot) dot.classList.add("encerrado");
+    }
+  }catch(e){}
 })();
 </script>
 </body>
