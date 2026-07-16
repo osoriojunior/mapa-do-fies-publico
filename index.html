@@ -1382,7 +1382,7 @@ fetch("data.json?v=" + Date.now(), { cache: "no-store" })
       .catch(function () { /* o contador nunca interrompe o Mapa do Fies */ });
   }
   heartbeat();
-  setInterval(heartbeat, 25000);
+  setInterval(heartbeat, 60000);
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState === "visible") heartbeat();
   });
