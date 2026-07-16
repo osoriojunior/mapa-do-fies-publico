@@ -44,8 +44,11 @@
   .map-status{background:#fff;border-bottom:1px solid var(--border);}
   .map-status-inner{max-width:1220px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:8px;color:var(--texto-sec);font-size:12px;font-weight:500;line-height:1.4;}
   @media (min-width:900px){ .map-status-inner{padding:9px 32px;} }
-  .map-status .dot{width:7px;height:7px;border-radius:50%;background:var(--azul);flex-shrink:0;animation:hu-pulse 1.9s ease-in-out infinite;}
-  @keyframes hu-pulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+  .map-status .dot{width:7px;height:7px;border-radius:50%;background:#2A9D78;flex-shrink:0;position:relative;}
+  .map-status .dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:#2A9D78;animation:hu-ping 1.8s ease-out infinite;}
+  @keyframes hu-ping{0%{transform:scale(1);opacity:.45;}70%,100%{transform:scale(2.6);opacity:0;}}
+  .map-status .ld-dot{animation:hu-dots 1.4s infinite;}
+  @keyframes hu-dots{0%{opacity:.2;}20%{opacity:1;}100%{opacity:.2;}}
   .header-top{
     display:flex;
     align-items:center;
@@ -670,7 +673,7 @@
 <div class="map-status" role="status">
   <div class="map-status-inner">
     <span class="dot" aria-hidden="true"></span>
-    <span>Realizando novo levantamento das notas de corte.</span>
+    <span>Atualizando as notas de corte<span class="ld-dot">.</span><span class="ld-dot" style="animation-delay:.2s">.</span><span class="ld-dot" style="animation-delay:.4s">.</span></span>
   </div>
 </div>
 </div>
