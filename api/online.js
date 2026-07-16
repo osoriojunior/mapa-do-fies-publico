@@ -1,19 +1,5 @@
 "use strict";
 
-/* =====================================================================
-   Contador de pessoas online — Mapa do Fies (ProFies)
-   Função serverless (Vercel). Guarda apenas sessões anônimas ativas
-   numa janela de tempo. NÃO grava nome, e-mail, telefone, nota do Enem,
-   buscas nem IP. Privacidade preservada.
-
-   Requer duas variáveis de ambiente (configuradas na Vercel):
-     UPSTASH_REDIS_REST_URL
-     UPSTASH_REDIS_REST_TOKEN
-   ===================================================================== */
-
-/* ---- CONFIG: domínios do SEU site autorizados a consultar o contador ----
-   Coloque aqui o(s) endereço(s) exato(s) onde o Mapa do Fies é aberto.
-   Aceitos automaticamente também: *.vercel.app, *.github.io e localhost. */
 const ALLOWED_HOSTS = [
   "mapadofies.com.br",
   "www.mapadofies.com.br",
@@ -24,7 +10,7 @@ const ALLOWED_HOSTS = [
   "www.fies.com.br"
 ];
 
-const ACTIVE_WINDOW_MS = 75 * 1000;         // "online" = ativo nos últimos 75s
+const ACTIVE_WINDOW_MS = 75 * 1000;
 const REDIS_KEY = "mapadofies:online";
 const SESSION_PATTERN = /^[a-zA-Z0-9_-]{16,80}$/;
 
@@ -51,8 +37,6 @@ module.exports = async function onlineHandler(req, res) {
   const host = origin ? hostFromOrigin(origin) : null;
   const allowed = !origin || isAllowedHost(host);
 
-  // CORS: como site e função podem ficar em domínios diferentes, devolvemos a
-  // origem autorizada e respondemos ao preflight (OPTIONS).
   if (origin && allowed) res.setHeader("Access-Control-Allow-Origin", origin);
   res.setHeader("Vary", "Origin");
   res.setHeader("Cache-Control", "private, no-store, max-age=0");
