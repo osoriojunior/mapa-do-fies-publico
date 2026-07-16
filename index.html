@@ -1059,9 +1059,21 @@ function detalheModalidades(item, resultado){
           </div>`;
         }
         const nota = fmtNota(m.n);
-        return `<div class="detail-row ${nota ? '' : 'na'}" style="background:${g.bg}">
+        if (nota){
+          return `<div class="detail-row" style="background:${g.bg}">
+            <span class="nome">${NOMES_MOD[k]}${vagasTxt}</span>
+            <span class="valor">${nota}</span>
+          </div>`;
+        }
+        if (m.v && m.v > 0){
+          return `<div class="detail-row na" style="background:${g.bg}">
+            <span class="nome">${NOMES_MOD[k]}${vagasTxt}</span>
+            <span class="valor">n/o</span>
+          </div>`;
+        }
+        return `<div class="detail-row na na-mec" style="background:${g.bg}">
           <span class="nome">${NOMES_MOD[k]}${vagasTxt}</span>
-          <span class="valor">${nota || 'n/o'}</span>
+          <span class="valor-mec">Não ofertada</span>
         </div>`;
       }).join("")}
     </div>
