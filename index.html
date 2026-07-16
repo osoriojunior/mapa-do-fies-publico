@@ -632,9 +632,11 @@
   .ms-item.sel .ms-check::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);}
   .ms-legenda{display:flex;align-items:flex-start;gap:5px;font-size:11.5px;color:var(--texto-sec);margin:6px 0 0;line-height:1.4;}
   .ms-legenda svg{flex-shrink:0;margin-top:1px;color:var(--azul);}
-  .online-badge{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;color:#287153;font-size:12px;font-weight:600;white-space:nowrap;}
+  .online-badge{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;color:#E3E6F0;font-size:12px;font-weight:600;white-space:nowrap;cursor:default;transition:color .2s ease;}
   .online-badge[hidden]{display:none;}
-  .online-dot{width:7px;height:7px;border-radius:50%;background:#2fa46f;box-shadow:0 0 0 3px rgba(47,164,111,.13);flex-shrink:0;}
+  .online-badge:hover{color:#287153;}
+  .online-dot{width:7px;height:7px;border-radius:50%;background:transparent;flex-shrink:0;transition:background .2s ease, box-shadow .2s ease;}
+  .online-badge:hover .online-dot{background:#2fa46f;box-shadow:0 0 0 3px rgba(47,164,111,.13);}
   .online-badge-wrap{text-align:center;margin-top:12px;}
   @media (max-width:520px){ .online-badge{font-size:11px;} }
 </style>
