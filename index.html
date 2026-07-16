@@ -632,6 +632,11 @@
   .ms-item.sel .ms-check::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);}
   .ms-legenda{display:flex;align-items:flex-start;gap:5px;font-size:11.5px;color:var(--texto-sec);margin:6px 0 0;line-height:1.4;}
   .ms-legenda svg{flex-shrink:0;margin-top:1px;color:var(--azul);}
+  .online-badge{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;color:#287153;font-size:12px;font-weight:600;white-space:nowrap;}
+  .online-badge[hidden]{display:none;}
+  .online-dot{width:7px;height:7px;border-radius:50%;background:#2fa46f;box-shadow:0 0 0 3px rgba(47,164,111,.13);flex-shrink:0;}
+  .online-badge-wrap{text-align:center;margin-top:12px;}
+  @media (max-width:520px){ .online-badge{font-size:11px;} }
 </style>
 </head>
 <body>
@@ -820,6 +825,7 @@
 
 <footer class="rodape-aviso">
   <p>O Mapa do Fies é uma ferramenta privada, administrada pela ProFies, sem vínculo com o Governo Federal, o Ministério da Educação, a Caixa Econômica Federal, o Banco do Brasil ou instituições de ensino superior. Para informações oficiais sobre o Fies, acesse <a href="https://acessounico.mec.gov.br/fies" target="_blank" rel="noopener">acessounico.mec.gov.br/fies</a>.</p>
+  <div class="online-badge-wrap"><span class="online-badge" id="onlineBadge" aria-live="off" hidden><span class="online-dot" aria-hidden="true"></span><span id="onlineCount"></span></span></div>
 </footer>
 
 <script>
@@ -1321,5 +1327,60 @@ fetch("data.json?v=" + Date.now(), { cache: "no-store" })
 })();
 </script>
 
+<script>
+(function () {
+  var ONLINE_API_URL = "/api/online";  /* mesmo dominio do site (projeto Vercel mapa-do-fies-publico) */
+  if (!ONLINE_API_URL) return;  /* sem endereco: o contador fica oculto e o site segue normal */
+  var badge = document.getElementById("onlineBadge");
+  var countElement = document.getElementById("onlineCount");
+  if (!badge || !countElement || !window.fetch) return;
+  var STORAGE_KEY = "mapaFiesOnlineSession";
+  var SESSION_DURATION = 6 * 60 * 60 * 1000;
+  function createSessionId() {
+    if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+    var bytes = new Uint8Array(16);
+    if (window.crypto && window.crypto.getRandomValues) {
+      window.crypto.getRandomValues(bytes);
+      return Array.from(bytes).map(function (v) { return v.toString(16).padStart(2, "0"); }).join("");
+    }
+    return Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  }
+  function getSessionId() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+      if (saved && typeof saved.id === "string" && saved.expiresAt > Date.now()) return saved.id;
+      var session = { id: createSessionId(), expiresAt: Date.now() + SESSION_DURATION };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      return session.id;
+    } catch (e) { return createSessionId(); }
+  }
+  var sessionId = getSessionId();
+  function showCount(count) {
+    countElement.textContent = count === 1
+      ? "1 pessoa online agora"
+      : count.toLocaleString("pt-BR") + " pessoas online agora";
+    badge.hidden = false;
+  }
+  function heartbeat() {
+    if (document.visibilityState === "hidden") return;
+    fetch(ONLINE_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: sessionId }),
+      cache: "no-store"
+    }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (data && Number.isInteger(data.online) && data.online >= 0) showCount(data.online);
+      })
+      .catch(function () { /* o contador nunca interrompe o Mapa do Fies */ });
+  }
+  heartbeat();
+  setInterval(heartbeat, 25000);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") heartbeat();
+  });
+  window.addEventListener("online", heartbeat);
+})();
+</script>
 </body>
 </html>
