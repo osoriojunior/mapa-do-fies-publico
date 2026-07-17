@@ -556,6 +556,10 @@
   .vest-info-titulo svg{width:15px;height:15px;flex-shrink:0;}
   .vest-info-txt{margin:0 0 8px;font-size:12px;color:#3F3F49;line-height:1.55;}
   .vest-info-txt:last-child{margin-bottom:0;}
+  .share-modo{display:flex;gap:6px;margin:0 0 12px;background:#F1F3FA;border-radius:10px;padding:4px;}
+  .share-modo-btn{flex:1;border:none;background:transparent;border-radius:8px;padding:7px 8px;font-size:12.5px;font-weight:600;color:var(--texto-sec);cursor:pointer;}
+  .share-modo-btn.is-on{background:#fff;color:var(--azul-escuro);box-shadow:0 1px 3px rgba(20,30,90,.12);}
+  .share-modo-btn:disabled{opacity:.45;cursor:not-allowed;}
   .aviso-edicao{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:#8A6110;background:#FEF3D9;border:1px solid #F0D89A;border-radius:8px;padding:10px 12px;margin:0 0 14px;line-height:1.5;}
   .aviso-edicao svg{width:15px;height:15px;flex-shrink:0;margin-top:1px;}
   .aviso-edicao b{font-weight:600;}
@@ -1176,6 +1180,71 @@ function atualizarTudo(){
   renderLista(lista);
 }
 
+// ---- Compartilhar "este resultado": embala a simulação/filtros no link ----
+function temResultadoParaCompartilhar(){
+  return !!(ESTADO.notaAluno || (ESTADO.ufs && ESTADO.ufs.length) || ESTADO.municipio || ESTADO.busca);
+}
+function montarLinkResultado(){
+  var base = "https://www.mapadofies.com.br/";
+  var p = [];
+  if (ESTADO.notaAluno) p.push("nota=" + encodeURIComponent(String(ESTADO.notaAluno).replace(".", ",")));
+  if (ESTADO.tipo) p.push("tipo=" + (ESTADO.tipo === "Fies" ? "fies" : "social"));
+  if (ESTADO.cota) p.push("vaga=" + ESTADO.cota);
+  if (ESTADO.edicao) p.push("ed=" + encodeURIComponent(ESTADO.edicao));
+  if (ESTADO.ufs && ESTADO.ufs.length) p.push("uf=" + encodeURIComponent(ESTADO.ufs.join(",")));
+  if (ESTADO.municipio) p.push("cidade=" + encodeURIComponent(ESTADO.municipio));
+  if (ESTADO.busca) p.push("busca=" + encodeURIComponent(ESTADO.busca));
+  return p.length ? base + "?" + p.join("&") : base;
+}
+function restaurarDoLink(){
+  try{
+    var q = new URLSearchParams(window.location.search);
+    var chaves = [];
+    q.forEach(function(_,k){ chaves.push(k); });
+    if (!chaves.length) return;
+    var ed = q.get("ed");
+    if (ed){ var selEd = document.getElementById("fEdicao"); if (Array.prototype.some.call(selEd.options, function(o){ return o.value === ed; })){ ESTADO.edicao = ed; selEd.value = ed; } }
+    var tipo = (q.get("tipo") || "").toLowerCase();
+    if (tipo === "fies" || tipo === "social"){
+      ESTADO.tipo = (tipo === "fies") ? "Fies" : "Social";
+      document.querySelectorAll("#grupoTipo button").forEach(function(b){ b.classList.toggle("active", b.dataset.tipo === ESTADO.tipo); });
+    }
+    var vaga = (q.get("vaga") || "").toLowerCase();
+    if (vaga === "ampla" || vaga === "ppiq" || vaga === "pcd"){
+      ESTADO.cota = vaga;
+      document.querySelectorAll("#grupoCota button").forEach(function(b){ b.classList.toggle("active", b.dataset.cota === vaga); });
+    }
+    var uf = q.get("uf");
+    if (uf){
+      uf.split(",").forEach(function(u){
+        u = u.trim().toUpperCase();
+        var item = document.querySelector('#msEstadoPanel .ms-item[data-uf="' + u + '"]');
+        if (item && ESTADO.ufs.indexOf(u) === -1) toggleEstado(u);
+      });
+    }
+    var cidade = q.get("cidade");
+    if (cidade){ var selMun = document.getElementById("fMunicipio"); if (Array.prototype.some.call(selMun.options, function(o){ return o.value === cidade; })){ ESTADO.municipio = cidade; selMun.value = cidade; } }
+    var busca = q.get("busca");
+    if (busca){ ESTADO.busca = busca; document.getElementById("busca").value = busca; }
+    var nota = q.get("nota");
+    if (nota){
+      var v = parseFloat(String(nota).replace(",", "."));
+      if (isFinite(v) && v > 0 && v <= 1000){
+        ESTADO.notaAluno = v;
+        document.getElementById("notaAluno").value = nota;
+        var bs = document.getElementById("btnSimular"); if (bs) bs.disabled = false;
+      }
+    }
+    atualizarTudo();
+    if (temResultadoParaCompartilhar()){
+      setTimeout(function(){
+        var alvo = document.getElementById("viewBuscar") || document.getElementById("lista");
+        if (alvo){ var topo = document.querySelector(".topo-fixo"); var off = (topo ? topo.offsetHeight : 0) + 12; var y = alvo.getBoundingClientRect().top + window.pageYOffset - off; window.scrollTo({ top: Math.max(0, y), behavior: "smooth" }); }
+      }, 220);
+    }
+  }catch(e){}
+}
+
 function initEventos(){
   document.getElementById("fEdicao").addEventListener("change", e => { ESTADO.edicao = e.target.value; atualizarTudo(); });
   const msBtn = document.getElementById("msEstadoBtn");
@@ -1303,6 +1372,7 @@ fetch("data.json?v=" + Date.now(), { cache: "no-store" })
     initEventos();
     document.getElementById("fEdicao").value = ESTADO.edicao;
     atualizarTudo();
+    restaurarDoLink();
     initAtualizacaoAuto();
   })
   .catch(() => {
@@ -1351,6 +1421,10 @@ function mostrarTarjaAtualizar(){
       <strong>Compartilhar</strong>
       <button type="button" class="share-close" data-close aria-label="Fechar">&times;</button>
     </div>
+    <div class="share-modo" role="group" aria-label="O que compartilhar">
+      <button type="button" class="share-modo-btn is-on" data-modo="mapa">Mapa do Fies</button>
+      <button type="button" class="share-modo-btn" data-modo="resultado">Este resultado</button>
+    </div>
     <div class="share-opts">
       <a class="share-opt" id="shWhats" target="_blank" rel="noopener">
         <span class="share-ic" style="background:#25D366"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.359.101 11.943c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a11.93 11.93 0 005.71 1.454h.006c6.585 0 11.946-5.359 11.949-11.945a11.86 11.86 0 00-3.48-8.418z"/></svg></span>WhatsApp</a>
@@ -1391,25 +1465,48 @@ function mostrarTarjaAtualizar(){
 </script>
 <script>
 (function(){
-  var url = "https://www.mapadofies.com.br";
-  var texto = "Achei esse Mapa do Fies da ProFies, mostra as notas de corte de Medicina faculdade por faculdade. Dá uma olhada:";
+  var urlMapa = "https://www.mapadofies.com.br";
   var e = encodeURIComponent;
   var btn = document.getElementById("btnShare");
   var modal = document.getElementById("shareModal");
   var toastEl = document.getElementById("toast");
   var g = function(id){ return document.getElementById(id); };
-  g("shWhats").href = "https://api.whatsapp.com/send?text=" + e(texto + " " + url);
-  g("shTelegram").href = "https://t.me/share/url?url=" + e(url) + "&text=" + e(texto);
-  g("shFace").href = "https://www.facebook.com/sharer/sharer.php?u=" + e(url);
-  g("shX").href = "https://twitter.com/intent/tweet?text=" + e(texto) + "&url=" + e(url);
-  g("shMail").href = "mailto:?subject=" + e("Mapa do Fies") + "&body=" + e(texto + " " + url);
+  var modo = "mapa";
+  function urlAtual(){
+    return (modo === "resultado" && typeof montarLinkResultado === "function") ? montarLinkResultado() : urlMapa;
+  }
+  function textoAtual(){
+    return modo === "resultado"
+      ? "Simulei minhas chances de Medicina no Mapa do Fies da ProFies. Olha o meu resultado:"
+      : "Achei esse Mapa do Fies da ProFies, mostra as notas de corte de Medicina faculdade por faculdade. Dá uma olhada:";
+  }
+  function refreshLinks(){
+    var url = urlAtual(), texto = textoAtual();
+    g("shWhats").href = "https://api.whatsapp.com/send?text=" + e(texto + " " + url);
+    g("shTelegram").href = "https://t.me/share/url?url=" + e(url) + "&text=" + e(texto);
+    g("shFace").href = "https://www.facebook.com/sharer/sharer.php?u=" + e(url);
+    g("shX").href = "https://twitter.com/intent/tweet?text=" + e(texto) + "&url=" + e(url);
+    g("shMail").href = "mailto:?subject=" + e("Mapa do Fies") + "&body=" + e(texto + " " + url);
+  }
+  function setModo(m){
+    modo = m;
+    document.querySelectorAll(".share-modo-btn").forEach(function(b){ b.classList.toggle("is-on", b.dataset.modo === m); });
+    refreshLinks();
+  }
   function toast(msg){
     toastEl.textContent = msg; toastEl.classList.add("show");
     clearTimeout(toastEl._t); toastEl._t = setTimeout(function(){ toastEl.classList.remove("show"); }, 2600);
   }
-  function abrir(){ modal.hidden = false; }
+  function abrir(){
+    var temRes = (typeof temResultadoParaCompartilhar === "function") && temResultadoParaCompartilhar();
+    var btnRes = document.querySelector('.share-modo-btn[data-modo="resultado"]');
+    if (btnRes) btnRes.disabled = !temRes;
+    setModo(temRes ? "resultado" : "mapa");
+    modal.hidden = false;
+  }
   function fechar(){ modal.hidden = true; }
   function copiar(){
+    var url = urlAtual();
     if (navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(url).then(function(){ toast("Link copiado!"); }, fb);
     } else { fb(); }
@@ -1424,6 +1521,7 @@ function mostrarTarjaAtualizar(){
   }
   if (btn) btn.addEventListener("click", abrir);
   modal.querySelectorAll("[data-close]").forEach(function(el){ el.addEventListener("click", fechar); });
+  document.querySelectorAll(".share-modo-btn").forEach(function(b){ b.addEventListener("click", function(){ if (!b.disabled) setModo(b.dataset.modo); }); });
   g("shCopy").addEventListener("click", function(){ copiar(); fechar(); });
   modal.querySelectorAll("a.share-opt").forEach(function(a){ a.addEventListener("click", fechar); });
   document.addEventListener("keydown", function(ev){ if (ev.key === "Escape" && !modal.hidden) fechar(); });
