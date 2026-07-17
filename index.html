@@ -644,10 +644,11 @@
   .online-badge:hover .online-dot{background:#2fa46f;box-shadow:0 0 0 3px rgba(47,164,111,.13);}
   .online-badge-wrap{text-align:center;margin-top:12px;}
   @media (max-width:520px){ .online-badge{font-size:11px;} }
-  /* ===== Animação do CTA "Encontrou uma oportunidade" (ícone balança + halo verde) ===== */
-  @keyframes cta-wig{0%,86%,100%{transform:rotate(0);}90%{transform:rotate(-16deg);}94%{transform:rotate(13deg);}98%{transform:rotate(-7deg);}}
-  @keyframes cta-glow{0%{box-shadow:0 0 0 0 rgba(47,164,111,.45);}70%,100%{box-shadow:0 0 0 10px rgba(47,164,111,0);}}
-  #ctaBtnBanner{animation:cta-glow 1.9s ease-out infinite;}
+  /* ===== Animação do CTA "Encontrou uma oportunidade" (ícone balança + halo verde + respiro) ===== */
+  @keyframes cta-wig{0%,80%,100%{transform:rotate(0);}84%{transform:rotate(-16deg);}88%{transform:rotate(13deg);}92%{transform:rotate(-8deg);}96%{transform:rotate(4deg);}}
+  @keyframes cta-glow{0%{box-shadow:0 0 0 0 rgba(47,164,111,.55);}70%,100%{box-shadow:0 0 0 13px rgba(47,164,111,0);}}
+  @keyframes cta-breathe{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+  #ctaBtnBanner{animation:cta-glow 1.8s ease-out infinite, cta-breathe 2.4s ease-in-out infinite; will-change:transform, box-shadow;}
   #ctaBtnBanner svg{animation:cta-wig 2.4s ease-in-out infinite;transform-origin:center;}
   @media (prefers-reduced-motion: reduce){ #ctaBtnBanner, #ctaBtnBanner svg{animation:none;} }
 </style>
