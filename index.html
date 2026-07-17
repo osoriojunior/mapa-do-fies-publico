@@ -1216,14 +1216,20 @@ function restaurarDoLink(){
     }
     var uf = q.get("uf");
     if (uf){
+      var itensUf = document.querySelectorAll("#msEstadoPanel .ms-item");
       uf.split(",").forEach(function(u){
-        u = u.trim().toUpperCase();
-        var item = document.querySelector('#msEstadoPanel .ms-item[data-uf="' + u + '"]');
-        if (item && ESTADO.ufs.indexOf(u) === -1) toggleEstado(u);
+        u = u.trim(); if (!u) return;
+        var alvo = null;
+        itensUf.forEach(function(it){ if (it.dataset.uf === u || it.dataset.uf.toLowerCase() === u.toLowerCase()) alvo = it; });
+        if (alvo && ESTADO.ufs.indexOf(alvo.dataset.uf) === -1) toggleEstado(alvo.dataset.uf);
       });
     }
     var cidade = q.get("cidade");
-    if (cidade){ var selMun = document.getElementById("fMunicipio"); if (Array.prototype.some.call(selMun.options, function(o){ return o.value === cidade; })){ ESTADO.municipio = cidade; selMun.value = cidade; } }
+    if (cidade){
+      var selMun = document.getElementById("fMunicipio");
+      var opt = Array.prototype.filter.call(selMun.options, function(o){ return o.value === cidade || o.value.toLowerCase() === cidade.toLowerCase(); })[0];
+      if (opt){ ESTADO.municipio = opt.value; selMun.value = opt.value; }
+    }
     var busca = q.get("busca");
     if (busca){ ESTADO.busca = busca; document.getElementById("busca").value = busca; }
     var nota = q.get("nota");
