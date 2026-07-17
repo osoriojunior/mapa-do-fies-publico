@@ -673,9 +673,6 @@
   .ms-legenda svg{flex-shrink:0;margin-top:1px;color:var(--azul);}
   /* ===== Animação do CTA "Encontrou uma oportunidade" (ícone balança + halo verde + respiro) ===== */
   @keyframes cta-wig{0%,76%,100%{transform:rotate(0);}80%{transform:rotate(-20deg);}85%{transform:rotate(16deg);}90%{transform:rotate(-10deg);}95%{transform:rotate(5deg);}}
-  @keyframes cta-glow{0%{box-shadow:0 0 0 0 rgba(42,157,120,.65);}70%,100%{box-shadow:0 0 0 18px rgba(42,157,120,0);}}
-  @keyframes cta-breathe{0%,100%{transform:scale(1);background:transparent;}50%{transform:scale(1.07);background:rgba(42,157,120,.14);}}
-  #ctaBtnBanner{animation:cta-glow 1.5s ease-out infinite, cta-breathe 2s ease-in-out infinite; will-change:transform, box-shadow;}
   #ctaBtnBanner svg{animation:cta-wig 2s ease-in-out infinite;transform-origin:center;}
   @media (prefers-reduced-motion: reduce){ #ctaBtnBanner, #ctaBtnBanner svg{animation:none;} }
   .tarja-atualiza{position:fixed;left:50%;bottom:18px;transform:translate(-50%,150%);z-index:60;display:flex;align-items:center;gap:10px;background:#2F3E9E;color:#fff;padding:9px 10px 9px 16px;border-radius:999px;box-shadow:0 6px 20px rgba(20,30,90,.28);font-size:13px;max-width:92vw;transition:transform .3s cubic-bezier(.4,0,.2,1);}
