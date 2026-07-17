@@ -57,6 +57,8 @@
   .share-btn-topo svg{width:13px;height:13px;}
   .share-btn-short{display:none;}
   @media (max-width:560px){ .share-btn-topo .share-btn-full{display:none;} .share-btn-topo .share-btn-short{display:inline;} .share-btn-topo{padding:5px 11px;} }
+  .share-btn-desk{display:none;}
+  @media (min-width:900px){ .share-btn-desk{display:inline-flex;} .share-btn-topo{display:none;} }
   .header-top{
     display:flex;
     align-items:center;
@@ -713,7 +715,7 @@
   <div class="map-status-inner">
     <span class="dot" id="mapStatusDot" aria-hidden="true"></span>
     <span id="mapStatusTxt">Atualizando as notas de corte<span class="ld-dot">.</span><span class="ld-dot" style="animation-delay:.2s">.</span><span class="ld-dot" style="animation-delay:.4s">.</span></span>
-    <button type="button" class="share-btn share-btn-topo" id="btnShare" aria-label="Compartilhar o Mapa do Fies">
+    <button type="button" class="share-btn share-btn-topo js-share-open" id="btnShare" aria-label="Compartilhar o Mapa do Fies">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
       <span class="share-btn-full">Compartilhar o Mapa do Fies</span><span class="share-btn-short">Compartilhar</span>
     </button>
@@ -783,7 +785,13 @@
   <div class="secao-divisor"></div>
 
   <p class="secao-eyebrow">Encontre uma instituição</p>
-  <h2 class="secao-titulo">Busque uma faculdade ou cidade</h2>
+  <div class="titulo-share">
+    <h2 class="secao-titulo">Busque uma faculdade ou cidade</h2>
+    <button type="button" class="share-btn share-btn-desk js-share-open" aria-label="Compartilhar o Mapa do Fies">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+      <span>Compartilhar o Mapa do Fies</span>
+    </button>
+  </div>
   <p class="secao-sub">Filtre por edição, estado e município para encontrar opções de Medicina.</p>
 
   <div class="filtros-lista">
@@ -1545,7 +1553,7 @@ function mostrarTarjaAtualizar(){
       document.body.removeChild(ta);
     }
   }
-  if (btn) btn.addEventListener("click", abrir);
+  document.querySelectorAll(".js-share-open").forEach(function(b){ b.addEventListener("click", abrir); });
   modal.querySelectorAll("[data-close]").forEach(function(el){ el.addEventListener("click", fechar); });
   document.querySelectorAll(".share-modo-btn").forEach(function(b){ b.addEventListener("click", function(){ if (!b.disabled) setModo(b.dataset.modo); }); });
   g("shCopy").addEventListener("click", function(){ copiar(); fechar(); });
