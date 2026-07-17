@@ -544,9 +544,19 @@
   .card-vagas .card-mens-rot{color:var(--texto-muted);font-weight:400;}
   .card-vest{font-size:12px;color:var(--texto-sec);margin:4px 0 0;line-height:1.45;}
   .card-vest strong{color:var(--texto);font-weight:600;}
-  .card-vest-selo{display:inline-flex;align-items:center;gap:5px;margin:6px 0 0;background:var(--vermelho);color:#fff;font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:999px;animation:vestSeloPulse 1.6s ease-in-out infinite;}
+  .card-vest-alerta{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;position:relative;margin:6px 0 0;}
+  .card-vest-selo{display:inline-flex;align-items:center;gap:5px;background:var(--vermelho);color:#fff;font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:999px;animation:vestSeloPulse 1.6s ease-in-out infinite;}
   .card-vest-selo svg{width:14px;height:14px;flex-shrink:0;}
   @keyframes vestSeloPulse{0%{box-shadow:0 0 0 0 rgba(238,106,67,.5);}70%,100%{box-shadow:0 0 0 10px rgba(238,106,67,0);}}
+  .vest-info-btn{width:19px;height:19px;border-radius:50%;border:1.4px solid var(--vermelho);background:#fff;color:var(--vermelho);font-size:12px;font-weight:700;font-family:Georgia,'Times New Roman',serif;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;}
+  .vest-info-btn[aria-expanded="true"]{background:var(--vermelho);color:#fff;}
+  .vest-info-pop{position:absolute;top:calc(100% + 8px);left:0;z-index:50;width:min(340px,86vw);background:#FFF4F0;border:1px solid #F3C8B8;border-radius:10px;padding:12px 14px;box-shadow:0 6px 20px rgba(20,30,90,.16);}
+  .vest-info-pop[hidden]{display:none;}
+  .vest-info-pop::before{content:"";position:absolute;top:-7px;left:16px;width:12px;height:12px;background:#FFF4F0;border-left:1px solid #F3C8B8;border-top:1px solid #F3C8B8;transform:rotate(45deg);}
+  .vest-info-titulo{display:flex;align-items:center;gap:6px;margin:0 0 8px;font-size:12px;font-weight:600;color:#C63D18;}
+  .vest-info-titulo svg{width:15px;height:15px;flex-shrink:0;}
+  .vest-info-txt{margin:0 0 8px;font-size:12px;color:#3F3F49;line-height:1.55;}
+  .vest-info-txt:last-child{margin-bottom:0;}
   @media (prefers-reduced-motion:reduce){ .card-vest-selo{animation:none;} }
   .aviso-edicao{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:#8A6110;background:#FEF3D9;border:1px solid #F0D89A;border-radius:8px;padding:10px 12px;margin:0 0 14px;line-height:1.5;}
   .aviso-edicao svg{width:15px;height:15px;flex-shrink:0;margin-top:1px;}
@@ -1131,7 +1141,7 @@ function renderLista(lista){
       vestHtml = vestNorm === "SIM"
         ? `<p class="card-vest">Haverá vestibular para ingressantes: <strong>Sim</strong>, concorrem calouros e veteranos.</p>`
         : (vestNorm === "NÃO" || vestNorm === "NAO")
-        ? `<p class="card-vest">Haverá vestibular para ingressantes: <strong>Não</strong>, concorrem apenas veteranos.</p><span class="card-vest-selo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Só veteranos concorrem</span>`
+        ? `<p class="card-vest">Haverá vestibular para ingressantes: <strong>Não</strong>, concorrem apenas veteranos.</p><span class="card-vest-alerta"><span class="card-vest-selo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Só veteranos concorrem</span><button type="button" class="vest-info-btn" aria-label="Saiba mais sobre esta restrição" aria-expanded="false">i</button><div class="vest-info-pop" hidden role="dialog" aria-label="Aviso sobre vestibular para veteranos"><p class="vest-info-titulo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Atenção, calouro</p><p class="vest-info-txt">Os cursos para os quais a instituição de ensino informou em seus Termos de Participação que não haverá realização de processo seletivo para ingresso de estudantes no período inicial estarão disponíveis somente para candidatos veteranos, ou seja, que estejam vinculados ao curso da instituição em razão de já o estar cursando desde semestre(s) anterior(es).</p><p class="vest-info-txt">O candidato que for ingressante (calouro) no período inicial do curso e se inscrever, caso seja pré-selecionado, terá sua inscrição rejeitada pela CPSA da IES em razão da impossibilidade de continuação da inscrição e por prestação de informação inverídica no ato da inscrição.</p></div></span>`
         : "";
     }
     return `
@@ -1360,6 +1370,27 @@ function mostrarTarjaAtualizar(){
   </div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(function(){
+  function fecharTodos(){
+    document.querySelectorAll(".vest-info-pop").forEach(function(p){ p.hidden = true; });
+    document.querySelectorAll(".vest-info-btn").forEach(function(b){ b.setAttribute("aria-expanded","false"); });
+  }
+  document.addEventListener("click", function(e){
+    var btn = e.target.closest ? e.target.closest(".vest-info-btn") : null;
+    if (btn){
+      e.preventDefault();
+      var pop = btn.parentNode.querySelector(".vest-info-pop");
+      var abrir = pop && pop.hidden;
+      fecharTodos();
+      if (abrir){ pop.hidden = false; btn.setAttribute("aria-expanded","true"); }
+      return;
+    }
+    if (!(e.target.closest && e.target.closest(".vest-info-pop"))) fecharTodos();
+  });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape") fecharTodos(); });
+})();
+</script>
 <script>
 (function(){
   var url = "https://www.mapadofies.com.br";
