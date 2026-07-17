@@ -1228,7 +1228,14 @@ function initEventos(){
   });
   btnSimular.addEventListener("click", () => {
     if (btnSimular.disabled) return;
-    document.getElementById("viewBuscar").scrollIntoView({ behavior: "smooth", block: "start" });
+    // Rola até o convite "Encontrou uma oportunidade..." e para logo abaixo do
+    // cabeçalho fixo, para o CTA de marketing ficar 100% visível.
+    let alvo = document.getElementById("ctaBanner");
+    if (!alvo || alvo.style.display === "none") alvo = document.getElementById("viewBuscar");
+    const topo = document.querySelector(".topo-fixo");
+    const offset = (topo ? topo.offsetHeight : 0) + 12;
+    const y = alvo.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
   });
 
   // Ambos os CTAs (banner e dentro de cada card) são links diretos para o
