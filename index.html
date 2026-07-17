@@ -556,10 +556,20 @@
   .vest-info-titulo svg{width:15px;height:15px;flex-shrink:0;}
   .vest-info-txt{margin:0 0 8px;font-size:12px;color:#3F3F49;line-height:1.55;}
   .vest-info-txt:last-child{margin-bottom:0;}
-  .share-modo{display:flex;gap:6px;margin:0 0 12px;background:#F1F3FA;border-radius:10px;padding:4px;}
-  .share-modo-btn{flex:1;border:none;background:transparent;border-radius:8px;padding:7px 8px;font-size:12.5px;font-weight:600;color:var(--texto-sec);cursor:pointer;}
-  .share-modo-btn.is-on{background:#fff;color:var(--azul-escuro);box-shadow:0 1px 3px rgba(20,30,90,.12);}
-  .share-modo-btn:disabled{opacity:.45;cursor:not-allowed;}
+  .share-modo{margin:0 0 14px;}
+  .share-modo-q{margin:0 0 8px;font-size:12px;color:var(--texto-sec);}
+  .share-modo-btn{width:100%;text-align:left;display:flex;gap:10px;align-items:flex-start;background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;margin:0 0 8px;cursor:pointer;font-family:inherit;transition:border-color .15s, background .15s;}
+  .share-modo-btn:last-child{margin-bottom:0;}
+  .share-modo-ic{color:var(--texto-sec);flex-shrink:0;margin-top:1px;display:inline-flex;}
+  .share-modo-ic svg{width:19px;height:19px;}
+  .share-modo-t{display:block;font-size:13px;font-weight:600;color:var(--texto);}
+  .share-modo-d{display:block;font-size:11.5px;color:var(--texto-sec);line-height:1.4;}
+  .share-modo-hint{display:none;font-size:11.5px;color:#C0431E;line-height:1.4;}
+  .share-modo-btn.is-on{border-color:var(--azul);background:#F5F8FF;}
+  .share-modo-btn.is-on .share-modo-ic{color:var(--azul-escuro);}
+  .share-modo-btn:disabled{opacity:.7;cursor:not-allowed;}
+  .share-modo-btn:disabled .share-modo-d{display:none;}
+  .share-modo-btn:disabled .share-modo-hint{display:block;}
   .aviso-edicao{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:#8A6110;background:#FEF3D9;border:1px solid #F0D89A;border-radius:8px;padding:10px 12px;margin:0 0 14px;line-height:1.5;}
   .aviso-edicao svg{width:15px;height:15px;flex-shrink:0;margin-top:1px;}
   .aviso-edicao b{font-weight:600;}
@@ -1427,9 +1437,16 @@ function mostrarTarjaAtualizar(){
       <strong>Compartilhar</strong>
       <button type="button" class="share-close" data-close aria-label="Fechar">&times;</button>
     </div>
-    <div class="share-modo" role="group" aria-label="O que compartilhar">
-      <button type="button" class="share-modo-btn is-on" data-modo="mapa">Mapa do Fies</button>
-      <button type="button" class="share-modo-btn" data-modo="resultado">Este resultado</button>
+    <div class="share-modo" role="group" aria-label="O que você quer compartilhar">
+      <p class="share-modo-q">O que você quer enviar?</p>
+      <button type="button" class="share-modo-btn is-on" data-modo="mapa">
+        <span class="share-modo-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></span>
+        <span class="share-modo-tx"><span class="share-modo-t">O Mapa do Fies</span><span class="share-modo-d">O site completo, para a pessoa explorar do zero.</span></span>
+      </button>
+      <button type="button" class="share-modo-btn" data-modo="resultado">
+        <span class="share-modo-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+        <span class="share-modo-tx"><span class="share-modo-t">Esta busca</span><span class="share-modo-d">Abre já com a sua nota e os filtros aplicados.</span><span class="share-modo-hint">Faça uma simulação ou um filtro para liberar.</span></span>
+      </button>
     </div>
     <div class="share-opts">
       <a class="share-opt" id="shWhats" target="_blank" rel="noopener">
