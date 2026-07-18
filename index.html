@@ -423,7 +423,7 @@
     border:1px solid var(--border);
     border-radius:12px;
     padding:12px 14px;
-    margin-bottom:10px;
+    margin-bottom:16px;
   }
   .card-top{
     display:flex;
@@ -611,7 +611,7 @@
 
   /* ===== ESPACAMENTO (discreto) — mais respiro entre cartoes, campos e
      colunas. Aditivo e reversivel. ===== */
-  .card{padding:14px 16px;margin-bottom:12px;}
+  .card{padding:14px 16px;margin-bottom:18px;}
   .sim-hero{padding:20px;}
   .campo{margin:0 0 14px;}
   .detail-grid{gap:10px;}
@@ -707,8 +707,9 @@
   .chip-filtro:disabled{opacity:.5;cursor:not-allowed;}
   .chip-filtro:focus-visible, #fOrdenacao:focus-visible{outline:2px solid var(--azul);outline-offset:2px;}
 
-  .card-comp{display:flex;align-items:center;gap:8px;margin:10px 0 0;padding:9px 12px;border-radius:10px;font-size:15px;font-weight:600;line-height:1.35;border:1px solid transparent;}
-  .card-comp svg{width:18px;height:18px;flex-shrink:0;}
+  .card-comp{display:flex;align-items:center;gap:7px;margin:10px 0 0;padding:8px 11px;border-radius:10px;font-size:13.5px;font-weight:600;line-height:1.3;border:1px solid transparent;white-space:nowrap;overflow:hidden;}
+  .card-comp span{overflow:hidden;text-overflow:ellipsis;}
+  .card-comp svg{width:16px;height:16px;flex-shrink:0;}
   .card-comp-pos{color:var(--verde-fies);background:#E4F1EC;border-color:var(--verde-fies-claro);}
   .card-comp-neg{color:#B8531F;background:#FCEAE2;border-color:#F3C8B8;}
   .card-comp-eq{color:var(--azul-escuro);background:#EEF1FC;border-color:#D6DEF5;}
@@ -752,7 +753,7 @@
     /* Tipografia mobile: nada relevante do cartão abaixo de 14px */
     .card-name{font-size:16px;font-weight:600;line-height:1.3;}
     .card-sub,.card-conceito,.card-mens,.card-vagas,.card-vest{font-size:14px;line-height:1.45;}
-    .card-comp{font-size:15px;}
+    .card-comp{font-size:13.5px;}
     .detail-heading,.detail-group-title{font-size:14px;font-weight:600;}
     .detail-row,.detail-row .valor,.detail-row .valor-mec{font-size:14px;}
     .resultado-titulo{font-size:15px;}
@@ -955,6 +956,7 @@
     <div class="filtros-rapidos" role="group" aria-label="Filtros rápidos">
       <button type="button" class="chip-filtro" id="qfCalouros" aria-pressed="false">Aceita calouros</button>
       <button type="button" class="chip-filtro" id="qfCompat" aria-pressed="false" disabled>Compatível com minha nota</button>
+      <button type="button" class="chip-filtro" id="qfSemVaga" aria-pressed="false">Sem oferta de vagas</button>
     </div>
     <div id="lista"></div>
     <div class="carregar-mais-wrap" id="carregarMaisWrap" style="display:none;">
@@ -985,7 +987,7 @@
 let DADOS = [];
 let DATA_SIG = null;
 function hashStr(s){ let h = 5381; for (let i = 0; i < s.length; i++){ h = ((h << 5) + h) ^ s.charCodeAt(i); } return (h >>> 0).toString(36); }
-let ESTADO = { edicao: null, ufs: [], municipio: "", tipo: "Fies", cota: "ampla", busca: "", notaAluno: null, ordenacao: "corte", soCalouros: false, soCompat: false };
+let ESTADO = { edicao: null, ufs: [], municipio: "", tipo: "Fies", cota: "ampla", busca: "", notaAluno: null, ordenacao: "corte", soCalouros: false, soCompat: false, soSemVaga: false };
 const POR_PAGINA = 25;      // carregamento progressivo
 let EXIBIDOS = POR_PAGINA;  // quantos cartões estão montados agora
 let LISTA_ATUAL = [];       // lista filtrada+ordenada atual (todos os resultados)
@@ -1107,6 +1109,12 @@ function classificarLinha(d, chave){
   return "zeroVaga";
 }
 
+// "Sem oferta de vagas": instituição com vaga total zerada (não está ofertando).
+function semOferta(d){
+  const t = d.vTotal != null ? d.vTotal : ((d.vFies || 0) + (d.vSocial || 0));
+  return !t;
+}
+
 // "Aceita calouros": exclui Remanescentes e cursos onde só veteranos concorrem.
 function aceitaCalouros(d){
   if (/Remanescentes/i.test(d.ed || "")) return false;
@@ -1126,6 +1134,7 @@ function filtrarDados(){
     if (!d.mod[chave]) return false;
     if (buscaLower && !(d.ies.toLowerCase().includes(buscaLower) || d.mun.toLowerCase().includes(buscaLower))) return false;
     if (ESTADO.soCalouros && !aceitaCalouros(d)) return false;
+    if (ESTADO.soSemVaga && !semOferta(d)) return false;
     if (ESTADO.soCompat){
       const n = d.mod[chave].n;
       if (nota == null || n == null || nota < n) return false;
@@ -1501,6 +1510,13 @@ function initEventos(){
     ESTADO.soCompat = !ESTADO.soCompat;
     qfComp.setAttribute("aria-pressed", String(ESTADO.soCompat));
     qfComp.classList.toggle("ativo", ESTADO.soCompat);
+    atualizarTudo();
+  });
+  const qfSem = document.getElementById("qfSemVaga");
+  if (qfSem) qfSem.addEventListener("click", () => {
+    ESTADO.soSemVaga = !ESTADO.soSemVaga;
+    qfSem.setAttribute("aria-pressed", String(ESTADO.soSemVaga));
+    qfSem.classList.toggle("ativo", ESTADO.soSemVaga);
     atualizarTudo();
   });
   // Carregar mais (não reseta a paginação)
