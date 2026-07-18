@@ -901,8 +901,7 @@
       </div>
       <div class="campo">
         <label class="filtro-label" for="fMunicipio">Cidade</label>
-        <select id="fMunicipio" aria-label="Cidade" disabled><option value="">Todas as cidades</option></select>
-        <p class="cidade-hint" id="cidadeHint">Escolha um estado primeiro.</p>
+        <select id="fMunicipio" aria-label="Cidade"><option value="">Todas as cidades</option></select>
       </div>
     </div>
 
@@ -1071,13 +1070,34 @@ function popularFiltros(){
 
 function popularMunicipios(){
   const selMun = document.getElementById("fMunicipio");
-  const base = ESTADO.ufs.length ? DADOS.filter(d => ESTADO.ufs.includes(d.uf)) : DADOS;
-  const municipios = [...new Set(base.map(d => d.mun))].sort((a,b)=>a.localeCompare(b,"pt"));
-  selMun.innerHTML = `<option value="">Todas as cidades</option>` + municipios.map(m => `<option value="${m}">${m}</option>`).join("");
+  // Cidade sempre liberada: lista todas as cidades da edição atual (e do estado, se houver).
+  const base = DADOS.filter(d => d.ed === ESTADO.edicao && (!ESTADO.ufs.length || ESTADO.ufs.includes(d.uf)));
+  const ufsPorCidade = {};
+  base.forEach(d => { (ufsPorCidade[d.mun] = ufsPorCidade[d.mun] || new Set()).add(d.uf); });
+  const pares = [];
+  Object.keys(ufsPorCidade).forEach(mun => {
+    const ufs = [...ufsPorCidade[mun]];
+    if (ufs.length > 1) ufs.forEach(uf => pares.push({ mun, uf }));   // desambigua (ex.: Valença BA/RJ)
+    else pares.push({ mun, uf: null });
+  });
+  pares.sort((a,b) => a.mun.localeCompare(b.mun,"pt") || (a.uf||"").localeCompare(b.uf||"","pt"));
+  selMun.innerHTML = `<option value="">Todas as cidades</option>` + pares.map(p => {
+    const val = p.uf ? p.mun + "|||" + p.uf : p.mun;
+    const lbl = p.uf ? p.mun + " (" + siglaUf(p.uf) + ")" : p.mun;
+    return `<option value="${val}">${lbl}</option>`;
+  }).join("");
   ESTADO.municipio = "";
-  selMun.disabled = !ESTADO.ufs.length;   // só habilita com estado(s) selecionado(s)
+  selMun.disabled = false;
   const hint = document.getElementById("cidadeHint");
-  if (hint) hint.style.display = ESTADO.ufs.length ? "none" : "";
+  if (hint) hint.style.display = "none";
+}
+
+// Casa a cidade selecionada, tratando o valor desambiguado "Cidade|||Estado".
+function matchMunicipio(d){
+  if (!ESTADO.municipio) return true;
+  const i = ESTADO.municipio.indexOf("|||");
+  if (i >= 0) return d.mun === ESTADO.municipio.slice(0,i) && d.uf === ESTADO.municipio.slice(i+3);
+  return d.mun === ESTADO.municipio;
 }
 
 function renderChipsEstado(){
@@ -1131,7 +1151,7 @@ function filtrarDados(){
   const lista = DADOS.filter(d => {
     if (d.ed !== ESTADO.edicao) return false;
     if (ESTADO.ufs.length && !ESTADO.ufs.includes(d.uf)) return false;
-    if (ESTADO.municipio && d.mun !== ESTADO.municipio) return false;
+    if (!matchMunicipio(d)) return false;
     if (!d.mod[chave]) return false;
     if (buscaLower && !(d.ies.toLowerCase().includes(buscaLower) || d.mun.toLowerCase().includes(buscaLower))) return false;
     if (ESTADO.soCalouros && !aceitaCalouros(d)) return false;
@@ -1179,7 +1199,7 @@ function filtrarBaseKPI(){
   return DADOS.filter(d => {
     if (d.ed !== ESTADO.edicao) return false;
     if (ESTADO.ufs.length && !ESTADO.ufs.includes(d.uf)) return false;
-    if (ESTADO.municipio && d.mun !== ESTADO.municipio) return false;
+    if (!matchMunicipio(d)) return false;
     if (buscaLower && !(d.ies.toLowerCase().includes(buscaLower) || d.mun.toLowerCase().includes(buscaLower))) return false;
     return true;
   });
@@ -1482,7 +1502,7 @@ function restaurarDoLink(){
 }
 
 function initEventos(){
-  document.getElementById("fEdicao").addEventListener("change", e => { ESTADO.edicao = e.target.value; atualizarTudo(); });
+  document.getElementById("fEdicao").addEventListener("change", e => { ESTADO.edicao = e.target.value; popularMunicipios(); atualizarTudo(); });
   const msBtn = document.getElementById("msEstadoBtn");
   const msPanel = document.getElementById("msEstadoPanel");
   const setPanel = (open) => { msPanel.hidden = !open; msBtn.setAttribute("aria-expanded", String(open)); };
