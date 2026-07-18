@@ -671,6 +671,10 @@
   .ms-check{width:17px;height:17px;flex-shrink:0;border:1.5px solid #C3C7D6;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;}
   .ms-item.sel .ms-check{background:var(--azul);border-color:var(--azul);}
   .ms-item.sel .ms-check::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);}
+  .ms-search{position:sticky;top:0;background:#fff;padding:2px 2px 8px;margin-bottom:2px;border-bottom:1px solid var(--border);}
+  .ms-search input{width:100%;height:38px;border:1px solid var(--border);border-radius:8px;padding:0 10px;font-size:13px;color:var(--texto);font-family:inherit;}
+  .ms-search input:focus-visible{outline:none;border-color:var(--azul);box-shadow:0 0 0 2px rgba(66,86,200,.18);}
+  .ms-empty{padding:10px;font-size:12.5px;color:var(--texto-muted);text-align:center;}
   .ms-legenda{display:flex;align-items:flex-start;gap:5px;font-size:11.5px;color:var(--texto-sec);margin:6px 0 0;line-height:1.4;}
   .ms-legenda svg{flex-shrink:0;margin-top:1px;color:var(--azul);}
   /* ===== Animação do CTA "Encontrou uma oportunidade" (ícone balança + halo verde + respiro) ===== */
@@ -900,8 +904,17 @@
         <p class="ms-legenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 11h1v5h1"/></svg><span>Selecione um ou mais estados para comparar.</span></p>
       </div>
       <div class="campo">
-        <label class="filtro-label" for="fMunicipio">Cidade</label>
-        <select id="fMunicipio" aria-label="Cidade"><option value="">Todas as cidades</option></select>
+        <label class="filtro-label" for="msCidadeBtn">Cidade</label>
+        <div class="ms" id="msCidade">
+          <div class="ms-field" id="msCidadeBtn" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false" aria-label="Selecionar cidades">
+            <span class="ms-chips" id="msCidadeChips"><span class="ms-placeholder">Todas as cidades</span></span>
+            <svg class="ms-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="ms-panel" id="msCidadePanel" hidden role="listbox" aria-multiselectable="true">
+            <div class="ms-search"><input type="text" id="msCidadeBusca" placeholder="Buscar cidade…" aria-label="Buscar cidade" autocomplete="off"></div>
+            <div class="ms-list" id="msCidadeList"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -987,7 +1000,7 @@
 let DADOS = [];
 let DATA_SIG = null;
 function hashStr(s){ let h = 5381; for (let i = 0; i < s.length; i++){ h = ((h << 5) + h) ^ s.charCodeAt(i); } return (h >>> 0).toString(36); }
-let ESTADO = { edicao: null, ufs: [], municipio: "", tipo: "Fies", cota: "ampla", busca: "", notaAluno: null, ordenacao: "corte", soCalouros: false, soCompat: false, soSemVaga: false };
+let ESTADO = { edicao: null, ufs: [], municipios: [], tipo: "Fies", cota: "ampla", busca: "", notaAluno: null, ordenacao: "corte", soCalouros: false, soCompat: false, soSemVaga: false };
 const POR_PAGINA = 25;      // carregamento progressivo
 let EXIBIDOS = POR_PAGINA;  // quantos cartões estão montados agora
 let LISTA_ATUAL = [];       // lista filtrada+ordenada atual (todos os resultados)
@@ -1068,9 +1081,14 @@ function popularFiltros(){
   renderChipsEstado();
 }
 
-function popularMunicipios(){
-  const selMun = document.getElementById("fMunicipio");
-  // Cidade sempre liberada: lista todas as cidades da edição atual (e do estado, se houver).
+// Rótulo amigável de uma cidade (com sigla do estado quando desambiguada).
+function labelCidade(val){
+  const i = val.indexOf("|||");
+  return i >= 0 ? val.slice(0,i) + " (" + siglaUf(val.slice(i+3)) + ")" : val;
+}
+
+// Monta a lista (multi-seleção com busca) de cidades da edição/estado atual.
+function popularCidades(){
   const base = DADOS.filter(d => d.ed === ESTADO.edicao && (!ESTADO.ufs.length || ESTADO.ufs.includes(d.uf)));
   const ufsPorCidade = {};
   base.forEach(d => { (ufsPorCidade[d.mun] = ufsPorCidade[d.mun] || new Set()).add(d.uf); });
@@ -1081,23 +1099,57 @@ function popularMunicipios(){
     else pares.push({ mun, uf: null });
   });
   pares.sort((a,b) => a.mun.localeCompare(b.mun,"pt") || (a.uf||"").localeCompare(b.uf||"","pt"));
-  selMun.innerHTML = `<option value="">Todas as cidades</option>` + pares.map(p => {
+  document.getElementById("msCidadeList").innerHTML = pares.map(p => {
     const val = p.uf ? p.mun + "|||" + p.uf : p.mun;
     const lbl = p.uf ? p.mun + " (" + siglaUf(p.uf) + ")" : p.mun;
-    return `<option value="${val}">${lbl}</option>`;
+    return `<button type="button" class="ms-item" role="option" aria-selected="false" data-val="${val}"><span class="ms-check"></span><span>${lbl}</span></button>`;
   }).join("");
-  ESTADO.municipio = "";
-  selMun.disabled = false;
-  const hint = document.getElementById("cidadeHint");
-  if (hint) hint.style.display = "none";
+  ESTADO.municipios = [];
+  const bu = document.getElementById("msCidadeBusca"); if (bu) bu.value = "";
+  filtrarListaCidades("");
+  renderChipsCidade();
 }
 
-// Casa a cidade selecionada, tratando o valor desambiguado "Cidade|||Estado".
+// Filtra visualmente os itens do painel conforme o texto digitado.
+function filtrarListaCidades(termo){
+  const t = (termo || "").trim().toLowerCase();
+  let visiveis = 0;
+  document.querySelectorAll("#msCidadeList .ms-item").forEach(el => {
+    const ok = el.textContent.toLowerCase().includes(t);
+    el.style.display = ok ? "" : "none";
+    if (ok) visiveis++;
+  });
+  const lista = document.getElementById("msCidadeList");
+  let vazio = lista.querySelector(".ms-empty");
+  if (!visiveis){ if (!vazio){ vazio = document.createElement("p"); vazio.className = "ms-empty"; vazio.textContent = "Nenhuma cidade encontrada."; lista.appendChild(vazio); } }
+  else if (vazio){ vazio.remove(); }
+}
+
+function renderChipsCidade(){
+  const wrap = document.getElementById("msCidadeChips");
+  if (!ESTADO.municipios.length){ wrap.innerHTML = '<span class="ms-placeholder">Todas as cidades</span>'; return; }
+  wrap.innerHTML = ESTADO.municipios.map(v => `<span class="ms-chip">${labelCidade(v)}<button type="button" class="ms-chip-x" data-val="${v}" aria-label="Remover ${labelCidade(v)}">×</button></span>`).join("");
+}
+
+function toggleCidade(val){
+  const i = ESTADO.municipios.indexOf(val);
+  if (i >= 0) ESTADO.municipios.splice(i,1); else ESTADO.municipios.push(val);
+  document.querySelectorAll("#msCidadeList .ms-item").forEach(el => {
+    const sel = ESTADO.municipios.includes(el.dataset.val);
+    el.classList.toggle("sel", sel); el.setAttribute("aria-selected", String(sel));
+  });
+  renderChipsCidade();
+  atualizarTudo();
+}
+
+// Casa a cidade: nenhuma selecionada = todas; senão, casa qualquer uma das escolhidas.
 function matchMunicipio(d){
-  if (!ESTADO.municipio) return true;
-  const i = ESTADO.municipio.indexOf("|||");
-  if (i >= 0) return d.mun === ESTADO.municipio.slice(0,i) && d.uf === ESTADO.municipio.slice(i+3);
-  return d.mun === ESTADO.municipio;
+  if (!ESTADO.municipios.length) return true;
+  return ESTADO.municipios.some(v => {
+    const i = v.indexOf("|||");
+    if (i >= 0) return d.mun === v.slice(0,i) && d.uf === v.slice(i+3);
+    return d.mun === v;
+  });
 }
 
 function renderChipsEstado(){
@@ -1113,7 +1165,7 @@ function toggleEstado(uf){
     el.classList.toggle("sel", sel); el.setAttribute("aria-selected", String(sel));
   });
   renderChipsEstado();
-  popularMunicipios();
+  popularCidades();
   atualizarTudo();
 }
 
@@ -1406,7 +1458,7 @@ function atualizarTudo(){
   const hero = document.querySelector(".sim-hero");
   if (hero){ hero.classList.toggle("tipo-fies", ESTADO.tipo === "Fies"); hero.classList.toggle("tipo-social", ESTADO.tipo !== "Fies"); }
   const btnLimpar = document.getElementById("btnLimpar");
-  if (btnLimpar) btnLimpar.disabled = !(ESTADO.busca || ESTADO.ufs.length || ESTADO.municipio);
+  if (btnLimpar) btnLimpar.disabled = !(ESTADO.busca || ESTADO.ufs.length || ESTADO.municipios.length);
   // Filtro rápido "compatível com minha nota" só vale com nota informada.
   const qfCompat = document.getElementById("qfCompat");
   if (qfCompat){
@@ -1432,7 +1484,7 @@ function atualizarTudo(){
 
 // ---- Compartilhar "este resultado": embala a simulação/filtros no link ----
 function temResultadoParaCompartilhar(){
-  return !!(ESTADO.notaAluno || (ESTADO.ufs && ESTADO.ufs.length) || ESTADO.municipio || ESTADO.busca);
+  return !!(ESTADO.notaAluno || (ESTADO.ufs && ESTADO.ufs.length) || (ESTADO.municipios && ESTADO.municipios.length) || ESTADO.busca);
 }
 function montarLinkResultado(){
   var base = "https://www.mapadofies.com.br/";
@@ -1442,7 +1494,7 @@ function montarLinkResultado(){
   if (ESTADO.cota) p.push("vaga=" + ESTADO.cota);
   if (ESTADO.edicao) p.push("ed=" + encodeURIComponent(ESTADO.edicao));
   if (ESTADO.ufs && ESTADO.ufs.length) p.push("uf=" + encodeURIComponent(ESTADO.ufs.join(",")));
-  if (ESTADO.municipio) p.push("cidade=" + encodeURIComponent(ESTADO.municipio));
+  if (ESTADO.municipios && ESTADO.municipios.length) p.push("cidade=" + encodeURIComponent(ESTADO.municipios.join("~")));
   if (ESTADO.busca) p.push("busca=" + encodeURIComponent(ESTADO.busca));
   return p.length ? base + "?" + p.join("&") : base;
 }
@@ -1476,9 +1528,11 @@ function restaurarDoLink(){
     }
     var cidade = q.get("cidade");
     if (cidade){
-      var selMun = document.getElementById("fMunicipio");
-      var opt = Array.prototype.filter.call(selMun.options, function(o){ return o.value === cidade || o.value.toLowerCase() === cidade.toLowerCase(); })[0];
-      if (opt){ ESTADO.municipio = opt.value; selMun.value = opt.value; }
+      cidade.split("~").forEach(function(c){
+        c = c.trim(); if (!c) return;
+        var it = document.querySelector('#msCidadeList .ms-item[data-val="' + c.replace(/"/g,'') + '"]');
+        if (it && ESTADO.municipios.indexOf(it.dataset.val) === -1) toggleCidade(it.dataset.val);
+      });
     }
     var busca = q.get("busca");
     if (busca){ ESTADO.busca = busca; document.getElementById("busca").value = busca; }
@@ -1502,7 +1556,19 @@ function restaurarDoLink(){
 }
 
 function initEventos(){
-  document.getElementById("fEdicao").addEventListener("change", e => { ESTADO.edicao = e.target.value; popularMunicipios(); atualizarTudo(); });
+  document.getElementById("fEdicao").addEventListener("change", e => { ESTADO.edicao = e.target.value; popularCidades(); atualizarTudo(); });
+  // Cidade: multi-seleção com busca (mesmo padrão do seletor de estados)
+  const cidBtn = document.getElementById("msCidadeBtn");
+  const cidPanel = document.getElementById("msCidadePanel");
+  const setCidPanel = (open) => { cidPanel.hidden = !open; cidBtn.setAttribute("aria-expanded", String(open)); if (open){ const b = document.getElementById("msCidadeBusca"); if (b) setTimeout(() => b.focus(), 0); } };
+  cidBtn.addEventListener("click", () => setCidPanel(cidPanel.hidden));
+  cidBtn.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); setCidPanel(cidPanel.hidden); } });
+  document.getElementById("msCidadeList").addEventListener("click", (ev) => { const it = ev.target.closest(".ms-item"); if (it) toggleCidade(it.dataset.val); });
+  document.getElementById("msCidadeChips").addEventListener("click", (ev) => { const x = ev.target.closest(".ms-chip-x"); if (x){ ev.stopPropagation(); toggleCidade(x.dataset.val); } });
+  document.getElementById("msCidadeBusca").addEventListener("input", (e) => filtrarListaCidades(e.target.value));
+  document.getElementById("msCidadeBusca").addEventListener("click", (e) => e.stopPropagation());
+  document.addEventListener("click", (ev) => { if (!document.getElementById("msCidade").contains(ev.target)) setCidPanel(false); });
+  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") setCidPanel(false); });
   const msBtn = document.getElementById("msEstadoBtn");
   const msPanel = document.getElementById("msEstadoPanel");
   const setPanel = (open) => { msPanel.hidden = !open; msBtn.setAttribute("aria-expanded", String(open)); };
@@ -1512,7 +1578,6 @@ function initEventos(){
   document.getElementById("msEstadoChips").addEventListener("click", (ev) => { const x = ev.target.closest(".ms-chip-x"); if (x){ ev.stopPropagation(); toggleEstado(x.dataset.uf); } });
   document.addEventListener("click", (ev) => { if (!document.getElementById("msEstado").contains(ev.target)) setPanel(false); });
   document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") setPanel(false); });
-  document.getElementById("fMunicipio").addEventListener("change", e => { ESTADO.municipio = e.target.value; atualizarTudo(); });
   document.getElementById("busca").addEventListener("input", e => { ESTADO.busca = e.target.value; atualizarTudo(); });
 
   // Ordenação
@@ -1586,7 +1651,7 @@ function initEventos(){
     ESTADO.ufs = [];
     document.querySelectorAll("#msEstadoPanel .ms-item").forEach(el => { el.classList.remove("sel"); el.setAttribute("aria-selected","false"); });
     renderChipsEstado();
-    popularMunicipios();
+    popularCidades();
     atualizarTudo();
   });
 
@@ -1682,7 +1747,7 @@ fetch("data.json?v=" + Date.now(), { cache: "no-store" })
     DADOS = dados;
     DATA_SIG = hashStr(txt);
     popularFiltros();
-    popularMunicipios();
+    popularCidades();
     initEventos();
     document.getElementById("fEdicao").value = ESTADO.edicao;
     atualizarTudo();
