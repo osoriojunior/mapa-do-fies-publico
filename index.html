@@ -53,12 +53,14 @@
   .map-status .dot.encerrado{background:#9EA1B3;}
   .map-status .dot.encerrado::after{display:none;}
   #mapStatusTxt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .share-btn-topo{margin-left:auto;padding:5px 13px;font-size:12px;flex-shrink:0;}
-  .share-btn-topo svg{width:13px;height:13px;}
-  .share-btn-short{display:none;}
-  @media (max-width:560px){ .share-btn-topo .share-btn-full{display:none;} .share-btn-topo .share-btn-short{display:inline;} .share-btn-topo{padding:5px 11px;} }
+  .share-btn-topo{padding:6px 12px;font-size:12.5px;flex-shrink:0;}
+  .share-btn-topo svg{width:15px;height:15px;}
   .share-btn.share-btn-desk{display:none;}
   @media (min-width:900px){ .share-btn.share-btn-desk{display:inline-flex;} .share-btn.share-btn-topo{display:none;} }
+  /* Compartilhar como ação secundária (desktop): mais leve, contorno neutro */
+  .share-btn-sec{font-size:12.5px;font-weight:500;padding:6px 13px;color:var(--texto-sec);border:1.5px solid var(--border);}
+  .share-btn-sec:hover{background:var(--bg);border-color:var(--azul);color:var(--azul-escuro);}
+  .share-btn-sec svg{width:14px;height:14px;}
   .header-top{
     display:flex;
     align-items:center;
@@ -682,7 +684,7 @@
   @media (prefers-reduced-motion: reduce){ .tarja-atualiza{transition:none;} }
 
   /* ============ Reformulação de UX: resultados, ordenação, filtros, cartões ============ */
-  html, body { overflow-x: hidden; }
+  html, body { overflow-x: clip; }
 
   .sim-resumo{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#E4F1EC;border:1px solid var(--verde-fies-claro);border-radius:12px;padding:10px 14px;margin:0 0 12px;}
   .sim-resumo-txt{font-size:14px;font-weight:600;color:var(--verde-fies);}
@@ -705,14 +707,12 @@
   .chip-filtro:disabled{opacity:.5;cursor:not-allowed;}
   .chip-filtro:focus-visible, #fOrdenacao:focus-visible{outline:2px solid var(--azul);outline-offset:2px;}
 
-  .card-nota-rel{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:8px 0 0;padding-top:8px;border-top:1px dashed var(--border);}
-  .card-nota-rel-lbl{font-size:12.5px;color:var(--texto-sec);}
-  .card-nota-rel-val{font-size:16px;font-weight:700;color:var(--texto);}
-  .card-nota-rel-val.muted{font-size:13px;font-weight:500;color:var(--texto-muted);}
-  .card-diff{display:flex;align-items:center;gap:6px;margin:6px 0 0;font-size:13px;font-weight:600;}
-  .card-diff svg{width:15px;height:15px;flex-shrink:0;}
-  .card-diff.pos{color:var(--verde-fies);}
-  .card-diff.neg{color:#B8531F;}
+  .card-comp{display:flex;align-items:center;gap:8px;margin:10px 0 0;padding:9px 12px;border-radius:10px;font-size:15px;font-weight:600;line-height:1.35;border:1px solid transparent;}
+  .card-comp svg{width:18px;height:18px;flex-shrink:0;}
+  .card-comp-pos{color:var(--verde-fies);background:#E4F1EC;border-color:var(--verde-fies-claro);}
+  .card-comp-neg{color:#B8531F;background:#FCEAE2;border-color:#F3C8B8;}
+  .card-comp-eq{color:var(--azul-escuro);background:#EEF1FC;border-color:#D6DEF5;}
+  .card-comp-muted{color:var(--texto-sec);background:var(--bg);border-color:var(--border);font-weight:500;}
 
   .ver-mods-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:44px;margin:10px 0 0;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--azul-escuro);font-size:13px;font-weight:600;cursor:pointer;}
   .ver-mods-btn:hover{background:#F5F7FD;}
@@ -734,18 +734,30 @@
   .como-interpretar[open] > summary::before{transform:rotate(90deg);}
   .como-interpretar[open] > summary{margin-bottom:2px;}
 
-  /* Cabeçalho compacto ao rolar no celular (~56–60px) */
-  @media (max-width:560px){
+  /* ≤768px: cabeçalho compacta ao rolar (~56–62px) e some o secundário */
+  @media (max-width:768px){
     .header{transition:padding .18s ease;}
     .brand svg,.header h1{transition:all .18s ease;}
-    .topo-fixo.compacto .header{padding:9px 0;}
+    .topo-fixo.compacto .header{padding:8px 0;}
     .topo-fixo.compacto .brand svg{height:18px;}
     .topo-fixo.compacto .header h1{font-size:16px;}
+    .topo-fixo.compacto .map-status{display:none;}
+    /* No celular o logo já é largo: compartilhar fica só ícone (com aria-label) p/ caber em 390px */
+    .share-btn-topo .share-btn-label{display:none;}
+    .share-btn-topo{padding:0;width:44px;height:44px;min-width:44px;justify-content:center;}
     .resultados-barra{flex-direction:column;align-items:stretch;}
     .resultados-ordenar{justify-content:space-between;}
     #fOrdenacao{flex:1;}
     .chip-filtro,.sim-resumo-alt,#fOrdenacao{min-height:44px;}
-    .card-diff,.card-nota-rel-lbl{font-size:14px;}
+    /* Tipografia mobile: nada relevante do cartão abaixo de 14px */
+    .card-name{font-size:16px;font-weight:600;line-height:1.3;}
+    .card-sub,.card-conceito,.card-mens,.card-vagas,.card-vest{font-size:14px;line-height:1.45;}
+    .card-comp{font-size:15px;}
+    .detail-heading,.detail-group-title{font-size:14px;font-weight:600;}
+    .detail-row,.detail-row .valor,.detail-row .valor-mec{font-size:14px;}
+    .resultado-titulo{font-size:15px;}
+    .resultado-texto{font-size:14px;line-height:1.5;}
+    #grupoTipo button,#grupoCota button{font-size:15px;}
   }
 </style>
 </head>
@@ -771,6 +783,10 @@
     </a>
     <div class="header-right">
       <h1>Mapa do Fies</h1>
+      <button type="button" class="share-btn share-btn-topo js-share-open" id="btnShare" aria-label="Compartilhar o Mapa do Fies">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+        <span class="share-btn-label">Compartilhar</span>
+      </button>
     </div>
   </div>
 </div>
@@ -779,10 +795,6 @@
   <div class="map-status-inner">
     <span class="dot" id="mapStatusDot" aria-hidden="true"></span>
     <span id="mapStatusTxt">Inscrições prorrogadas até 19/7</span>
-    <button type="button" class="share-btn share-btn-topo js-share-open" id="btnShare" aria-label="Compartilhar o Mapa do Fies">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
-      <span class="share-btn-full">Compartilhar o Mapa do Fies</span><span class="share-btn-short">Compartilhar</span>
-    </button>
   </div>
 </div>
 </div>
@@ -851,9 +863,9 @@
   <p class="secao-eyebrow">Encontre uma instituição</p>
   <div class="titulo-share">
     <h2 class="secao-titulo">Busque uma faculdade ou cidade</h2>
-    <button type="button" class="share-btn share-btn-desk js-share-open" aria-label="Compartilhar o Mapa do Fies">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
-      <span>Compartilhar o Mapa do Fies</span>
+    <button type="button" class="share-btn share-btn-desk share-btn-sec js-share-open" aria-label="Compartilhar o Mapa do Fies">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+      <span>Compartilhar</span>
     </button>
   </div>
   <p class="secao-sub">Filtre por edição, estado e município para encontrar opções de Medicina.</p>
@@ -932,6 +944,7 @@
       <div class="resultados-ordenar">
         <label class="ordenar-label" for="fOrdenacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4v16M8 4L5 7M8 4l3 3"/><path d="M16 20V4M16 20l-3-3M16 20l3-3"/></svg>Ordenar</label>
         <select id="fOrdenacao" aria-label="Ordenar resultados">
+          <option value="compat" disabled>Melhor compatibilidade com minha nota</option>
           <option value="corte">Menor nota de corte</option>
           <option value="mensalidade">Menor mensalidade</option>
           <option value="conceito">Conceito MEC</option>
@@ -1252,36 +1265,25 @@ function detalheModalidades(item, resultado){
       }).join("")}
     </div>
   `).join("") + `</div>
-  ${resultado || ""}
-  <div class="card-suporte">
-    <a class="cta-btn small" href="https://api.whatsapp.com/send?phone=5534998622338&text=Ol%C3%A1%2C%20ProFies%21%20Consultei%20o%20Mapa%20do%20Fies%20e%20preciso%20de%20orienta%C3%A7%C3%A3o%20para%20a%20minha%20inscri%C3%A7%C3%A3o%20no%20Fies." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" style="flex-shrink:0" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.359.101 11.943c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a11.93 11.93 0 005.71 1.454h.006c6.585 0 11.946-5.359 11.949-11.945a11.86 11.86 0 00-3.48-8.418z"/></svg>Falar com a ProFies no WhatsApp</a>
-  </div>`;
+  ${resultado || ""}`;
 }
 
-// Diferença entre a nota do aluno e a nota de corte relevante (nunca "aprovado").
-function fmtDiffPontos(margem){
-  const v = Math.abs(margem).toLocaleString("pt-BR", {minimumFractionDigits:2, maximumFractionDigits:2});
-  return margem >= 0
-    ? { cls:"pos", ico:'<path d="M12 19V5M5 12l7-7 7 7"/>', txt:`Sua nota está ${v} pontos acima da referência` }
-    : { cls:"neg", ico:'<path d="M12 5v14M5 12l7 7 7-7"/>', txt:`Faltam ${v} pontos para alcançar essa referência` };
-}
-
-// Bloco (sempre visível) com a nota de corte da modalidade escolhida + diferença.
-function notaRelevanteHtml(item, chave){
-  const label = (ESTADO.tipo === "Fies" ? "Fies" : "Fies Social") + " · " + NOMES_MOD[chave];
+// Diferença numérica (nota do aluno − nota de corte da modalidade/vaga selecionada).
+// Só aparece quando há nota. Nunca promete aprovação: é referência.
+function comparacaoHtml(item, chave){
+  if (ESTADO.notaAluno == null) return "";
   const m = item.mod[chave];
   const rem = /Remanescentes/i.test(item.ed || "");
-  let val, cls = "";
-  if (rem){ val = "Não divulgada pelo MEC"; cls = "muted"; }
-  else if (m.n != null){ val = fmtNota(m.n); }
-  else if (vagaAgregada(item) > 0){ val = "Não ofertada nesta modalidade"; cls = "muted"; }
-  else { val = "Sem vaga nesta modalidade"; cls = "muted"; }
-  let diff = "";
-  if (!rem && m.n != null && ESTADO.notaAluno != null){
-    const d = fmtDiffPontos(ESTADO.notaAluno - m.n);
-    diff = `<p class="card-diff ${d.cls}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d.ico}</svg>${d.txt}</p>`;
+  if (rem || m.n == null){
+    return `<p class="card-comp card-comp-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 11h1v5h1"/></svg><span>Não há nota de corte disponível para esta modalidade</span></p>`;
   }
-  return `<div class="card-nota-rel"><span class="card-nota-rel-lbl">Nota de corte — ${label}</span><span class="card-nota-rel-val ${cls}">${val}</span></div>${diff}`;
+  const dif = ESTADO.notaAluno - m.n;
+  const v = Math.abs(dif).toLocaleString("pt-BR", {minimumFractionDigits:2, maximumFractionDigits:2});
+  let cls, ico, txt;
+  if (dif > 0){ cls = "pos"; ico = '<path d="M12 19V5M5 12l7-7 7 7"/>'; txt = `Sua nota está ${v} pontos acima da referência`; }
+  else if (dif < 0){ cls = "neg"; ico = '<path d="M12 5v14M5 12l7 7 7-7"/>'; txt = `Faltam ${v} pontos para alcançar a referência`; }
+  else { cls = "eq"; ico = '<path d="M5 12h14"/>'; txt = "Sua nota coincide com a referência"; }
+  return `<p class="card-comp card-comp-${cls}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ico}</svg><span>${txt}</span></p>`;
 }
 
 function renderLista(lista){
@@ -1328,6 +1330,7 @@ function renderLista(lista){
           ${vestHtml}
         </div>
       </div>
+      ${comparacaoHtml(item, chave)}
       <div class="card-detail">${detalheModalidades(item, resultado)}</div>
     </div>`;
   }).join("");
@@ -1379,6 +1382,15 @@ function atualizarTudo(){
     const semNota = ESTADO.notaAluno == null;
     if (semNota && ESTADO.soCompat){ ESTADO.soCompat = false; qfCompat.setAttribute("aria-pressed","false"); qfCompat.classList.remove("ativo"); }
     qfCompat.disabled = semNota;
+  }
+  // Ordenação por compatibilidade só existe com nota válida; senão volta p/ "Menor nota de corte".
+  const selOrd = document.getElementById("fOrdenacao");
+  if (selOrd){
+    const optCompat = selOrd.querySelector('option[value="compat"]');
+    const notaValida = ESTADO.notaAluno != null;
+    if (optCompat) optCompat.disabled = !notaValida;
+    if (!notaValida && ESTADO.ordenacao === "compat") ESTADO.ordenacao = "corte";
+    if (selOrd.value !== ESTADO.ordenacao) selOrd.value = ESTADO.ordenacao;
   }
   renderKPIs();
   renderAvisoEdicao();
@@ -1570,6 +1582,8 @@ function initEventos(){
   });
   btnSimular.addEventListener("click", () => {
     if (btnSimular.disabled) return;
+    // Nova simulação executada: passa a ordenar por compatibilidade com a nota.
+    if (ESTADO.notaAluno != null){ ESTADO.ordenacao = "compat"; atualizarTudo(); }
     // Rola até o convite "Encontrou uma oportunidade..." e para logo abaixo do
     // cabeçalho fixo, para o CTA de marketing ficar 100% visível.
     let alvo = document.getElementById("ctaBanner");
