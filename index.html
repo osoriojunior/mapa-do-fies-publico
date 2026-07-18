@@ -973,7 +973,7 @@ let DADOS = [];
 let DATA_SIG = null;
 function hashStr(s){ let h = 5381; for (let i = 0; i < s.length; i++){ h = ((h << 5) + h) ^ s.charCodeAt(i); } return (h >>> 0).toString(36); }
 let ESTADO = { edicao: null, ufs: [], municipio: "", tipo: "Fies", cota: "ampla", busca: "", notaAluno: null, ordenacao: "compat", soCalouros: false, soCompat: false };
-const POR_PAGINA = 18;      // carregamento progressivo
+const POR_PAGINA = 25;      // carregamento progressivo
 let EXIBIDOS = POR_PAGINA;  // quantos cartões estão montados agora
 let LISTA_ATUAL = [];       // lista filtrada+ordenada atual (todos os resultados)
 
@@ -1342,14 +1342,14 @@ function renderResultados(reset){
   const total = LISTA_ATUAL.length;
   renderLista(LISTA_ATUAL.slice(0, EXIBIDOS));
   const cnt = document.getElementById("resultCount");
-  if (cnt) cnt.textContent = total === 0 ? "Nenhuma instituição encontrada"
-    : fmtInt(total) + (total === 1 ? " instituição encontrada" : " instituições encontradas");
+  if (cnt) cnt.textContent = total === 0 ? "Nenhum resultado encontrado"
+    : fmtInt(total) + (total === 1 ? " resultado encontrado" : " resultados encontrados");
   const wrap = document.getElementById("carregarMaisWrap");
   const btn = document.getElementById("btnCarregarMais");
   if (wrap && btn){
     if (EXIBIDOS < total){
       wrap.style.display = "";
-      btn.textContent = "Carregar mais resultados (+" + fmtInt(Math.min(POR_PAGINA, total - EXIBIDOS)) + ")";
+      btn.textContent = "Carregar mais resultados";
     } else { wrap.style.display = "none"; }
   }
 }
