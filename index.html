@@ -932,7 +932,6 @@
       <div class="resultados-ordenar">
         <label class="ordenar-label" for="fOrdenacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4v16M8 4L5 7M8 4l3 3"/><path d="M16 20V4M16 20l-3-3M16 20l3-3"/></svg>Ordenar</label>
         <select id="fOrdenacao" aria-label="Ordenar resultados">
-          <option value="compat">Melhor compatibilidade com minha nota</option>
           <option value="corte">Menor nota de corte</option>
           <option value="mensalidade">Menor mensalidade</option>
           <option value="conceito">Conceito MEC</option>
@@ -973,7 +972,7 @@
 let DADOS = [];
 let DATA_SIG = null;
 function hashStr(s){ let h = 5381; for (let i = 0; i < s.length; i++){ h = ((h << 5) + h) ^ s.charCodeAt(i); } return (h >>> 0).toString(36); }
-let ESTADO = { edicao: null, ufs: [], municipio: "", tipo: "Fies", cota: "ampla", busca: "", notaAluno: null, ordenacao: "compat", soCalouros: false, soCompat: false };
+let ESTADO = { edicao: null, ufs: [], municipio: "", tipo: "Fies", cota: "ampla", busca: "", notaAluno: null, ordenacao: "corte", soCalouros: false, soCompat: false };
 const POR_PAGINA = 25;      // carregamento progressivo
 let EXIBIDOS = POR_PAGINA;  // quantos cartões estão montados agora
 let LISTA_ATUAL = [];       // lista filtrada+ordenada atual (todos os resultados)
@@ -1145,7 +1144,7 @@ function ordenarLista(lista, chave){
     conceito: (a,b) => (conc(b) - conc(a)) || porTier(a,b),
     vagas: (a,b) => (vagas(b) - vagas(a)) || porTier(a,b)
   };
-  const f = cmp[ESTADO.ordenacao] || cmp.compat;
+  const f = cmp[ESTADO.ordenacao] || cmp.corte;
   return lista.slice().sort((a,b) => f(a,b) || a.ies.localeCompare(b.ies, "pt"));
 }
 
