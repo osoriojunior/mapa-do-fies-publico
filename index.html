@@ -692,9 +692,10 @@
 
   .resultados-barra{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 0 10px;}
   .resultados-conta{font-size:14px;font-weight:600;color:var(--texto);margin:0;}
-  .resultados-ordenar{display:flex;align-items:center;gap:8px;}
-  .resultados-ordenar .filtro-label{margin:0;white-space:nowrap;}
-  #fOrdenacao{min-height:40px;border:1px solid var(--border);border-radius:10px;padding:0 12px;font-size:13px;color:var(--texto);background:#fff;cursor:pointer;max-width:100%;}
+  .resultados-ordenar{display:inline-flex;align-items:center;gap:8px;background:#F5F7FD;border:1px solid #D6DEF5;border-radius:10px;padding:4px 4px 4px 12px;}
+  .ordenar-label{display:inline-flex;align-items:center;gap:6px;margin:0;font-size:12.5px;font-weight:600;color:var(--azul-escuro);white-space:nowrap;}
+  .ordenar-label svg{width:16px;height:16px;flex-shrink:0;}
+  #fOrdenacao{min-height:38px;border:1px solid #D6DEF5;border-radius:8px;padding:0 12px;font-size:13px;font-weight:600;color:var(--texto);background:#fff;cursor:pointer;max-width:100%;}
 
   .filtros-rapidos{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;}
   .chip-filtro{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 14px;border-radius:999px;border:1px solid var(--border);background:#fff;color:var(--texto-sec);font-size:13px;font-weight:600;cursor:pointer;}
@@ -929,7 +930,7 @@
     <div class="resultados-barra">
       <p class="resultados-conta" id="resultCount" aria-live="polite"></p>
       <div class="resultados-ordenar">
-        <label class="filtro-label" for="fOrdenacao">Ordenar por</label>
+        <label class="ordenar-label" for="fOrdenacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4v16M8 4L5 7M8 4l3 3"/><path d="M16 20V4M16 20l-3-3M16 20l3-3"/></svg>Ordenar</label>
         <select id="fOrdenacao" aria-label="Ordenar resultados">
           <option value="compat">Melhor compatibilidade com minha nota</option>
           <option value="corte">Menor nota de corte</option>
