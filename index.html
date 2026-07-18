@@ -948,14 +948,15 @@
           <option value="compat" disabled>Melhor compatibilidade com minha nota</option>
           <option value="corte">Menor nota de corte</option>
           <option value="mensalidade">Menor mensalidade</option>
+          <option value="mensalidadeDesc">Maior mensalidade</option>
           <option value="conceito">Conceito MEC</option>
           <option value="vagas">Mais vagas</option>
         </select>
       </div>
     </div>
     <div class="filtros-rapidos" role="group" aria-label="Filtros rápidos">
-      <button type="button" class="chip-filtro" id="qfCalouros" aria-pressed="false">Aceita calouros</button>
       <button type="button" class="chip-filtro" id="qfCompat" aria-pressed="false" disabled>Compatível com minha nota</button>
+      <button type="button" class="chip-filtro" id="qfCalouros" aria-pressed="false">Aceita calouros</button>
       <button type="button" class="chip-filtro" id="qfSemVaga" aria-pressed="false">Sem oferta de vagas</button>
     </div>
     <div id="lista"></div>
@@ -1163,6 +1164,7 @@ function ordenarLista(lista, chave){
     },
     corte: (a,b) => porTier(a,b) || (corte(a) - corte(b)),
     mensalidade: (a,b) => (mens(a) - mens(b)) || porTier(a,b),
+    mensalidadeDesc: (a,b) => { const A = a.mens == null ? -Infinity : a.mens, B = b.mens == null ? -Infinity : b.mens; return (B - A) || porTier(a,b); },
     conceito: (a,b) => (conc(b) - conc(a)) || porTier(a,b),
     vagas: (a,b) => (vagas(b) - vagas(a)) || porTier(a,b)
   };
