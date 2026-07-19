@@ -765,6 +765,25 @@
     #grupoTipo button,#grupoCota button{font-size:15px;}
   }
 </style>
+<style>
+  /* Modo interno (?interno=1): esconde o que e voltado ao cliente.
+     Usado quando o mapa e incorporado dentro do IA ProFies. */
+  html.modo-interno .cta-banner,
+  html.modo-interno #ctaBanner,
+  html.modo-interno .share-btn,
+  html.modo-interno #shareModal{ display:none !important; }
+</style>
+<script>
+  (function(){
+    try{
+      var p = new URLSearchParams(window.location.search);
+      var v = (p.get("interno") || "").toLowerCase();
+      if (v === "1" || v === "true" || v === "sim"){
+        document.documentElement.classList.add("modo-interno");
+      }
+    }catch(e){}
+  })();
+</script>
 </head>
 <body>
 
@@ -877,6 +896,11 @@
 
   <div class="filtros-lista">
     <div class="campo">
+      <label class="filtro-label" for="fEdicao">Edição do Fies</label>
+      <select id="fEdicao" aria-label="Edição do Fies"></select>
+    </div>
+
+    <div class="campo">
       <label class="filtro-label" for="busca">Buscar instituição</label>
       <div class="search-wrap">
         <span class="search-icon">
@@ -884,11 +908,6 @@
         </span>
         <input type="text" id="busca" placeholder="Cidade ou nome da faculdade" aria-label="Buscar instituição">
       </div>
-    </div>
-
-    <div class="campo">
-      <label class="filtro-label" for="fEdicao">Edição do Fies</label>
-      <select id="fEdicao" aria-label="Edição do Fies"></select>
     </div>
 
     <div class="campos-2col">
