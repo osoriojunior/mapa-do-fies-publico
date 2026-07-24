@@ -906,7 +906,7 @@
         <span class="search-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         </span>
-        <input type="text" id="busca" placeholder="Cidade ou nome da faculdade" aria-label="Buscar instituição">
+        <input type="text" id="busca" placeholder="Cidade, campus ou nome da faculdade" aria-label="Buscar instituição">
       </div>
     </div>
 
@@ -1215,16 +1215,30 @@ function aceitaCalouros(d){
   return true;
 }
 
+// Normaliza texto para busca: minúsculas e sem acentos.
+function normBusca(s){
+  return (s || "").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// Verifica se o termo digitado aparece no nome da instituição, na cidade
+// ou no campus / local de oferta (ex.: "vergueiro" encontra a UNINOVE).
+function casaBusca(d, termo){
+  if (!termo) return true;
+  return normBusca(d.ies).includes(termo)
+      || normBusca(d.mun).includes(termo)
+      || normBusca(d.local).includes(termo);
+}
+
 function filtrarDados(){
   const chave = modKey();
-  const buscaLower = ESTADO.busca.trim().toLowerCase();
+  const buscaLower = normBusca(ESTADO.busca.trim());
   const nota = ESTADO.notaAluno;
   const lista = DADOS.filter(d => {
     if (d.ed !== ESTADO.edicao) return false;
     if (ESTADO.ufs.length && !ESTADO.ufs.includes(d.uf)) return false;
     if (!matchMunicipio(d)) return false;
     if (!d.mod[chave]) return false;
-    if (buscaLower && !(d.ies.toLowerCase().includes(buscaLower) || d.mun.toLowerCase().includes(buscaLower))) return false;
+    if (!casaBusca(d, buscaLower)) return false;
     if (ESTADO.soCalouros && !aceitaCalouros(d)) return false;
     if (ESTADO.soSemVaga && !semOferta(d)) return false;
     if (ESTADO.soCompat){
@@ -1266,12 +1280,12 @@ function ordenarLista(lista, chave){
 // Base dos KPIs oficiais: filtra só por edição + geografia + busca,
 // ignorando a cota/tipo selecionados — para bater com o Power BI (fonte da verdade).
 function filtrarBaseKPI(){
-  const buscaLower = ESTADO.busca.trim().toLowerCase();
+  const buscaLower = normBusca(ESTADO.busca.trim());
   return DADOS.filter(d => {
     if (d.ed !== ESTADO.edicao) return false;
     if (ESTADO.ufs.length && !ESTADO.ufs.includes(d.uf)) return false;
     if (!matchMunicipio(d)) return false;
-    if (buscaLower && !(d.ies.toLowerCase().includes(buscaLower) || d.mun.toLowerCase().includes(buscaLower))) return false;
+    if (!casaBusca(d, buscaLower)) return false;
     return true;
   });
 }
